@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Base;
 
-public struct Result<TData>
+public readonly struct Result<TData>
 {
     private readonly TData? _data;
     private readonly string _message;

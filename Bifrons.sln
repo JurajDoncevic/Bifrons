@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Base", "Bifrons.Bas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Base.Tests", "Bifrons.Base.Tests\Bifrons.Base.Tests.csproj", "{1BE26167-B00D-48E4-8A16-7253EE64620D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Lenses", "Bifrons.Lenses\Bifrons.Lenses.csproj", "{4320BFF5-5619-42FC-9C8B-855B2D2A1957}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Lenses.Tests", "Bifrons.Lenses.Tests\Bifrons.Lenses.Tests.csproj", "{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{1BE26167-B00D-48E4-8A16-7253EE64620D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BE26167-B00D-48E4-8A16-7253EE64620D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BE26167-B00D-48E4-8A16-7253EE64620D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4320BFF5-5619-42FC-9C8B-855B2D2A1957}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4320BFF5-5619-42FC-9C8B-855B2D2A1957}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4320BFF5-5619-42FC-9C8B-855B2D2A1957}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4320BFF5-5619-42FC-9C8B-855B2D2A1957}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
