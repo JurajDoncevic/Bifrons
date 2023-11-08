@@ -169,4 +169,11 @@ public static class Results
         => await result.ContinueWith(t => t.Result.Bind(bind));
 
     #endregion
+
+    public static Option<T> ToOption<T>(this Result<T> result)
+        => result.Match(
+            value => Option.Some(value),
+            _ => Option.None<T>(),
+            _ => Option.None<T>()
+        );
 }

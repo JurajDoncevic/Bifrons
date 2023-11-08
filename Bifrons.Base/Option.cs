@@ -43,6 +43,15 @@ public readonly struct Option<T>
         return option.IsSome;
     }
 
+        /// <summary>
+    /// Implicit operator to turn a value into a Option
+    /// </summary>
+    /// <param name="data"></param>
+    public static implicit operator Option<T>(T data)
+        => data != null
+            ? Option.Some(data)
+            : Option.None<T>();
+
     public static bool operator ==(Option<T> left, Option<T> right)
     {
         return left.Equals(right);
