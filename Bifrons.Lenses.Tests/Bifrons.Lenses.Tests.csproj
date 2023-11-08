@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Bifrons.Lenses\Bifrons.Lenses.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Strings\" />
+  </ItemGroup>
+
 </Project>
