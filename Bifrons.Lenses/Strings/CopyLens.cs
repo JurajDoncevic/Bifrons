@@ -6,7 +6,7 @@ public class CopyLens : BaseAsymmetricLens<string, string>
 {
     private Regex _matchRegex;
 
-    public CopyLens(string matchRegex)
+    private CopyLens(string matchRegex)
     {
         _matchRegex = new Regex(matchRegex ?? string.Empty);
     }
@@ -54,4 +54,6 @@ public class CopyLens : BaseAsymmetricLens<string, string>
                 }
             }
         };
+
+    public static CopyLens Create(string matchRegex) => new(matchRegex);
 }
