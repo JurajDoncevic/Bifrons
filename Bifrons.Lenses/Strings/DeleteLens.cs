@@ -17,22 +17,33 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
     }
 
     public override Func<string, Option<string>, Result<string>> Put =>
-        (updatedView, originalSource) =>
+    (updatedView, originalSource) =>
+    {
+        if (!originalSource)
         {
-            var view = Get(originalSource.Value);
+            return Create(updatedView);
+        }
 
-            if (!view || !originalSource)
-            {
-                return view;
-            }
+        var view = Get(originalSource.Value);
 
-            var firstIndex = originalSource.Value.IndexOf(view.Data);
-            var lastIndex = firstIndex + view.Data.Length;
+        if (!view)
+        {
+            return view;
+        }
 
-            var result = updatedView;
+        var firstIndex = originalSource.Value.IndexOf(view.Data);
 
-            return Results.OnFailure<string>("Not implemented");
-        };
+        if (firstIndex == -1)
+        {
+            return Results.OnFailure<string>("View not found in original source");
+        }
+
+        var lastIndex = firstIndex + view.Data.Length;
+
+        var result = originalSource.Value.Substring(0, firstIndex) + updatedView + originalSource.Value.Substring(lastIndex);
+
+        return Results.OnSuccess(result);
+    };
 
     public override Func<string, Result<string>> Get =>
         source =>
@@ -51,7 +62,7 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
         };
 
     public override Func<string, Result<string>> Create => 
-        view => Results.OnFailure<string>("Not implemented");
+        view => Results.OnFailure<string>("Not implemented representative for regex");
 
     public static DeleteLens Cons(string matchRegex) => new(matchRegex ?? string.Empty);
 }
