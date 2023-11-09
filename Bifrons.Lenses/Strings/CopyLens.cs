@@ -2,9 +2,13 @@
 
 namespace Bifrons.Lenses;
 
-public class CopyLens : BaseAsymmetricLens<string, string>
+/// <summary>
+/// Basic asymmetric lens that takes the regex-matching part of the source as the view.
+/// As presented in https://www.cs.cornell.edu/~jnfoster/papers/jnfoster-dissertation.pdf p.22
+/// </summary>
+public sealed class CopyLens : BaseAsymmetricLens<string, string>
 {
-    private Regex _matchRegex;
+    private readonly Regex _matchRegex;
 
     private CopyLens(string matchRegex)
     {

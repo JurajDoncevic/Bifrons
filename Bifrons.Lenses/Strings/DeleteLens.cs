@@ -3,7 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace Bifrons.Lenses;
 
-public class DeleteLens : BaseAsymmetricLens<string, string>
+/// <summary>
+/// Basic asymmetric lens that gives a predetermined constant as view and ignores it in the put. The put returns the original source
+/// As presented in https://www.cs.cornell.edu/~jnfoster/papers/jnfoster-dissertation.pdf p.24
+/// </summary>
+public sealed class DeleteLens : BaseAsymmetricLens<string, string>
 {
     private Regex _matchRegex;
 
@@ -16,10 +20,17 @@ public class DeleteLens : BaseAsymmetricLens<string, string>
         (updatedView, originalSource) =>
         {
             var view = Get(originalSource.Value);
+
             if (!view || !originalSource)
             {
                 return view;
             }
+
+            var firstIndex = originalSource.Value.IndexOf(view.Data);
+            var lastIndex = firstIndex + view.Data.Length;
+
+            var result = updatedView;
+
             return Results.OnFailure<string>("Not implemented");
         };
 
@@ -38,4 +49,9 @@ public class DeleteLens : BaseAsymmetricLens<string, string>
                 return Results.OnFailure<string>("No match found");
             }
         };
+
+    public static DeleteLens Create(string matchRegex)
+    {
+        return new DeleteLens(matchRegex ?? string.Empty);
+    }
 }

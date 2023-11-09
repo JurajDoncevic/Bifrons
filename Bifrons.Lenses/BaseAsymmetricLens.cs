@@ -1,5 +1,10 @@
 ﻿namespace Bifrons.Lenses;
 
+/// <summary>
+/// Base class for monadic asymmetric lenses.
+/// </summary>
+/// <typeparam name="TSource">Type of source</typeparam>
+/// <typeparam name="TView">Type of view</typeparam>
 public abstract class BaseAsymmetricLens<TSource, TView>
 {
 
@@ -7,8 +12,14 @@ public abstract class BaseAsymmetricLens<TSource, TView>
     {
     }
 
+    /// <summary>
+    /// For a given updated view and original source returns an updated source
+    /// </summary>
     public abstract Func<TView, Option<TSource>, Result<TSource>> Put { get; }
 
+    /// <summary>
+    /// For a given source returns a view
+    /// </summary>
     public abstract Func<TSource, Result<TView>> Get { get; }
 
     /// <summary>
