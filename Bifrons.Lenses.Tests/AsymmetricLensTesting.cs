@@ -15,6 +15,12 @@ public abstract class AsymmetricLensTesting
     public abstract void GetPutTest();
 
     /// <summary>
+    /// Should confirm that get(create v) = v
+    /// </summary>
+    [Fact(DisplayName = $"CREATEGET rule test")]
+    public abstract void CreateGetTest();
+
+    /// <summary>
     /// Should confirm that put v' (put v s) = put v' s
     /// </summary>
     [Fact(DisplayName = $"PUTPUT rule test")]
@@ -54,6 +60,16 @@ public abstract class AsymmetricLensTestingFramework<TSource, TView> : Asymmetri
 
         Assert.True(result);
         Assert.Equal(_source, result.Data);
+    }
+
+    public override void CreateGetTest()
+    {
+        var result = _lens
+            .Create(_view)
+            .Bind(_lens.Get);
+
+        Assert.True(result);
+        Assert.Equal(_view, result.Data);
     }
 
     public override void PutPutTest()

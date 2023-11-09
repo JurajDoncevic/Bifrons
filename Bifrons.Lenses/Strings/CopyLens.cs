@@ -59,5 +59,8 @@ public sealed class CopyLens : BaseAsymmetricLens<string, string>
             }
         };
 
-    public static CopyLens Create(string matchRegex) => new(matchRegex);
+    public override Func<string, Result<string>> Create => 
+        view => Results.OnSuccess(view);
+
+    public static CopyLens Cons(string matchRegex) => new(matchRegex);
 }

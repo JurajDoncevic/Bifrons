@@ -19,12 +19,15 @@ public sealed class ConstantLens : BaseAsymmetricLens<string, string>
     }
 
     public override Func<string, Option<string>, Result<string>> Put => 
-        (updatedView, originalSource) => originalSource ? Results.OnSuccess(originalSource.Value) : string.Empty;
+        (updatedView, originalSource) => originalSource ? Results.OnSuccess(originalSource.Value) : Create(updatedView);
 
     public override Func<string, Result<string>> Get => 
         source => Results.OnSuccess(_constant);
 
-    public static ConstantLens Create(string constant, string matchRegex)
+    public override Func<string, Result<string>> Create => 
+        (view) => Results.OnSuccess(string.Empty);
+
+    public static ConstantLens Cons(string constant, string matchRegex)
     {
         return new ConstantLens(constant, matchRegex ?? string.Empty);
     }

@@ -50,8 +50,8 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
             }
         };
 
-    public static DeleteLens Create(string matchRegex)
-    {
-        return new DeleteLens(matchRegex ?? string.Empty);
-    }
+    public override Func<string, Result<string>> Create => 
+        view => Results.OnFailure<string>("Not implemented");
+
+    public static DeleteLens Cons(string matchRegex) => new(matchRegex ?? string.Empty);
 }

@@ -8,6 +8,6 @@ public class CopyLensTests : AsymmetricLensTestingFramework<string, string>
     protected override string _view => "World";
     protected override string _updatedView => "Universe";
 
-    protected override BaseAsymmetricLens<string, string> _lens => CopyLens.Create(@"World");
+    protected override BaseAsymmetricLens<string, string> _lens => CopyLens.Cons(@"World");
 
 }
