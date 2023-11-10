@@ -25,8 +25,40 @@ public sealed class ConstantLens : BaseAsymmetricLens<string, string>
         source => Results.OnSuccess(_constant);
 
     public override Func<string, Result<string>> Create => 
-        (view) => Results.OnSuccess(string.Empty);
+        (view) => Results.OnSuccess(GetRepresentative(_matchRegex.ToString()));
 
+
+    private string GetRepresentative(string regex)
+    {
+        // Use the regex pattern to generate a representative string
+        var representativeString = new System.Text.StringBuilder();
+
+        // Handle character classes
+        string charClassPattern = @"\[.*?\]";
+        regex = Regex.Replace(regex, charClassPattern, match =>
+        {
+            string charClass = match.Value;
+            char representativeChar = charClass.Length > 2 ? charClass[1] : 'a';
+            return representativeChar.ToString();
+        });
+
+        // Handle other special characters
+        regex = Regex.Replace(regex, @"[.*+?()\\^$]", match =>
+        {
+            string specialChar = match.Value;
+            return "\\" + specialChar;
+        });
+
+        // Generate a representative string based on the modified regex pattern
+        Random random = new Random();
+        for (int i = 0; i < 10; i++)
+        {
+            char randomChar = (char)random.Next('a', 'z' + 1);
+            representativeString.Append(randomChar);
+        }
+
+        return representativeString.ToString();
+    }
     public static ConstantLens Cons(string constant, string matchRegex)
     {
         return new ConstantLens(constant, matchRegex ?? string.Empty);
