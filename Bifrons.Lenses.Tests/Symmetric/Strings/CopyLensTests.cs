@@ -14,5 +14,5 @@ public sealed class CopyLensTests : SymmetricLensTestingFramework<string, string
 
     // moving right: ignore the part of the string until a comma is found
     // moving left: take the entire string
-    protected override BaseSymmetricLens<string, string> _lens => CopyLens.Cons(@"(?!.*, )\w+", @".+");
+    protected override BaseSymmetricLens<string, string> _lens => CopyLens.Cons(@"(?!.*, )\w+", @"\w+");
 }
