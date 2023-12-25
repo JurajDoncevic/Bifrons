@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Symmetric.Strings;
 
-public sealed class DisconnectLens : BaseSymmetricLens<string, string>
+public class DisconnectLens : BaseSymmetricLens<string, string>
 {
     private readonly Regex _matchToRightRegex;
     private readonly Regex _matchToLeftRegex;
@@ -14,7 +14,7 @@ public sealed class DisconnectLens : BaseSymmetricLens<string, string>
     /// </summary>
     /// <param name="matchToRightRegex">Regex string that is used for PutR</param>
     /// <param name="matchToLeftRegex">Regex string that is used for PutL</param>
-    private DisconnectLens(string matchToRightRegex, string matchToLeftRegex, string leftDefault, string rightDefault)
+    protected DisconnectLens(string matchToRightRegex, string matchToLeftRegex, string leftDefault, string rightDefault)
     {
         _matchToRightRegex = new Regex(matchToRightRegex ?? string.Empty);
         _matchToLeftRegex = new Regex(matchToLeftRegex ?? string.Empty);

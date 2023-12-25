@@ -1,7 +1,6 @@
-﻿
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 public sealed class IdentityLens : BaseSymmetricLens<string, string>
 {
