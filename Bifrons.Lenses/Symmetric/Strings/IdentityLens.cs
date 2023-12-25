@@ -1,21 +1,27 @@
 ﻿
+using System.Text.RegularExpressions;
+
 namespace Bifrons.Lenses;
 
-public class IdentityLens : BaseSymmetricLens<string, string>
+public sealed class IdentityLens : BaseSymmetricLens<string, string>
 {
-    private IdentityLens() { }
+    private readonly Regex _identityRegex;
+    private IdentityLens(string identityRegexString)
+    {
+        _identityRegex = new Regex(identityRegexString ?? @".*");
+    }
 
     public override Func<string, Option<string>, Result<string>> PutLeft =>
-        (right, _) => Results.OnSuccess(right);
+        (right, _) => Results.OnSuccess(_identityRegex.Match(right).Value);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
-        (left, _) => Results.OnSuccess(left);
+        (left, _) => Results.OnSuccess(_identityRegex.Match(left).Value);
 
     public override Func<string, Result<string>> CreateRight =>
-        left => Results.OnSuccess(left);
+        left => Results.OnSuccess(_identityRegex.Match(left).Value);
 
     public override Func<string, Result<string>> CreateLeft =>
-        right => Results.OnSuccess(right);
+        right => Results.OnSuccess(_identityRegex.Match(right).Value);
 
-    public static IdentityLens Cons() => new();
+    public static IdentityLens Cons(string identityRegexString = @".*") => new(identityRegexString);
 }
