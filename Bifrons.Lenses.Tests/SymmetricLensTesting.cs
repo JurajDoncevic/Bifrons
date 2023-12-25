@@ -39,49 +39,51 @@ public abstract class SymmetricLensTesting
 /// <typeparam name="TRight"></typeparam>
 public abstract class SymmetricLensTestingFramework<TLeft, TRight> : SymmetricLensTesting
 {
-    protected abstract TLeft _x { get; }
-    protected abstract TRight _y { get; }
+    protected abstract TLeft _left { get; }
+    protected abstract TRight _right { get; }
+    protected abstract TLeft _updatedLeft { get; }
+    protected abstract TRight _updatedRight { get; }
 
     protected abstract BaseSymmetricLens<TLeft, TRight> _lens { get; }
 
     public override void CreatePutLRTest()
     {
         var result =
-        _lens.CreateLeft(Option.Some(_y))
-            .Bind(x => _lens.PutRight(x, Option.Some(_y)));
+        _lens.CreateLeft(_right)
+            .Bind(left => _lens.PutRight(left, Option.Some(_right)));
 
         Assert.True(result);
-        Assert.Equal(_y, result.Data);
+        Assert.Equal(_right, result.Data);
     }
 
     public override void CreatePutRLTest()
     {
         var result =
-        _lens.CreateRight(Option.Some(_x))
-            .Bind(y => _lens.PutLeft(y, Option.Some(_x)));
+        _lens.CreateRight(_left)
+            .Bind(right => _lens.PutLeft(right, Option.Some(_left)));
 
         Assert.True(result);
-        Assert.Equal(_x, result.Data);
+        Assert.Equal(_left, result.Data);
     }
 
     public override void PutLRTest()
     {
         var result =
-        _lens.PutLeft(_y, Option.Some(_x))
-            .Bind(x => _lens.PutRight(x, Option.Some(_y)));
+        _lens.PutLeft(_updatedRight, Option.Some(_left))
+            .Bind(left => _lens.PutRight(left, Option.Some(_updatedRight)));
 
         Assert.True(result);
-        Assert.Equal(_y, result.Data);
+        Assert.Equal(_updatedRight, result.Data);
     }
 
     public override void PutRLTest()
     {
         var result =
-        _lens.PutRight(_x, Option.Some(_y))
-            .Bind(y => _lens.PutLeft(y, Option.Some(_x)));
+        _lens.PutRight(_updatedLeft, Option.Some(_right))
+            .Bind(right => _lens.PutLeft(right, Option.Some(_updatedLeft)));
 
         Assert.True(result);
-        Assert.Equal(_x, result.Data);
+        Assert.Equal(_updatedLeft, result.Data);
     }
 
 }

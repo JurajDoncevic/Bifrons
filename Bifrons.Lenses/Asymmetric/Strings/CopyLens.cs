@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Asymmetric.Strings;
 
 /// <summary>
 /// Basic asymmetric lens that takes the regex-matching part of the source as the view.
@@ -59,7 +59,7 @@ public sealed class CopyLens : BaseAsymmetricLens<string, string>
             }
         };
 
-    public override Func<string, Result<string>> Create => 
+    public override Func<string, Result<string>> Create =>
         view => Results.OnSuccess(view);
 
     public static CopyLens Cons(string matchRegex) => new(matchRegex);

@@ -1,7 +1,7 @@
 ﻿
 using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Asymmetric.Strings;
 
 /// <summary>
 /// Basic asymmetric lens that gives a predetermined constant as view and ignores it in the put. The put returns the original source
@@ -61,7 +61,7 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
             }
         };
 
-    public override Func<string, Result<string>> Create => 
+    public override Func<string, Result<string>> Create =>
         view => Results.OnFailure<string>("Not implemented representative for regex");
 
     public static DeleteLens Cons(string matchRegex) => new(matchRegex ?? string.Empty);

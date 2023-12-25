@@ -1,6 +1,6 @@
 ﻿using Bifrons.Lenses.Tests;
 
-namespace Bifrons.Lenses.Strings.Tests;
+namespace Bifrons.Lenses.Asymmetric.Strings.Tests;
 
 public class CopyLensTests : AsymmetricLensTestingFramework<string, string>
 {

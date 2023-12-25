@@ -1,5 +1,5 @@
 ﻿
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Asymmetric.Strings;
 
 public sealed class InsertLens : BaseAsymmetricLens<string, string>
 {

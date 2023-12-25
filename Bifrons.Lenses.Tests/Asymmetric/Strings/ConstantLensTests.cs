@@ -1,7 +1,7 @@
 ﻿
 using Bifrons.Lenses.Tests;
 
-namespace Bifrons.Lenses.Strings.Tests;
+namespace Bifrons.Lenses.Asymmetric.Strings.Tests;
 
 public class ConstantLensTests : AsymmetricLensTestingFramework<string, string>
 {

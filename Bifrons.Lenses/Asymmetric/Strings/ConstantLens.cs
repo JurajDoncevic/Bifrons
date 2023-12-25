@@ -1,7 +1,7 @@
 ﻿
 using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Asymmetric.Strings;
 
 /// <summary>
 /// Basic asymmetric lens that gives a predetermined constant as view and ignores it in the put. The put returns the original source
@@ -18,13 +18,13 @@ public sealed class ConstantLens : BaseAsymmetricLens<string, string>
         _matchRegex = new Regex(matchRegex ?? string.Empty);
     }
 
-    public override Func<string, Option<string>, Result<string>> Put => 
+    public override Func<string, Option<string>, Result<string>> Put =>
         (updatedView, originalSource) => originalSource ? Results.OnSuccess(originalSource.Value) : Create(updatedView);
 
-    public override Func<string, Result<string>> Get => 
+    public override Func<string, Result<string>> Get =>
         source => Results.OnSuccess(_constant);
 
-    public override Func<string, Result<string>> Create => 
+    public override Func<string, Result<string>> Create =>
         (view) => Results.OnSuccess(GetRepresentative(_matchRegex.ToString()));
 
 

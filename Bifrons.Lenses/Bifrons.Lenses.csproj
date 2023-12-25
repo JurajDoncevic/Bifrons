@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Bifrons.Base\Bifrons.Base.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Asymmetric\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

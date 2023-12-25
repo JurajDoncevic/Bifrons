@@ -10,27 +10,27 @@ public abstract class BaseSymmetricLens<TLeft, TRight>
     /// <summary>
     /// putL : Y -> X? -> X
     /// </summary>
-    public Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft => _PutLeft;
+    public abstract Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft { get; }
     /// <summary>
     /// putR : X -> Y? -> Y
     /// </summary>
-    public Func<TLeft, Option<TRight>, Result<TRight>> PutRight => _PutRight;
+    public abstract Func<TLeft, Option<TRight>, Result<TRight>> PutRight { get; }
     /// <summary>
     /// createR : X? -> Y
     /// </summary>
-    public Func<Option<TLeft>, Result<TRight>> CreateRight => _CreateRight;
+    public abstract Func<TLeft, Result<TRight>> CreateRight { get; }
     /// <summary>
     /// createL : Y? -> X
     /// </summary>
-    public Func<Option<TRight>, Result<TLeft>> CreateLeft => _CreateLeft;
+    public abstract Func<TRight, Result<TLeft>> CreateLeft { get; }
 
     /// <summary>
     /// Constructor
     /// </summary>
     protected BaseSymmetricLens() { }
 
-    protected abstract Result<TLeft> _PutLeft(TRight right, Option<TLeft> left);
-    protected abstract Result<TRight> _PutRight(TLeft left, Option<TRight> right);
-    protected abstract Result<TRight> _CreateRight(Option<TLeft> left);
-    protected abstract Result<TLeft> _CreateLeft(Option<TRight> right);
+    public Result<TLeft> CallPutLeft(TRight right, Option<TLeft> left) => PutLeft(right, left);
+    public Result<TRight> CallPutRight(TLeft left, Option<TRight> right) => PutRight(left, right);
+    public Result<TRight> CallCreateRight(TLeft left) => CreateRight(left);
+    public Result<TLeft> CallCreateLeft(TRight right) => CreateLeft(right);
 }
