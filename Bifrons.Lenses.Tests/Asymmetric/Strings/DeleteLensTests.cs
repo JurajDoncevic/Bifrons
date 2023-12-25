@@ -1,5 +1,4 @@
-﻿
-using Bifrons.Lenses.Tests;
+﻿using Bifrons.Lenses.Tests;
 
 namespace Bifrons.Lenses.Asymmetric.Strings.Tests;
 
