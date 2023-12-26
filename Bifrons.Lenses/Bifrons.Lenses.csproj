@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Asymmetric\" />
+    <Folder Include="Symmetric\Combinators\" />
   </ItemGroup>
 
   <PropertyGroup>
