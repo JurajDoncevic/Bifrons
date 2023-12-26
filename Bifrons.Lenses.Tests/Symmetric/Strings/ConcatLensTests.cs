@@ -15,7 +15,7 @@ public class ConcatLensTests : SymmetricLensTestingFramework<string, string>
     protected override string _updatedRight => "Janine ";
 
     protected override BaseSymmetricLens<string, string> _lens
-        => ConcatLens.Cons(
+        => Combinators.Concat(
             IdentityLens.Cons(@"\w+"),
             IdentityLens.Cons(@" ")
         );

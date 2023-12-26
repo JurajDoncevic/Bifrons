@@ -1,4 +1,4 @@
-﻿namespace Bifrons.Lenses;
+﻿namespace Bifrons.Lenses.Symmetric;
 
 public abstract class BaseSymmetricCombinator<TLhsLens, TRhsLens, TResLens,
                                               TLhsLensLeft, TLhsLensRight,

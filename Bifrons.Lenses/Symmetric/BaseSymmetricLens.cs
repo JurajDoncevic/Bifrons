@@ -1,7 +1,7 @@
-﻿namespace Bifrons.Lenses;
+﻿namespace Bifrons.Lenses.Symmetric;
 
 /// <summary>
-/// Describes a SIMPLE symmetric lens
+/// Abstractly describes a SIMPLE symmetric lens
 /// </summary>
 /// <typeparam name="TLeft">Left type</typeparam>
 /// <typeparam name="TRight">Right type</typeparam>
@@ -29,8 +29,26 @@ public abstract class BaseSymmetricLens<TLeft, TRight>
     /// </summary>
     protected BaseSymmetricLens() { }
 
+    /// <summary>
+    /// Call PutL
+    /// </summary>
     public Result<TLeft> CallPutLeft(TRight right, Option<TLeft> left) => PutLeft(right, left);
+
+    /// <summary>
+    /// Call PutR
+    /// </summary>
     public Result<TRight> CallPutRight(TLeft left, Option<TRight> right) => PutRight(left, right);
+
+    /// <summary>
+    /// Call CreateR
+    /// </summary>
     public Result<TRight> CallCreateRight(TLeft left) => CreateRight(left);
+
+    /// <summary>
+    /// Call CreateL
+    /// </summary>
     public Result<TLeft> CallCreateLeft(TRight right) => CreateLeft(right);
+
+
+
 }
