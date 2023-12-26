@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Strings;
 
-public sealed class IdentityLens : BaseSymmetricLens<string, string>
+public sealed class IdentityLens : SymmetricStringLens
 {
     private readonly Regex _identityRegex;
     private IdentityLens(string identityRegexString)

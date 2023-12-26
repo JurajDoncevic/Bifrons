@@ -1,7 +1,7 @@
 ﻿
 namespace Bifrons.Lenses.Symmetric.Strings;
 
-public sealed class ConcatLens : BaseSymmetricLens<string, string>
+public sealed class ConcatLens : SymmetricStringLens
 {
     private readonly BaseSymmetricLens<string, string> _leftLens;
     private readonly BaseSymmetricLens<string, string> _rightLens;

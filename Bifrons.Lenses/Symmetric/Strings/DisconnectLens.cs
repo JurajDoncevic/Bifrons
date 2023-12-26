@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Strings;
 
-public class DisconnectLens : BaseSymmetricLens<string, string>
+public class DisconnectLens : SymmetricStringLens
 {
     private readonly Regex _matchToRightRegex;
     private readonly Regex _matchToLeftRegex;

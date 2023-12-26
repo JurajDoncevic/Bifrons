@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric;
+﻿using Bifrons.Lenses.Symmetric.Strings;
+
+namespace Bifrons.Lenses.Symmetric;
 
 /// <summary>
 /// Abstractly describes a SIMPLE symmetric lens
@@ -48,7 +50,5 @@ public abstract class BaseSymmetricLens<TLeft, TRight>
     /// Call CreateL
     /// </summary>
     public Result<TLeft> CallCreateLeft(TRight right) => CreateLeft(right);
-
-
 
 }

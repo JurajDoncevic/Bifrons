@@ -2,10 +2,10 @@
 
 public static class Combinators
 {
-    public static BaseSymmetricLens<string, string> Concat(BaseSymmetricLens<string, string> lhsLens, BaseSymmetricLens<string, string> rhsLens)
+    public static SymmetricStringLens Concat(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => ConcatLens.Cons(lhsLens, rhsLens);
 
-    public static BaseSymmetricLens<string, string> ConcatAnon(BaseSymmetricLens<string, string> lhsLens, BaseSymmetricLens<string, string> rhsLens)
+    public static BaseSymmetricLens<string, string> ConcatAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
     {
         Func<string, Result<string>> createLeft = originalLeft =>
         {
