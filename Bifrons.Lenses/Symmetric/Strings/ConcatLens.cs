@@ -18,7 +18,7 @@ public sealed class ConcatLens : SymmetricStringLens
             var defaultLeft = originalLeft
                 .Match(
                     res => res,
-                    () => CreateLeft(updatedRight).Data ?? string.Empty
+                    () => CreateLeft(updatedRight).Match(_ => _, _ => string.Empty)
                 );
             var defaultRight = originalLeft
                 .Match(
@@ -48,7 +48,7 @@ public sealed class ConcatLens : SymmetricStringLens
             var defaultRight = originalRight
                 .Match(
                     res => res,
-                    () => CreateRight(updatedLeft).Data ?? string.Empty
+                    () => CreateRight(updatedLeft).Match(_ => _, _ => string.Empty)
                 );
             var defaultLeft = originalRight
                 .Match(
