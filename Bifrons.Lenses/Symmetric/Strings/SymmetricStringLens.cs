@@ -21,6 +21,14 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// </summary>
     /// <param name="originalLens">The original lens to invert</param>
     public static SymmetricStringLens operator !(SymmetricStringLens originalLens)
-        => InvertLens.Cons(originalLens);
+        => Combinators.Invert(originalLens);
+
+    /// <summary>
+    /// Composition of two simple symmetric string lenses.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    public static SymmetricStringLens operator >>(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+        => Combinators.Compose(lhsLens, rhsLens);
 
 }

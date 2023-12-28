@@ -23,6 +23,21 @@ public static class Combinators
         => IterateLens.Cons(separatorRegexString, itemLens);
 
     /// <summary>
+    /// Inverts a simple symmetric string lens.
+    /// </summary>
+    /// <param name="originalLens">The original lens to invert</param>
+    public static SymmetricStringLens Invert(SymmetricStringLens originalLens)
+        => InvertLens.Cons(originalLens);
+
+    /// <summary>
+    /// Composes two simple symmetric string lenses.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    public static SymmetricStringLens Compose(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+        => ComposeLens.Cons(lhsLens, rhsLens);
+
+    /// <summary>
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
     /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
     /// </summary>
@@ -121,7 +136,6 @@ public static class Combinators
         );
     }
 
-
     /// <summary>
     /// Iterates over a string by a separator and applies a lens to each item to create a anonymous <c>SymmetricLens</c>.
     /// </summary>
@@ -187,6 +201,197 @@ public static class Combinators
         return SymmetricLens.Cons(
             putLeft,
             PutRight,
+            createRight,
+            createLeft
+        );
+    }
+
+    /// <summary>
+    /// Inverts a simple symmetric string lens to a anonymous <c>SymmetricLens</c>.
+    /// </summary> 
+    /// <param name="originalLens">The original lens to invert</param>
+    public static BaseSymmetricLens<string, string> InvertAnon(SymmetricStringLens originalLens)
+    {
+        Func<string, Result<string>> createLeft = originalLeft =>
+        {
+            var result = originalLens.CreateRight(originalLeft)
+                .Map(rightLensRes => originalLeft + rightLensRes);
+
+            return result;
+        };
+
+        Func<string, Result<string>> createRight = originalRight =>
+        {
+            var result = originalLens.CreateLeft(originalRight)
+                .Map(leftLensRes => leftLensRes + originalRight);
+
+            return result;
+        };
+
+        Func<string, Option<string>, Result<string>> putRight =
+        (updatedLeft, originalRight) =>
+        {
+            var defaultRight = originalRight
+                .Match(
+                    res => res,
+                    () => createRight(updatedLeft)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var defaultLeft = originalRight
+                .Match(
+                    res => createLeft(res)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        ),
+                    () => createLeft(defaultRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var result = originalLens.PutRight(updatedLeft, originalRight)
+                .Map(rightLensRes => defaultRight.Replace(defaultLeft, rightLensRes));
+
+            return result;
+        };
+
+        Func<string, Option<string>, Result<string>> putLeft =
+        (updatedRight, originalLeft) =>
+        {
+            var defaultLeft = originalLeft
+                .Match(
+                    res => res,
+                    () => createLeft(updatedRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var defaultRight = originalLeft
+                .Match(
+                    res => createRight(res)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        ),
+                    () => createRight(defaultLeft)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+
+            var result = originalLens.PutLeft(updatedRight, originalLeft)
+                .Map(leftLensRes => defaultLeft.Replace(defaultRight, leftLensRes));
+
+            return result;
+        };
+
+        return SymmetricLens.Cons(
+            putLeft,
+            putRight,
+            createRight,
+            createLeft
+        );
+    }
+
+    /// <summary>
+    /// Composes two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    public static BaseSymmetricLens<string, string> ComposeAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+    {
+        Func<string, Result<string>> createLeft = originalLeft =>
+        {
+            var result = lhsLens.CreateLeft(originalLeft)
+                .Bind(leftLensRes => rhsLens.CreateLeft(leftLensRes));
+
+            return result;
+        };
+
+        Func<string, Result<string>> createRight = originalRight =>
+        {
+            var result = rhsLens.CreateRight(originalRight)
+                .Bind(rightLensRes => lhsLens.CreateRight(rightLensRes));
+
+            return result;
+        };
+
+        Func<string, Option<string>, Result<string>> putRight =
+        (updatedLeft, originalRight) =>
+        {
+            var defaultRight = originalRight
+                .Match(
+                    res => res,
+                    () => createRight(updatedLeft)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var defaultLeft = originalRight
+                .Match(
+                    res => createLeft(res)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        ),
+                    () => createLeft(defaultRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var result = rhsLens.PutRight(updatedLeft, originalRight)
+                .Bind(rightLensRes => lhsLens.PutRight(rightLensRes, originalRight)
+                                        .Map(leftLensRes => leftLensRes + rightLensRes)
+                                        .Map(res => defaultRight.Replace(defaultLeft, res)));
+
+            return result;
+        };
+
+        Func<string, Option<string>, Result<string>> putLeft =
+        (updatedRight, originalLeft) =>
+        {
+            var defaultLeft = originalLeft
+                .Match(
+                    res => res,
+                    () => createLeft(updatedRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+            var defaultRight = originalLeft
+                .Match(
+                    res => createRight(res)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        ),
+                    () => createRight(defaultLeft)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
+                );
+
+            var result = lhsLens.PutLeft(updatedRight, originalLeft)
+                .Bind(leftLensRes => rhsLens.PutLeft(leftLensRes, originalLeft)
+                                        .Map(rightLensRes => leftLensRes + rightLensRes)
+                                        .Map(res => defaultLeft.Replace(defaultRight, res)));
+
+            return result;
+        };
+
+        return SymmetricLens.Cons(
+            putLeft,
+            putRight,
             createRight,
             createLeft
         );
