@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Tests;
 /// <summary>
 /// Test declarations for SIMPLE symmetric lenses
 /// </summary>
-public abstract class SymmetricLensTesting
+public abstract class ISymmetricLensTesting
 {
     /// <summary>
     /// Should confirm that putL x (createR x) = x
@@ -38,7 +38,7 @@ public abstract class SymmetricLensTesting
 /// </summary>
 /// <typeparam name="TLeft"></typeparam>
 /// <typeparam name="TRight"></typeparam>
-public abstract class SymmetricLensTestingFramework<TLeft, TRight> : SymmetricLensTesting
+public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricLensTesting
 {
     protected abstract TLeft _left { get; }
     protected abstract TRight _right { get; }

@@ -1,28 +1,26 @@
-﻿using Bifrons.Lenses.Symmetric.Strings;
-
-namespace Bifrons.Lenses.Symmetric;
+﻿namespace Bifrons.Lenses.Symmetric;
 
 /// <summary>
-/// Abstractly describes a SIMPLE symmetric lens
+/// Abstractly describes a SIMPLE symmetric lens. L : R <=> L
 /// </summary>
 /// <typeparam name="TLeft">Left type</typeparam>
 /// <typeparam name="TRight">Right type</typeparam>
 public abstract class BaseSymmetricLens<TLeft, TRight>
 {
     /// <summary>
-    /// putL : Y -> X? -> X
+    /// <c>putL : Y -> Option X -> Result X</c>
     /// </summary>
     public abstract Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft { get; }
     /// <summary>
-    /// putR : X -> Y? -> Y
+    /// <c>putR : X -> Option Y -> Result Y</c>
     /// </summary>
     public abstract Func<TLeft, Option<TRight>, Result<TRight>> PutRight { get; }
     /// <summary>
-    /// createR : X? -> Y
+    /// <c>createR : Option X -> Result Y</c>
     /// </summary>
     public abstract Func<TLeft, Result<TRight>> CreateRight { get; }
     /// <summary>
-    /// createL : Y? -> X
+    /// <c>createL : Option Y -> Result X</c>
     /// </summary>
     public abstract Func<TRight, Result<TLeft>> CreateLeft { get; }
 
@@ -32,22 +30,22 @@ public abstract class BaseSymmetricLens<TLeft, TRight>
     protected BaseSymmetricLens() { }
 
     /// <summary>
-    /// Call PutL
+    /// Calls <c>PutL</c>. See <see cref="PutLeft"/>
     /// </summary>
     public Result<TLeft> CallPutLeft(TRight right, Option<TLeft> left) => PutLeft(right, left);
 
     /// <summary>
-    /// Call PutR
+    /// Calls <c>PutR</c>. See <see cref="PutRight"/>
     /// </summary>
     public Result<TRight> CallPutRight(TLeft left, Option<TRight> right) => PutRight(left, right);
 
     /// <summary>
-    /// Call CreateR
+    /// Calls <c>CreateR</c>. See <see cref="CreateRight"/>
     /// </summary>
     public Result<TRight> CallCreateRight(TLeft left) => CreateRight(left);
 
     /// <summary>
-    /// Call CreateL
+    /// Calls <c>CreateL</c>. See <see cref="CreateLeft"/>
     /// </summary>
     public Result<TLeft> CallCreateLeft(TRight right) => CreateLeft(right);
 

@@ -2,6 +2,11 @@
 
 namespace Bifrons.Lenses.Symmetric.Strings;
 
+/// <summary>
+/// A lens that copies string values through two regexes depending on the side that is being copied from. 
+/// Taken as an experiment from the asymmetric lens implementation.
+/// <c>Copy(R, S)</c>
+/// </summary>
 public sealed class CopyLens : BaseSymmetricLens<string, string>
 {
     private readonly Regex _matchToRightRegex;

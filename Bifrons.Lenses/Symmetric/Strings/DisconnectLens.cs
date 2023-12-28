@@ -2,6 +2,10 @@
 
 namespace Bifrons.Lenses.Symmetric.Strings;
 
+/// <summary>
+/// Describes a disconnect lens. A disconnect lens does not propagate any data at all from one format to the other.
+/// <c>disconnect(R, S, s, t)</c>
+/// </summary>
 public class DisconnectLens : SymmetricStringLens
 {
     private readonly Regex _matchToRightRegex;
@@ -37,6 +41,14 @@ public class DisconnectLens : SymmetricStringLens
     public override Func<string, Result<string>> CreateLeft =>
         right => Results.OnSuccess(_leftDefault);
 
+    /// <summary>
+    /// Constructs a DisconnectLens.
+    /// </summary>
+    /// <param name="matchToRightRegex">String for the right match regex</param>
+    /// <param name="matchToLeftRegex">String for the left match regex</param>
+    /// <param name="leftDefault">Left default value</param>
+    /// <param name="rightDefault">Right default value</param>
+    /// <returns>A disconnect lens</returns>
     public static DisconnectLens Cons(string matchToRightRegex, string matchToLeftRegex, string leftDefault, string rightDefault)
         => new(matchToRightRegex, matchToLeftRegex, leftDefault, rightDefault);
 }

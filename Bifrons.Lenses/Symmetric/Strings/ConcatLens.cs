@@ -1,11 +1,26 @@
-﻿
-namespace Bifrons.Lenses.Symmetric.Strings;
+﻿namespace Bifrons.Lenses.Symmetric.Strings;
 
+/// <summary>
+/// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes of the concat.
+/// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
+/// </summary>
 public sealed class ConcatLens : SymmetricStringLens
 {
+    /// <summary>
+    /// Left-hand operand lens of the concat.
+    /// </summary>
     private readonly BaseSymmetricLens<string, string> _leftLens;
+
+    /// <summary>
+    /// Right-hand operand lens of the concat.
+    /// </summary>
     private readonly BaseSymmetricLens<string, string> _rightLens;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="leftLens">Left-hand operand lens of the concat.</param>
+    /// <param name="rightLens">Right-hand operand lens of the concat.</param>
     private ConcatLens(BaseSymmetricLens<string, string> leftLens, BaseSymmetricLens<string, string> rightLens)
     {
         _leftLens = leftLens;
@@ -18,7 +33,11 @@ public sealed class ConcatLens : SymmetricStringLens
             var defaultLeft = originalLeft
                 .Match(
                     res => res,
-                    () => CreateLeft(updatedRight).Match(_ => _, _ => string.Empty)
+                    () => CreateLeft(updatedRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
                 );
             var defaultRight = originalLeft
                 .Match(
@@ -48,7 +67,11 @@ public sealed class ConcatLens : SymmetricStringLens
             var defaultRight = originalRight
                 .Match(
                     res => res,
-                    () => CreateRight(updatedLeft).Match(_ => _, _ => string.Empty)
+                    () => CreateRight(updatedLeft)
+                        .Match(
+                            _ => _,
+                            _ => string.Empty
+                        )
                 );
             var defaultLeft = originalRight
                 .Match(
@@ -91,6 +114,12 @@ public sealed class ConcatLens : SymmetricStringLens
             return result;
         };
 
-    public static ConcatLens Cons(BaseSymmetricLens<string, string> leftLens, BaseSymmetricLens<string, string> rightLens)
-        => new(leftLens, rightLens);
+    /// <summary>
+    /// Constructs a concat lens.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    /// <returns>A concat lens</returns>
+    public static ConcatLens Cons(BaseSymmetricLens<string, string> lhsLens, BaseSymmetricLens<string, string> rhsLens)
+        => new(lhsLens, rhsLens);
 }

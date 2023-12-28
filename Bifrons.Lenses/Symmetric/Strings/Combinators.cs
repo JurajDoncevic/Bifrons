@@ -1,10 +1,21 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Strings;
 
+/// <summary>
+/// Combinators for simple symmetric string lenses.
+/// </summary>
 public static class Combinators
 {
+    /// <summary>
+    /// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes of the concat.
+    /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
+    /// </summary>
     public static SymmetricStringLens Concat(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => ConcatLens.Cons(lhsLens, rhsLens);
 
+    /// <summary>
+    /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
+    /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
+    /// </summary>
     public static BaseSymmetricLens<string, string> ConcatAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
     {
         Func<string, Result<string>> createLeft = originalLeft =>
@@ -31,7 +42,11 @@ public static class Combinators
             var defaultRight = originalRight
                 .Match(
                     res => res,
-                    () => createRight(updatedLeft).Data ?? string.Empty
+                    () => createRight(updatedLeft)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
                 );
             var defaultLeft = originalRight
                 .Match(
@@ -60,7 +75,11 @@ public static class Combinators
             var defaultLeft = originalLeft
                 .Match(
                     res => res,
-                    () => createLeft(updatedRight).Data ?? string.Empty
+                    () => createLeft(updatedRight)
+                        .Match(
+                            res => res,
+                            _ => string.Empty
+                        )
                 );
             var defaultRight = originalLeft
                 .Match(
