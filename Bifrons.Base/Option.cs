@@ -43,7 +43,7 @@ public readonly struct Option<T>
         return option.IsSome;
     }
 
-        /// <summary>
+    /// <summary>
     /// Implicit operator to turn a value into a Option
     /// </summary>
     /// <param name="data"></param>
