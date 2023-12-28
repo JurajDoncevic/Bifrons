@@ -176,4 +176,35 @@ public static class Results
             _ => Option.None<T>(),
             _ => Option.None<T>()
         );
+
+    public static Result<IEnumerable<T>> Unfold<T>(this IEnumerable<Result<T>> results)
+    {
+        var data = new List<T>();
+        var messages = new List<string>();
+        var exceptions = new List<Exception>();
+
+        foreach (var result in results)
+        {
+            switch (result.ResultType)
+            {
+                case ResultTypes.SUCCESS:
+                    data.Add(result.Data);
+                    break;
+                case ResultTypes.FAILURE:
+                    messages.Add(result.Message);
+                    break;
+                case ResultTypes.EXCEPTION:
+                    exceptions.Add(result.Exception);
+                    break;
+                default:
+                    throw new Exception("Unknown result type");
+            }
+        }
+
+        if (exceptions.Count > 0)
+            return Results.OnException<IEnumerable<T>>(new AggregateException(exceptions), string.Join("\n", messages));
+        if (messages.Count > 0)
+            return Results.OnFailure<IEnumerable<T>>(string.Join("\n", messages));
+        return Results.OnSuccess<IEnumerable<T>>(data);
+    }
 }
