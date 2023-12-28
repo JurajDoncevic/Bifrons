@@ -19,6 +19,7 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
     public override Func<string, Option<string>, Result<string>> Put =>
     (updatedView, originalSource) =>
     {
+
         if (!originalSource)
         {
             return Create(updatedView);
@@ -31,18 +32,33 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
             return view;
         }
 
-        var firstIndex = originalSource.Value.IndexOf(view.Data);
+        var match = _matchRegex.Match(originalSource.Value);
 
-        if (firstIndex == -1)
+        if (!match.Success)
         {
             return Results.OnFailure<string>("View not found in original source");
         }
 
-        var lastIndex = firstIndex + view.Data.Length;
+        var prefixChar = match.Index == 0 ? Option.None<char>() : Option.Some(originalSource.Value[match.Index - 1]);
+        var suffixChar = match.Index + match.Length == originalSource.Value.Length ? Option.None<char>() : Option.Some(originalSource.Value[match.Index + match.Length]);
 
-        var result = originalSource.Value.Substring(0, firstIndex) + updatedView + originalSource.Value.Substring(lastIndex);
+        var prefixIndex = updatedView.LastIndexOf(prefixChar.Value);
+        var suffixIndex = updatedView.IndexOf(suffixChar.Value, prefixIndex + 1);
 
-        return Results.OnSuccess(result);
+        if (prefixIndex >= 0 && suffixIndex >= 0)
+        {
+            var matchValue = originalSource.Value.Substring(match.Index, match.Length);
+            var prefixLength = prefixIndex + 1;
+            var suffixLength = suffixIndex - prefixLength;
+
+            var result = updatedView.Substring(0, prefixLength) + matchValue + updatedView.Substring(prefixLength + suffixLength);
+            return Results.OnSuccess(result);
+        }
+        else
+        {
+            return Results.OnFailure<string>("Regex prefix or suffix character not found in updated view. No position for deleted data found for updated source");
+        }
+
     };
 
     public override Func<string, Result<string>> Get =>
@@ -62,7 +78,7 @@ public sealed class DeleteLens : BaseAsymmetricLens<string, string>
         };
 
     public override Func<string, Result<string>> Create =>
-        view => Results.OnFailure<string>("Not implemented representative for regex");
+        view => Results.OnSuccess<string>(view);
 
     public static DeleteLens Cons(string matchRegex) => new(matchRegex ?? string.Empty);
 }

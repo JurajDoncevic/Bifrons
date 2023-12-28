@@ -21,6 +21,12 @@ public abstract class AsymmetricLensTesting
     public abstract void CreateGetTest();
 
     /// <summary>
+    /// Should confirm that put v (put v s) = put v s
+    /// </summary>
+    [Fact(DisplayName = $"PUTTWICE rule test")]
+    public abstract void PutTwiceTest();
+
+    /// <summary>
     /// Should confirm that put v' (put v s) = put v' s
     /// </summary>
     [Fact(DisplayName = $"PUTPUT rule test")]
@@ -39,6 +45,7 @@ public abstract class AsymmetricLensTestingFramework<TSource, TView> : Asymmetri
     protected abstract TSource _source { get; }
     protected abstract TView _view { get; }
     protected abstract TView _updatedView { get; }
+    protected abstract TSource _updatedSource { get; }
 
     protected abstract BaseAsymmetricLens<TSource, TView> _lens { get; }
 
@@ -70,6 +77,20 @@ public abstract class AsymmetricLensTestingFramework<TSource, TView> : Asymmetri
 
         Assert.True(result);
         Assert.Equal(_view, result.Data);
+    }
+
+    public override void PutTwiceTest()
+    {
+        var resultLeft = _lens
+            .Put(_view, _source)
+            .Bind(_ => _lens.Put(_view, _source));
+
+        var resultRight = _lens
+            .Put(_view, _source);
+
+        Assert.True(resultRight);
+        Assert.True(resultLeft);
+        Assert.Equal(resultLeft, resultRight);
     }
 
     public override void PutPutTest()
