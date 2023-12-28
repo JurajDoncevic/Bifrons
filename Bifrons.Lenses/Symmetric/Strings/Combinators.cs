@@ -9,8 +9,18 @@ public static class Combinators
     /// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes of the concat.
     /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
     /// </summary>
+    /// <param name="lhsLens">Left lens</param>
+    /// <param name="rhsLens">Right lens</param>
     public static SymmetricStringLens Concat(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => ConcatLens.Cons(lhsLens, rhsLens);
+
+    /// <summary>
+    /// Iterates over a string by a separator and applies a lens to each item.
+    /// </summary>
+    /// <param name="separatorRegexString">String for separator regex</param>
+    /// <param name="itemLens">Item lens to be applied on each item</param>
+    public static IterateLens Iterate(string separatorRegexString, SymmetricStringLens itemLens)
+        => IterateLens.Cons(separatorRegexString, itemLens);
 
     /// <summary>
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
@@ -111,4 +121,74 @@ public static class Combinators
         );
     }
 
+
+    /// <summary>
+    /// Iterates over a string by a separator and applies a lens to each item to create a anonymous <c>SymmetricLens</c>.
+    /// </summary>
+    /// <param name="separatorRegexString">String for separator regex</param>
+    /// <param name="itemLens">Item lens to be applied on each item</param>
+    public static BaseSymmetricLens<string, IEnumerable<string>> IterateAnon(string separatorRegexString, SymmetricStringLens itemLens)
+    {
+        System.Text.RegularExpressions.Regex separatorRegex = new System.Text.RegularExpressions.Regex(separatorRegexString);
+
+        Func<IEnumerable<string>, Option<string>, Result<string>> putLeft =
+        (updatedRight, originalLeft) =>
+        {
+            var leftElements = originalLeft.Match(
+                left => separatorRegex.Split(left).AsEnumerable(),
+                () => Enumerable.Empty<string>()
+            );
+            var results = updatedRight.Mapi((idx, right) => itemLens.PutLeft(right, leftElements.ElementAtOrDefault((int)idx) ?? Option.None<string>()))
+                .Unfold()
+                .Map(rs => string.Join(separatorRegex.ToString(), rs));
+
+            return results;
+        };
+
+        Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutRight =
+            (updatedLeft, originalRight) =>
+            {
+                var updatedItems = separatorRegex.Split(updatedLeft).AsEnumerable();
+                var originalItems = originalRight.Match(
+                    items => items,
+                    () => separatorRegex.Split(updatedLeft).AsEnumerable()
+                );
+
+                var results = updatedItems.Mapi((idx, item) =>
+                {
+                    var originalItem = originalItems.ElementAtOrDefault((int)idx) ?? string.Empty;
+                    return itemLens.PutRight(item, originalItem);
+                }).Unfold();
+
+                return results;
+            };
+
+        Func<string, Result<IEnumerable<string>>> createRight =
+        left =>
+        {
+            var items = separatorRegex.Split(left).AsEnumerable();
+            var results = items.Map(itemLens.CreateRight)
+                .Unfold();
+
+            return results;
+
+        };
+
+        Func<IEnumerable<string>, Result<string>> createLeft =
+            right =>
+            {
+                var result = right.Map(itemLens.CreateLeft)
+                    .Unfold()
+                    .Map(rs => string.Join(separatorRegex.ToString(), rs));
+
+                return result;
+            };
+
+        return SymmetricLens.Cons(
+            putLeft,
+            PutRight,
+            createRight,
+            createLeft
+        );
+    }
 }
