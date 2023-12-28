@@ -49,4 +49,12 @@ public abstract class BaseSymmetricLens<TLeft, TRight>
     /// </summary>
     public Result<TLeft> CallCreateLeft(TRight right) => CreateLeft(right);
 
+
+    /// <summary>
+    /// Inverts the lens
+    /// </summary>
+    /// <param name="originalLens">The original lens to invert</param>
+    public static InvertLens<TRight, TLeft> operator !(BaseSymmetricLens<TLeft, TRight> originalLens)
+        => InvertLens.Cons(originalLens);
+
 }
