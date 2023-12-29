@@ -207,4 +207,18 @@ public static class Results
             return Results.OnFailure<IEnumerable<T>>(string.Join("\n", messages));
         return Results.OnSuccess<IEnumerable<T>>(data);
     }
+
+    public static Result<Either<TLeft, TRight>> Unfold<TLeft, TRight>(this Either<Result<TLeft>, Result<TRight>> target)
+        => target.Match(
+            left => left.Match(
+                value => Results.OnSuccess(Either.Left<TLeft, TRight>(value)),
+                _ => Results.OnFailure<Either<TLeft, TRight>>("Left result is a failure"),
+                ex => Results.OnException<Either<TLeft, TRight>>(ex, "Left result is an exception:")
+            ),
+            right => right.Match(
+                value => Results.OnSuccess(Either.Right<TLeft, TRight>(value)),
+                _ => Results.OnFailure<Either<TLeft, TRight>>("Right result is a failure"),
+                ex => Results.OnException<Either<TLeft, TRight>>(ex, "Right result is an exception")
+            )
+        );
 }

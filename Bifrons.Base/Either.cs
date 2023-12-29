@@ -100,5 +100,13 @@ public static class Either
         => either.IsLeft
             ? Left<TLeft, RRight>(either.Left)
             : rbind(either.Right);
+
+    public static TResult Match<TLeft, TRight, TResult>(
+        this Either<TLeft, TRight> either,
+        Func<TLeft, TResult> lmatch,
+        Func<TRight, TResult> rmatch)
+        => either.IsLeft
+            ? lmatch(either.Left)
+            : rmatch(either.Right);
 }
 
