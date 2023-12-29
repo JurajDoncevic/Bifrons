@@ -38,6 +38,14 @@ public static class Combinators
         => ComposeLens.Cons(lhsLens, rhsLens);
 
     /// <summary>
+    /// Creates a union lens from two simple symmetric string lenses.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    public static OrLens Or(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+        => OrLens.Cons(lhsLens, rhsLens);
+
+    /// <summary>
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
     /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
     /// </summary>

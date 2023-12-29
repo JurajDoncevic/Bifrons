@@ -31,4 +31,11 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     public static SymmetricStringLens operator >>(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => Combinators.Compose(lhsLens, rhsLens);
 
+    /// <summary>
+    /// Creates a new lens that is the union of two lenses.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
+    public static OrLens operator +(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+        => OrLens.Cons(lhsLens, rhsLens);
 }
