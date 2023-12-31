@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric.Strings;
+﻿using System.Text.RegularExpressions;
+
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Describes an invert lens. L : R <=> L
@@ -6,6 +8,9 @@
 public class InvertLens : SymmetricStringLens
 {
     private readonly SymmetricStringLens _originalLens;
+
+    public override Regex LeftRegex => _originalLens.RightRegex;
+    public override Regex RightRegex => _originalLens.LeftRegex;
 
     /// <summary>
     /// Constructor

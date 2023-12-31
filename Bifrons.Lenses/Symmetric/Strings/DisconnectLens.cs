@@ -13,6 +13,9 @@ public class DisconnectLens : SymmetricStringLens
     private readonly string _rightDefault;
     private readonly string _leftDefault;
 
+    public override Regex LeftRegex => _matchToLeftRegex;
+    public override Regex RightRegex => _matchToRightRegex;
+
     /// <summary>
     /// Constructor
     /// </summary>

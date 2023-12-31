@@ -8,6 +8,10 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// </summary>
 public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
 {
+
+    public abstract Regex LeftRegex { get; }
+    public abstract Regex RightRegex { get; }
+
     /// <summary>
     /// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes.
     /// e.g. <c>id(\w+)</c> | <c>id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+)</c> | <c>id(\w+)</c> is not.

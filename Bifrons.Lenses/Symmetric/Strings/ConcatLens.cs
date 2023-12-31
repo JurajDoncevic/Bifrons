@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric.Strings;
+﻿using System.Text.RegularExpressions;
+
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes of the concat.
@@ -15,6 +17,10 @@ public sealed class ConcatLens : SymmetricStringLens
     /// Right-hand operand lens of the concat.
     /// </summary>
     private readonly SymmetricStringLens _rightLens;
+
+    public override Regex LeftRegex => _leftLens.LeftRegex;
+    public override Regex RightRegex => _rightLens.RightRegex;
+
 
     /// <summary>
     /// Constructor.

@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric.Strings;
+﻿using System.Text.RegularExpressions;
+
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Describes a sequentially composed lens. 
@@ -8,6 +10,9 @@ public class ComposeLens : SymmetricStringLens
 {
     private readonly SymmetricStringLens _lhsLens;
     private readonly SymmetricStringLens _rhsLens;
+
+    public override Regex LeftRegex => _lhsLens.LeftRegex;
+    public override Regex RightRegex => _rhsLens.RightRegex;
 
     /// <summary>
     /// Constructor

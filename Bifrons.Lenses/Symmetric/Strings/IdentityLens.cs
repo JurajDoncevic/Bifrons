@@ -10,6 +10,9 @@ public sealed class IdentityLens : SymmetricStringLens
 {
     private readonly Regex _identityRegex;
 
+    public override Regex LeftRegex => _identityRegex;
+    public override Regex RightRegex => _identityRegex;
+
     /// <summary>
     /// Constructor
     /// </summary>
