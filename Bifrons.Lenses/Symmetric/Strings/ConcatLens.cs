@@ -9,19 +9,19 @@ public sealed class ConcatLens : SymmetricStringLens
     /// <summary>
     /// Left-hand operand lens of the concat.
     /// </summary>
-    private readonly BaseSymmetricLens<string, string> _leftLens;
+    private readonly SymmetricStringLens _leftLens;
 
     /// <summary>
     /// Right-hand operand lens of the concat.
     /// </summary>
-    private readonly BaseSymmetricLens<string, string> _rightLens;
+    private readonly SymmetricStringLens _rightLens;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="leftLens">Left-hand operand lens of the concat.</param>
     /// <param name="rightLens">Right-hand operand lens of the concat.</param>
-    private ConcatLens(BaseSymmetricLens<string, string> leftLens, BaseSymmetricLens<string, string> rightLens)
+    private ConcatLens(SymmetricStringLens leftLens, SymmetricStringLens rightLens)
     {
         _leftLens = leftLens;
         _rightLens = rightLens;
@@ -120,6 +120,6 @@ public sealed class ConcatLens : SymmetricStringLens
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
     /// <returns>A concat lens</returns>
-    public static ConcatLens Cons(BaseSymmetricLens<string, string> lhsLens, BaseSymmetricLens<string, string> rhsLens)
+    public static ConcatLens Cons(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => new(lhsLens, rhsLens);
 }
