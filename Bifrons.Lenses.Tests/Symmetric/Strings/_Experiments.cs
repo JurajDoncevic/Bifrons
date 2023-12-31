@@ -40,7 +40,7 @@ public class Experiments
 
     [Fact]
     public void RoundTrip_OnIterateLens()
-    {
+    { 
         var source = "John;Paul;Alice;George;Dicky;Stuart;Pete";
         var target = new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
         var updatedTarget = new[] { "John", "George", "Alice", "Dicky", "Pete", "Gregory" };

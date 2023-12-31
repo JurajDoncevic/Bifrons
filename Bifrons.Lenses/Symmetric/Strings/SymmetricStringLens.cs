@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric.Strings;
+﻿using System.Text.RegularExpressions;
+
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Abstract class describing a simple symmetric lens between two strings.
@@ -37,5 +39,13 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
     public static OrLens operator +(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
-        => OrLens.Cons(lhsLens, rhsLens);
+        => Combinators.Or(lhsLens, rhsLens);
+
+    /// <summary>
+    /// Creates a string lens that iterates over a string and applies a lens to each item according to the regex separator.
+    /// </summary>
+    /// <param name="lhsRegexString">Regex string for separator</param>
+    /// <param name="rhsLens">Lens to be applied on each item</param>
+    public static IterateLens operator *(string lhsRegexString, SymmetricStringLens rhsLens)
+        => Combinators.Iterate(lhsRegexString, rhsLens);
 }

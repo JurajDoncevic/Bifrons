@@ -45,6 +45,12 @@ public static class Combinators
     public static OrLens Or(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => OrLens.Cons(lhsLens, rhsLens);
 
+    public static MergeLeft MergeL(SymmetricStringLens lhsLens, OrLens rhsLens)
+        => MergeLeft.Cons(rhsLens, lhsLens);
+
+    public static MergeRight MergeR(OrLens lhsLens, SymmetricStringLens rhsLens)
+        => MergeRight.Cons(lhsLens, rhsLens);
+
     /// <summary>
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
     /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
