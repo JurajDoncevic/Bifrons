@@ -18,8 +18,8 @@ public sealed class ConcatLens : SymmetricStringLens
     /// </summary>
     private readonly SymmetricStringLens _rightLens;
 
-    public override Regex LeftRegex => _leftLens.LeftRegex;
-    public override Regex RightRegex => _rightLens.RightRegex;
+    public override Regex LeftRegex => new Regex(_leftLens.LeftRegex.ToString() + _rightLens.LeftRegex.ToString());
+    public override Regex RightRegex => new Regex(_leftLens.RightRegex.ToString() + _rightLens.RightRegex.ToString());
 
 
     /// <summary>
@@ -34,88 +34,94 @@ public sealed class ConcatLens : SymmetricStringLens
     }
 
     public override Func<string, Option<string>, Result<string>> PutLeft =>
-        (updatedRight, originalLeft) =>
+        (updatedSource, originalTarget) =>
         {
-            var defaultLeft = originalLeft
-                .Match(
-                    res => res,
-                    () => CreateLeft(updatedRight)
-                        .Match(
-                            res => res,
-                            _ => string.Empty
-                        )
-                );
-            var defaultRight = originalLeft
-                .Match(
-                    res => CreateRight(res)
-                        .Match(
-                            res => res,
-                            _ => string.Empty
-                        ),
-                    () => CreateRight(defaultLeft)
-                        .Match(
-                            res => res,
-                            _ => string.Empty
-                        )
-                );
+            if (!originalTarget)
+            {
+                return CreateRight(updatedSource);
+            }
 
-            var result = _leftLens.PutLeft(updatedRight, originalLeft)
-                .Bind(leftLensRes => _rightLens.PutLeft(updatedRight, originalLeft)
-                                        .Map(rightLensRes => leftLensRes + rightLensRes)
-                                        .Map(res => defaultLeft.Replace(defaultRight, res)));
+            var originalTargetValue = originalTarget.Value;
+
+            var result = _leftLens.PutRight(updatedSource, originalTarget)
+                .Map(leftLensRes => (
+                    leftLensRes,
+                    unmatchedSourcePrefix: _leftLens.LeftRegex.GetNonMatchingValueFromStart(updatedSource),
+                    unmatchedSourceSuffix: _leftLens.LeftRegex.GetNonMatchingValueToEnd(updatedSource),
+                    unmatchedTargetPrefix: _leftLens.RightRegex.GetNonMatchingValueFromStart(originalTargetValue),
+                    unmatchedTargetSuffix: _leftLens.RightRegex.GetNonMatchingValueToEnd(originalTargetValue)
+                ))
+                .Bind(res => _rightLens.PutRight(res.unmatchedSourceSuffix, res.unmatchedTargetSuffix)
+                                        .Map(rightLensRes => (
+                                            lensRes: res.leftLensRes + rightLensRes,
+                                            unmatchedSourcePrefix: res.unmatchedSourcePrefix,
+                                            unmatchedSourceSuffix: _rightLens.LeftRegex.GetNonMatchingValueToEnd(res.unmatchedSourceSuffix),
+                                            unmatchedTargetPrefix: res.unmatchedTargetPrefix,
+                                            unmatchedTargetSuffix: _rightLens.RightRegex.GetNonMatchingValueToEnd(res.unmatchedTargetSuffix)
+                                        )))
+                                        .Map(res => res.unmatchedTargetPrefix + /*res.unmatchedSourcePrefix +*/ res.lensRes + /*res.unmatchedSourceSuffix +*/ res.unmatchedTargetSuffix);
 
             return result;
+
         };
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
-        (updatedLeft, originalRight) =>
+        (updatedSource, originalTarget) =>
         {
-            var defaultRight = originalRight
-                .Match(
-                    res => res,
-                    () => CreateRight(updatedLeft)
-                        .Match(
-                            _ => _,
-                            _ => string.Empty
-                        )
-                );
-            var defaultLeft = originalRight
-                .Match(
-                    res => CreateLeft(res)
-                        .Match(
-                            res => res,
-                            _ => string.Empty
-                        ),
-                    () => CreateLeft(defaultRight)
-                        .Match(
-                            res => res,
-                            _ => string.Empty
-                        )
-                );
-            var result = _rightLens.PutRight(updatedLeft, originalRight)
-                .Bind(rightLensRes => _leftLens.PutRight(updatedLeft, originalRight)
-                                        .Map(leftLensRes => leftLensRes + rightLensRes)
-                                        .Map(res => defaultRight.Replace(defaultLeft, res)));
+            if (!originalTarget)
+            {
+                return CreateRight(updatedSource);
+            }
+
+            var originalTargetValue = originalTarget.Value;
+
+            var result = _leftLens.PutRight(updatedSource, originalTarget)
+                .Map(leftLensRes => (
+                    leftLensRes,
+                    unmatchedSourcePrefix: _leftLens.LeftRegex.GetNonMatchingValueFromStart(updatedSource),
+                    unmatchedSourceSuffix: _leftLens.LeftRegex.GetNonMatchingValueToEnd(updatedSource),
+                    unmatchedTargetPrefix: _leftLens.RightRegex.GetNonMatchingValueFromStart(originalTargetValue),
+                    unmatchedTargetSuffix: _leftLens.RightRegex.GetNonMatchingValueToEnd(originalTargetValue)
+                ))
+                .Bind(res => _rightLens.PutRight(res.unmatchedSourceSuffix, res.unmatchedTargetSuffix)
+                                        .Map(rightLensRes => (
+                                            lensRes: res.leftLensRes + rightLensRes,
+                                            unmatchedSourcePrefix: res.unmatchedSourcePrefix,
+                                            unmatchedSourceSuffix: _rightLens.LeftRegex.GetNonMatchingValueToEnd(res.unmatchedSourceSuffix),
+                                            unmatchedTargetPrefix: res.unmatchedTargetPrefix,
+                                            unmatchedTargetSuffix: _rightLens.RightRegex.GetNonMatchingValueToEnd(res.unmatchedTargetSuffix)
+                                        )))
+                                        .Map(res => res.unmatchedTargetPrefix + /*res.unmatchedSourcePrefix +*/ res.lensRes + /*res.unmatchedSourceSuffix +*/ res.unmatchedTargetSuffix);
 
             return result;
         };
 
     public override Func<string, Result<string>> CreateRight =>
-        originalLeft =>
+        source =>
         {
-            var result = _leftLens.CreateRight(originalLeft)
-                .Bind(leftLensRes => _rightLens.CreateRight(originalLeft)
-                                        .Map(rightLensRes => leftLensRes + rightLensRes));
+            var result = _leftLens.CreateRight(source)
+                .Map(leftLensResult => (
+                    leftLensResult,
+                    unmatchedPrefix: _leftLens.LeftRegex.GetNonMatchingValueFromStart(source),
+                    unmatchedSuffix: _leftLens.LeftRegex.GetNonMatchingValueToEnd(source)
+                ))
+                .Bind(res => _rightLens.CreateRight(res.unmatchedSuffix)
+                                        .Map(rightLensRes => res.leftLensResult + rightLensRes));
 
             return result;
         };
 
     public override Func<string, Result<string>> CreateLeft =>
-        originalRight =>
+        source =>
         {
-            var result = _rightLens.CreateLeft(originalRight)
-                .Bind(rightLensRes => _leftLens.CreateLeft(originalRight)
-                                        .Map(leftLensRes => leftLensRes + rightLensRes));
+            var result = _leftLens.CreateLeft(source)
+                .Map(leftLensResult => (
+                    leftLensResult,
+                    unmatchedPrefix: _leftLens.RightRegex.GetNonMatchingValueFromStart(source),
+                    unmatchedSuffix: _leftLens.RightRegex.GetNonMatchingValueToEnd(source)
+                ))
+                .Bind(res => _rightLens.CreateLeft(res.unmatchedSuffix)
+                                        .Map(rightLensRes => res.leftLensResult + rightLensRes));
 
             return result;
         };

@@ -1,24 +1,17 @@
-﻿
-using Bifrons.Lenses.Symmetric.Strings;
-using Bifrons.Lenses.Tests;
+﻿using Bifrons.Lenses.Tests;
 
 namespace Bifrons.Lenses.Symmetric.Strings.Tests;
 
 public class ConcatLensTests : SymmetricLensTestingFramework<string, string>
 {
-    protected override string _left => "Jane Doe";
+    protected override string _left => "12345;Jane Doe";
 
     protected override string _right => "Jane ";
 
-    protected override string _updatedLeft => "Janine Doe";
+    protected override string _updatedLeft => "12345;Janine Doe";
 
     protected override string _updatedRight => "Janine ";
 
     protected override BaseSymmetricLens<string, string> _lens
-        => IdentityLens.Cons(@"\w+") | IdentityLens.Cons(@" ");
-    // The above is equivalent to:
-    //=> Combinators.Concat(
-    //    IdentityLens.Cons(@"\w+"),
-    //    IdentityLens.Cons(@" ")
-    //);
+        => IdentityLens.Cons(@"[a-zA-Z]+") | IdentityLens.Cons(@" ");
 }

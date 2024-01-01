@@ -8,8 +8,13 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// </summary>
 public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
 {
-
+    /// <summary>
+    /// Regex describing the strings on the left-hand side of the lens.
+    /// </summary>
     public abstract Regex LeftRegex { get; }
+    /// <summary>
+    /// Regex describing the strings on the right-hand side of the lens.
+    /// </summary>
     public abstract Regex RightRegex { get; }
 
     /// <summary>
