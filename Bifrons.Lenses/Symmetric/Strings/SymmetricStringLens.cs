@@ -24,7 +24,7 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// <param name="lhsLens">Left-hand operand lens</param>
     /// <param name="rhsLens">Right-hand operand lens</param>
     /// <returns>SymmetricStringLens</returns>
-    public static SymmetricStringLens operator |(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+    public static SymmetricStringLens operator &(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => Combinators.Concat(lhsLens, rhsLens);
 
     /// <summary>
@@ -47,7 +47,7 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    public static OrLens operator +(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+    public static OrLens operator |(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => Combinators.Or(lhsLens, rhsLens);
 
     /// <summary>
@@ -57,4 +57,5 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// <param name="rhsLens">Lens to be applied on each item</param>
     public static IterateLens operator *(string lhsRegexString, SymmetricStringLens rhsLens)
         => Combinators.Iterate(lhsRegexString, rhsLens);
+
 }

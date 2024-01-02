@@ -12,5 +12,5 @@ public class ConcatLensTests : SymmetricLensTestingFramework<string, string>
     private readonly string _numberRegex = @"12345";
 
     protected override BaseSymmetricLens<string, string> _lens
-        => DeleteLens.Cons(_numberRegex) | IdentityLens.Cons(_nameRegex) | DeleteLens.Cons(";") | InsertLens.Cons(" ") | IdentityLens.Cons(_nameRegex);
+        => DeleteLens.Cons(_numberRegex) & IdentityLens.Cons(_nameRegex) & DeleteLens.Cons(";") & InsertLens.Cons(" ") & IdentityLens.Cons(_nameRegex);
 }

@@ -5,10 +5,10 @@ public class Experiments
     [Fact]
     public void CreateRight_WithConcatLens()
     {
-        var lens = IdentityLens.Cons(@"\w+") |
-            IdentityLens.Cons(@"\s+") |
-            IdentityLens.Cons(@"(?!\w+\s+)\w+") |
-            DeleteLens.Cons(@"(?!\w+\s+):\s+") |
+        var lens = IdentityLens.Cons(@"\w+") &
+            IdentityLens.Cons(@"\s+") &
+            IdentityLens.Cons(@"(?!\w+\s+)\w+") &
+            DeleteLens.Cons(@"(?!\w+\s+):\s+") &
             InsertLens.Cons(@",");
 
         var source = "Jane Doe: ";
@@ -23,10 +23,10 @@ public class Experiments
     [Fact]
     public void PutRight_OnConcatLens_WithNoOriginalSource()
     {
-        var lens = IdentityLens.Cons(@"\w+") |
-            IdentityLens.Cons(@"\s+") |
-            IdentityLens.Cons(@"(?!\w+\s+)\w+") |
-            DeleteLens.Cons(@"(?!\w+\s+):\s+") |
+        var lens = IdentityLens.Cons(@"\w+") &
+            IdentityLens.Cons(@"\s+") &
+            IdentityLens.Cons(@"(?!\w+\s+)\w+") &
+            DeleteLens.Cons(@"(?!\w+\s+):\s+") &
             InsertLens.Cons(@",");
 
         var source = "Jane Doe: ";
@@ -57,42 +57,41 @@ public class Experiments
     [Fact]
     public void RoundTripCSV_OnIterateLens()
     {
-        string completeData =
+        string sourceData =
             "John;Doe;1985;Engineering;50000\n" +
             "Jane;Smith;1990;Marketing;60000\n" +
             "Mike;Johnson;1982;Finance;70000\n" +
             "Emily;Williams;1995;Human Resources;55000";
 
-        string expectedPartyDataString =
-            "John;Doe;1985;Engineering\n" +
-            "Jane;Smith;1990;Marketing\n" +
-            "Mike;Johnson;1982;Finance\n" +
-            "Emily;Williams;1995;Human Resources";
-
-        var expectedPartyData = new[]
+        var targetData = new[]
         {
-            "John;Doe;1985;Engineering",
-            "Jane;Smith;1990;Marketing",
-            "Mike;Johnson;1982;Finance",
-            "Emily;Williams;1995;Human Resources"
+            "John Doe 1985 Engineering 50000",
+            "Jane Smith 1990 Marketing 60000",
+            "Mike Johnson 1982 Finance 70000",
+            "Emily Williams 1995 Human Resources 55000"
+
         };
 
         var lens = "\n" * (
-            IdentityLens.Cons(@"[^;]+") |
-            IdentityLens.Cons(@"(?![^;]+);") |
-            IdentityLens.Cons(@"(?![^;]+;)[^;]+") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+);") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+;)[^;]+") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+;[^;]+);") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+;[^;]+;)[^;]+") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+;[^;]+;[^;]);") |
-            IdentityLens.Cons(@"(?![^;]+;[^;]+;[^;]+;[^;];).+")
+            IdentityLens.Cons(@"[^;]+")
+            & DeleteLens.Cons(";")
+            & InsertLens.Cons(@" ")
+            & IdentityLens.Cons(@"[^;]+")
+            & DeleteLens.Cons(";")
+            & InsertLens.Cons(@" ")
+            & IdentityLens.Cons(@"\d+")
+            & DeleteLens.Cons(";")
+            & InsertLens.Cons(@" ")
+            & IdentityLens.Cons(@"[^;]+")
+            & DeleteLens.Cons(";")
+            & InsertLens.Cons(@" ")
+            & IdentityLens.Cons(@"[^\n]+")
         );
 
-        var result = lens.CreateRight(completeData);
+        var result = lens.CreateRight(sourceData);
 
         Assert.True(result);
-        Assert.Equal(expectedPartyData, result.Data);
+        Assert.Equal(targetData, result.Data);
     }
 
 }

@@ -9,14 +9,14 @@ public sealed class InsertLens : DisconnectLens
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="targetString">String that is inserted L => R</param>
+    /// <param name="targetString">CONSTANT string that is inserted L => R</param>
     private InsertLens(string targetString)
         : base(string.Empty, targetString, string.Empty, targetString) { }
 
     /// <summary>
     /// Constructs an insert lens
     /// </summary>
-    /// <param name="targetString">String that is inserted L => R</param>
+    /// <param name="targetString">CONSTANT string that is inserted L => R</param>
     public static InsertLens Cons(string targetString)
         => new(targetString);
 }

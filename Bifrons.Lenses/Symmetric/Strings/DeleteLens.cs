@@ -9,14 +9,14 @@ public sealed class DeleteLens : DisconnectLens
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="sourceString">Regex string that is used for PutR</param>
+    /// <param name="sourceString">CONSTANT string that is used for PutR</param>
     private DeleteLens(string sourceString)
         : base(sourceString, string.Empty, sourceString, string.Empty) { }
 
     /// <summary>
     /// Constructs a DeleteLens from a regex string
     /// </summary>
-    /// <param name="sourceString">Regex string that is used for PutR</param>
+    /// <param name="sourceString">CONSTANT string that is used for PutR</param>
     public static DeleteLens Cons(string sourceString)
         => new(sourceString);
 }
