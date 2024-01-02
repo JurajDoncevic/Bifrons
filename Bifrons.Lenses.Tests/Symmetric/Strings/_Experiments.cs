@@ -94,4 +94,23 @@ public class Experiments
         Assert.Equal(targetData, result.Data);
     }
 
+    [Fact]
+    public void RoundTrip_OnOrLens_WithImplicitMerge()
+    {
+        var sourceLeft = "1234";
+        var sourceRight = "abcd";
+
+        var targetLeft = "1234";
+        var targetRight = "abcd";
+
+        SymmetricStringLens lens = IdentityLens.Cons(@"\d+") | IdentityLens.Cons(@"[a-zA-Z]+"); // Implicit merge
+
+        var resultLeft = lens.CreateRight(sourceLeft);
+        var resultRight = lens.CreateRight(sourceRight);
+
+        Assert.True(resultLeft);
+        Assert.True(resultRight);
+        Assert.Equal(targetLeft, resultLeft.Data);
+        Assert.Equal(targetRight, resultRight.Data);
+    }
 }

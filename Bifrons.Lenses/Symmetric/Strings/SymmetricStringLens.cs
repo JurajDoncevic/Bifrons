@@ -58,4 +58,8 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     public static IterateLens operator *(string lhsRegexString, SymmetricStringLens rhsLens)
         => Combinators.Iterate(lhsRegexString, rhsLens);
 
+
+    public static implicit operator SymmetricStringLens(OrLens orLens)
+        => MergeLens.Cons(orLens);
+
 }

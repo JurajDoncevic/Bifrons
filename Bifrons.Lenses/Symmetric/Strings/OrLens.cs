@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Symmetric.Strings;
+﻿using System.Text.RegularExpressions;
+
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Describes a lens union combinator.
@@ -8,6 +10,9 @@ public sealed class OrLens
 {
     private readonly SymmetricStringLens _lhsLens;
     private readonly SymmetricStringLens _rhsLens;
+
+    public Regex LeftRegex => new Regex(_lhsLens.LeftRegex.ToString() + "|" + _rhsLens.LeftRegex.ToString());
+    public Regex RightRegex => new Regex(_lhsLens.RightRegex.ToString() + "|" + _rhsLens.RightRegex.ToString());
 
     /// <summary>
     /// Constructor
@@ -45,6 +50,18 @@ public sealed class OrLens
             leftLensRight => _lhsLens.CreateLeft(leftLensRight),
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)
         ).Unfold();
+
+    internal bool IsLhsLeftRegexMatch(string source)
+        => _lhsLens.LeftRegex.Match(source).Value.Equals(source);
+
+    internal bool IsLhsRightRegexMatch(string source)
+        => _lhsLens.RightRegex.Match(source).Value.Equals(source);
+
+    internal bool IsRhsLeftRegexMatch(string source)
+        => _rhsLens.LeftRegex.Match(source).Value.Equals(source);
+
+    internal bool IsRhsRightRegexMatch(string source)
+        => _rhsLens.RightRegex.Match(source).Value.Equals(source);
 
     /// <summary>
     /// Constructs a new lens that is the union of two lenses.
