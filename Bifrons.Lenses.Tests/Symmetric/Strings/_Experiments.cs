@@ -254,4 +254,21 @@ public class Experiments
             Assert.Equal(expectedHRRow, updatedHRRow.Data);
         }
     }
+
+    [Fact]
+    public void Inverse_OnIterateLens()
+    {
+        var source = "John;Paul;Alice;George;Dicky;Stuart;Pete";
+        var target = new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
+        var updatedTarget = new[] { "John", "George", "Alice", "Dicky", "Pete", "Gregory" };
+        var updatedSource = "John;George;Alice;Dicky;Pete;Gregory";
+
+        var lens = Symmetric.Combinators.Invert(Combinators.Iterate(";", IdentityLens.Cons(@"\w+")));
+
+        var result = lens.CreateRight(target)
+            .Bind(right => lens.PutLeft(updatedSource, Option.Some(Enumerable.AsEnumerable(target))));
+
+        Assert.True(result);
+        Assert.Equal(updatedTarget, result.Data);
+    }
 }

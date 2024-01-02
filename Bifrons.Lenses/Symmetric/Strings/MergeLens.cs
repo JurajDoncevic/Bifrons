@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using Bifrons.Lenses.Symmetric.Strings;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.Symmetric.Strings;
 
 /// <summary>
 /// Describes a merge (left and right) lens. Used to merge the sides of an OrLens.
