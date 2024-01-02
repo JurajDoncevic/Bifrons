@@ -100,4 +100,13 @@ public readonly struct Result<TData>
     {
         return HashCode.Combine(_data, _message, _resultType, _exception);
     }
+
+    public override readonly string ToString()
+        => ResultType switch
+        {
+            ResultTypes.SUCCESS => $"Result<{typeof(TData).Name}>: \"{Data}\"",
+            ResultTypes.FAILURE => $"Result<{typeof(TData).Name}>: Fail with: {Message}",
+            ResultTypes.EXCEPTION => $"Result<{typeof(TData).Name}>: Exception: {Message} with exception: {Exception.Message}",
+            _ => $"Result<{typeof(TData).Name}>: {Message}"
+        };
 }

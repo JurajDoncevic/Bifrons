@@ -42,8 +42,6 @@ public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricL
 {
     protected abstract TLeft _left { get; }
     protected abstract TRight _right { get; }
-    protected abstract TLeft _updatedLeft { get; }
-    protected abstract TRight _updatedRight { get; }
 
     protected abstract BaseSymmetricLens<TLeft, TRight> _lens { get; }
 
@@ -70,21 +68,21 @@ public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricL
     public override void PutLRTest()
     {
         var result =
-        _lens.PutLeft(_updatedRight, Option.Some(_left))
-            .Bind(left => _lens.PutRight(left, Option.Some(_updatedRight)));
+        _lens.PutLeft(_right, Option.Some(_left))
+            .Bind(left => _lens.PutRight(left, Option.Some(_right)));
 
         Assert.True(result);
-        Assert.Equal(_updatedRight, result.Data);
+        Assert.Equal(_right, result.Data);
     }
 
     public override void PutRLTest()
     {
         var result =
-        _lens.PutRight(_updatedLeft, Option.Some(_right))
-            .Bind(right => _lens.PutLeft(right, Option.Some(_updatedLeft)));
+        _lens.PutRight(_left, Option.Some(_right))
+            .Bind(right => _lens.PutLeft(right, Option.Some(_left)));
 
         Assert.True(result);
-        Assert.Equal(_updatedLeft, result.Data);
+        Assert.Equal(_left, result.Data);
     }
 
 }

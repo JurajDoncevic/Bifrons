@@ -43,15 +43,15 @@ public sealed class ConcatLens : SymmetricStringLens
 
             var originalTargetValue = originalTarget.Value;
 
-            var result = _leftLens.PutRight(updatedSource, originalTarget)
+            var result = _leftLens.PutLeft(updatedSource, originalTarget)
                 .Map(leftLensRes => (
                     leftLensRes,
-                    unmatchedSourcePrefix: _leftLens.LeftRegex.GetNonMatchingValueFromStart(updatedSource),
-                    unmatchedSourceSuffix: _leftLens.LeftRegex.GetNonMatchingValueToEnd(updatedSource),
-                    unmatchedTargetPrefix: _leftLens.RightRegex.GetNonMatchingValueFromStart(originalTargetValue),
-                    unmatchedTargetSuffix: _leftLens.RightRegex.GetNonMatchingValueToEnd(originalTargetValue)
+                    unmatchedSourcePrefix: _leftLens.RightRegex.GetNonMatchingValueFromStart(updatedSource),
+                    unmatchedSourceSuffix: _leftLens.RightRegex.GetNonMatchingValueToEnd(updatedSource),
+                    unmatchedTargetPrefix: _leftLens.LeftRegex.GetNonMatchingValueFromStart(originalTargetValue),
+                    unmatchedTargetSuffix: _leftLens.LeftRegex.GetNonMatchingValueToEnd(originalTargetValue)
                 ))
-                .Bind(res => _rightLens.PutRight(res.unmatchedSourceSuffix, res.unmatchedTargetSuffix)
+                .Bind(res => _rightLens.PutLeft(res.unmatchedSourceSuffix, res.unmatchedTargetSuffix)
                                         .Map(rightLensRes => (
                                             lensRes: res.leftLensRes + rightLensRes,
                                             unmatchedSourcePrefix: res.unmatchedSourcePrefix,
@@ -59,7 +59,7 @@ public sealed class ConcatLens : SymmetricStringLens
                                             unmatchedTargetPrefix: res.unmatchedTargetPrefix,
                                             unmatchedTargetSuffix: _rightLens.RightRegex.GetNonMatchingValueToEnd(res.unmatchedTargetSuffix)
                                         )))
-                                        .Map(res => res.unmatchedTargetPrefix + /*res.unmatchedSourcePrefix +*/ res.lensRes + /*res.unmatchedSourceSuffix +*/ res.unmatchedTargetSuffix);
+                                        .Map(res => /* res.unmatchedTargetPrefix  + */ /*res.unmatchedSourcePrefix +*/ res.lensRes /*+ res.unmatchedSourceSuffix *//* +  res.unmatchedTargetSuffix*/);
 
             return result;
 
@@ -91,7 +91,7 @@ public sealed class ConcatLens : SymmetricStringLens
                                             unmatchedTargetPrefix: res.unmatchedTargetPrefix,
                                             unmatchedTargetSuffix: _rightLens.RightRegex.GetNonMatchingValueToEnd(res.unmatchedTargetSuffix)
                                         )))
-                                        .Map(res => res.unmatchedTargetPrefix + /*res.unmatchedSourcePrefix +*/ res.lensRes + /*res.unmatchedSourceSuffix +*/ res.unmatchedTargetSuffix);
+                                        .Map(res => /*res.unmatchedTargetPrefix +*/  /*res.unmatchedSourcePrefix +*/ res.lensRes /*+ res.unmatchedSourceSuffix */ /*+res.unmatchedTargetSuffix */);
 
             return result;
         };

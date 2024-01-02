@@ -8,9 +8,5 @@ public class IdentityLensTests : SymmetricLensTestingFramework<string, string>
 
     protected override string _right => "Hello, World!";
 
-    protected override string _updatedLeft => "Hello, Universe!";
-
-    protected override string _updatedRight => "Hello, Universe!";
-
-    protected override BaseSymmetricLens<string, string> _lens => IdentityLens.Cons();
+    protected override BaseSymmetricLens<string, string> _lens => IdentityLens.Cons(@"Hello, World!");
 }
