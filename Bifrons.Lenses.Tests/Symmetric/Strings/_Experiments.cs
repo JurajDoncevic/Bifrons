@@ -258,7 +258,7 @@ public class Experiments
     [Fact]
     public void Inverse_OnIterateLens()
     {
-        var source = "John;Paul;Alice;George;Dicky;Stuart;Pete";
+        //var source = "John;Paul;Alice;George;Dicky;Stuart;Pete";
         var target = new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
         var updatedTarget = new[] { "John", "George", "Alice", "Dicky", "Pete", "Gregory" };
         var updatedSource = "John;George;Alice;Dicky;Pete;Gregory";
