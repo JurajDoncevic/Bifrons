@@ -59,7 +59,11 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
         => Combinators.Iterate(lhsRegexString, rhsLens);
 
 
+    /// <summary>
+    /// Implicitly merges an OrLens into a SymmetricStringLens (MergeLens).
+    /// </summary>
+    /// <param name="orLens">OrLens to merge</param>
     public static implicit operator SymmetricStringLens(OrLens orLens)
-        => MergeLens.Cons(orLens);
+        => Combinators.Merge(orLens);
 
 }

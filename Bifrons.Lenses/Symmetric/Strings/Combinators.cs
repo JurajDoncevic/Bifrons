@@ -45,11 +45,29 @@ public static class Combinators
     public static OrLens Or(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
         => OrLens.Cons(lhsLens, rhsLens);
 
+    /// <summary>
+    /// Merges the left side of a or lens with a symmetric string lens.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
     public static MergeLeft MergeL(SymmetricStringLens lhsLens, OrLens rhsLens)
         => MergeLeft.Cons(rhsLens, lhsLens);
 
+    /// <summary>
+    /// Merges the right side of a or lens with a symmetric string lens.
+    /// </summary>
+    /// <param name="lhsLens">Left-hand side operand lens</param>
+    /// <param name="rhsLens">Right-hand side operand lens</param>
     public static MergeRight MergeR(OrLens lhsLens, SymmetricStringLens rhsLens)
         => MergeRight.Cons(lhsLens, rhsLens);
+
+    /// <summary>
+    /// Merges both side of a OrLens to a MergeLens (in effect a symmetric string lens).
+    /// Side to use is decided by the regex match.
+    /// </summary>
+    /// <param name="orLens">OrLens to merge</param>
+    public static MergeLens Merge(OrLens orLens)
+        => MergeLens.Cons(orLens);
 
     /// <summary>
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.

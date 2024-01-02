@@ -11,7 +11,14 @@ public sealed class OrLens
     private readonly SymmetricStringLens _lhsLens;
     private readonly SymmetricStringLens _rhsLens;
 
+    /// <summary>
+    /// Regex describing the strings on the left-hand side of the lens.
+    /// </summary>
     public Regex LeftRegex => new Regex(_lhsLens.LeftRegex.ToString() + "|" + _rhsLens.LeftRegex.ToString());
+
+    /// <summary>
+    /// Regex describing the strings on the right-hand side of the lens.
+    /// </summary>
     public Regex RightRegex => new Regex(_lhsLens.RightRegex.ToString() + "|" + _rhsLens.RightRegex.ToString());
 
     /// <summary>
@@ -51,15 +58,27 @@ public sealed class OrLens
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)
         ).Unfold();
 
+    /// <summary>
+    /// Checks if the source string completely matches the left-side operand lenses left-side regex.
+    /// </summary>
     internal bool IsLhsLeftRegexMatch(string source)
         => _lhsLens.LeftRegex.Match(source).Value.Equals(source);
 
+    /// <summary>
+    /// Checks if the source string completely matches the left-side operand lenses right-side regex.
+    /// </summary>
     internal bool IsLhsRightRegexMatch(string source)
         => _lhsLens.RightRegex.Match(source).Value.Equals(source);
 
+    /// <summary>
+    /// Checks if the source string completely matches the right-side operand lenses left-side regex.
+    /// </summary>
     internal bool IsRhsLeftRegexMatch(string source)
         => _rhsLens.LeftRegex.Match(source).Value.Equals(source);
 
+    /// <summary>
+    /// Checks if the source string completely matches the right-side operand lenses right-side regex.
+    /// </summary>
     internal bool IsRhsRightRegexMatch(string source)
         => _rhsLens.RightRegex.Match(source).Value.Equals(source);
 

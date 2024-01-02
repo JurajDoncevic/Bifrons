@@ -3,11 +3,20 @@ using Bifrons.Lenses.Symmetric.Strings;
 
 namespace Bifrons.Lenses;
 
+/// <summary>
+/// Describes a merge (left and right) lens. Used to merge the sides of an OrLens.
+/// Desides on the side to use based on the regex match.
+/// <c>L : string <=> string</c>
+/// </summary>
 public class MergeLens : SymmetricStringLens
 {
     private readonly OrLens _orLens;
 
-    public MergeLens(OrLens orLens)
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="orLens">OrLens to merge</param>
+    private MergeLens(OrLens orLens)
     {
         _orLens = orLens;
     }
@@ -52,6 +61,10 @@ public class MergeLens : SymmetricStringLens
                     : Results.OnFailure<Either<string, string>>($"Source string '{source}' does not match either regex."))
             .Map(either => either.Match(l => l, r => r));
 
+    /// <summary>
+    /// Constructs a MergeLens from an OrLens
+    /// </summary>
+    /// <param name="orLens">OrLens to merge</param>
     public static MergeLens Cons(OrLens orLens)
         => new(orLens);
 }
