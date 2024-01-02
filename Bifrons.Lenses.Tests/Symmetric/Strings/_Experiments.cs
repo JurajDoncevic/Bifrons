@@ -113,4 +113,145 @@ public class Experiments
         Assert.Equal(targetLeft, resultLeft.Data);
         Assert.Equal(targetRight, resultRight.Data);
     }
+
+    [Fact]
+    public void ManagementAndHR_DataSync()
+    {
+        var managementData = new[] {
+            "Jane Doe: 38000",
+            "John Public: 37500",
+            "Mike Johnson: 40000",
+            "Emily Williams: 35000",
+            "Gregory Smith: 45000"
+        };
+
+        var HRData = new[] {
+            "Jane Doe,Healthcare Inc.",
+            "John Public,Insurance Co.",
+            "Mike Johnson,Healthcare Inc.",
+            "Emily Williams,Based Co.",
+            "Gregory Smith,Insurance Co."
+        };
+
+
+        var nameRegex = @"[a-zA-Z]+";
+        var salaryRegex = @"\d+";
+        var companyRegex = @"[a-zA-Z \.]+";
+
+        var nameLens = IdentityLens.Cons(nameRegex) & IdentityLens.Cons(" ") & IdentityLens.Cons(nameRegex) & DeleteLens.Cons(": ") & InsertLens.Cons(",");
+        var employeeLens = nameLens & DisconnectLens.Cons(salaryRegex, "", "unk", "") & DisconnectLens.Cons("", companyRegex, "", "UNK");
+
+        foreach (var (managementRow, hrRow) in Enumerable.Zip(managementData, HRData))
+        {
+            var result = employeeLens.PutRight(managementRow, hrRow);
+            Assert.True(result);
+            Assert.Equal(hrRow, result.Data);
+        }
+
+    }
+
+    [Fact]
+    public void ManagementAndHR_RoundTrip_WithRightUpdate()
+    {
+        var managementData = new[] {
+            "Jane Doe: 38000",
+            "John Public: 37500",
+            "Mike Johnson: 40000",
+            "Emily Williams: 35000",
+            "Gregory Smith: 45000"
+        };
+
+        var HRData = new[] {
+            "Jane Doe,Healthcare Inc.",
+            "John Public,Insurance Co.",
+            "Mike Johnson,Healthcare Inc.",
+            "Emily Williams,Based Co.",
+            "Gregory Smith,Insurance Co."
+        };
+
+        var updatedHRData = new[] {
+            "Janine Doe,Healthcare Inc.",
+            "John Private,Insurance Co.",
+            "Michael Johnson,HealthUncare Inc.",
+            "Emily Bills,Based Co.",
+            "Gregor Smithe,Insurance Co."
+        };
+
+        var updatedManagementData = new[] {
+            "Janine Doe: 38000",
+            "John Private: 37500",
+            "Michael Johnson: 40000",
+            "Emily Bills: 35000",
+            "Gregor Smithe: 45000"
+        };
+
+        var nameRegex = @"[a-zA-Z]+";
+        var salaryRegex = @"\d+";
+        var companyRegex = @"[a-zA-Z \.]+";
+
+        var nameLens = IdentityLens.Cons(nameRegex) & IdentityLens.Cons(" ") & IdentityLens.Cons(nameRegex) & DeleteLens.Cons(": ") & InsertLens.Cons(",");
+        var employeeLens = nameLens & DisconnectLens.Cons(salaryRegex, "", "unk", "") & DisconnectLens.Cons("", companyRegex, "", "UNK");
+
+        foreach (var (managementRow, updatedHRRow, expectedManagementRow) in Enumerable.Zip(managementData, updatedHRData, updatedManagementData))
+        {
+            var hrRow = employeeLens.CreateRight(managementRow);
+            var updatedManagmentRow = employeeLens.PutLeft(updatedHRRow, managementRow);
+
+            Assert.True(updatedManagmentRow);
+            Assert.Equal(expectedManagementRow, updatedManagmentRow.Data);
+        }
+
+    }
+
+    [Fact]
+    public void ManagementAndHR_RoundTrip_WithLeftUpdate()
+    {
+        var managementData = new[] {
+            "Jane Doe: 38000",
+            "John Public: 37500",
+            "Mike Johnson: 40000",
+            "Emily Williams: 35000",
+            "Gregory Smith: 45000"
+        };
+
+        var HRData = new[] {
+            "Jane Doe,Healthcare Inc.",
+            "John Public,Insurance Co.",
+            "Mike Johnson,Healthcare Inc.",
+            "Emily Williams,Based Co.",
+            "Gregory Smith,Insurance Co."
+        };
+
+        var updatedHRData = new[] {
+            "Janine Doe,Healthcare Inc.",
+            "John Private,Insurance Co.",
+            "Michael Johnson,Healthcare Inc.",
+            "Emily Bills,Based Co.",
+            "Gregor Smithe,Insurance Co."
+        };
+
+        var updatedManagementData = new[] {
+            "Janine Doe: 38000",
+            "John Private: 37500",
+            "Michael Johnson: 40000",
+            "Emily Bills: 35000",
+            "Gregor Smithe: 45000"
+        };
+
+        var nameRegex = @"[a-zA-Z]+";
+        var salaryRegex = @"\d+";
+        var companyRegex = @"[a-zA-Z \.]+";
+
+        var nameLens = IdentityLens.Cons(nameRegex) & IdentityLens.Cons(" ") & IdentityLens.Cons(nameRegex) & DeleteLens.Cons(": ") & InsertLens.Cons(",");
+        var employeeLens = nameLens & DisconnectLens.Cons(salaryRegex, "", "unk", "") & DisconnectLens.Cons("", companyRegex, "", "UNK");
+
+        foreach (var (hrRow, updatedManagementRow, expectedHRRow) in Enumerable.Zip(HRData, updatedManagementData, updatedHRData))
+        {
+            var managementRow = employeeLens.CreateLeft(hrRow);
+            var updatedHRRow = employeeLens.PutRight(updatedManagementRow, hrRow);
+
+            Assert.True(updatedHRRow);
+            Assert.Equal(expectedHRRow, updatedHRRow.Data);
+        }
+    }
 }
