@@ -51,12 +51,12 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
         => Combinators.Or(lhsLens, rhsLens);
 
     /// <summary>
-    /// Creates a string lens that iterates over a string and applies a lens to each item according to the regex separator.
+    /// Creates a string lens that iterates over a string and applies a lens to each item according to the constant separator.
     /// </summary>
-    /// <param name="lhsRegexString">Regex string for separator</param>
+    /// <param name="lhsRegexString">String for separator - CONSTANT</param>
     /// <param name="rhsLens">Lens to be applied on each item</param>
-    public static IterateLens operator *(string lhsRegexString, SymmetricStringLens rhsLens)
-        => Combinators.Iterate(lhsRegexString, rhsLens);
+    public static IterateLens operator *(string lhsSeparatorString, SymmetricStringLens rhsLens)
+        => Combinators.Iterate(lhsSeparatorString, rhsLens);
 
 
     /// <summary>

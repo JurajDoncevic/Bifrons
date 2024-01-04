@@ -9,7 +9,7 @@ public class IterateLensTests : SymmetricLensTestingFramework<string, IEnumerabl
     protected override IEnumerable<string> _right => new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
 
     protected override BaseSymmetricLens<string, IEnumerable<string>> _lens =>
-        IterateLens.Cons(
+        EnumerateLens.Cons(
             "\n",
             IdentityLens.Cons(@"\w+")
         );

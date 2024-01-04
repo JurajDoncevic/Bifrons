@@ -12,7 +12,7 @@ public static class Combinators
     /// <typeparam name="TRight"></typeparam>
     /// <param name="lens">Original lens</param>
     public static InvertLens<TRight, TLeft> Invert<TLeft, TRight>(this BaseSymmetricLens<TLeft, TRight> lens)
-        => new(lens);
+        => InvertLens.Cons(lens);
 
     /// <summary>
     /// Constructs a sequentially composed lens.
@@ -22,7 +22,7 @@ public static class Combinators
     public static BaseSymmetricLens<TLeft, TRight> Compose<TLeft, TMid, TRight>(
         this BaseSymmetricLens<TLeft, TMid> lhsLens,
         BaseSymmetricLens<TMid, TRight> rhsLens)
-        => new ComposeLens<TLeft, TMid, TRight>(lhsLens, rhsLens);
+        => ComposeLens.Cons(lhsLens, rhsLens);
 
     /// <summary>
     /// Constructs an or lens from two lenses.
@@ -36,5 +36,16 @@ public static class Combinators
     public static OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget> Or<TLeftSource, TRightSource, TLeftTarget, TRightTarget>(
         this BaseSymmetricLens<TLeftSource, TLeftTarget> lhsLens,
         BaseSymmetricLens<TRightSource, TRightTarget> rhsLens)
-        => new(lhsLens, rhsLens);
+        => OrLens.Cons(lhsLens, rhsLens);
+
+
+    /// <summary>
+    /// Constructs an iterate lens from a an item lens
+    /// </summary>
+    /// <typeparam name="TLeft"></typeparam>
+    /// <typeparam name="TRight"></typeparam>
+    /// <param name="itemLens">Item lens to be applied on each item</param>
+    public static IterateLens<TLeft, TRight> Iterate<TLeft, TRight>(
+        BaseSymmetricLens<TLeft, TRight> itemLens)
+        => IterateLens.Cons(itemLens);
 }

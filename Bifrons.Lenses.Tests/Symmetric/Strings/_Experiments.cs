@@ -39,14 +39,14 @@ public class Experiments
     }
 
     [Fact]
-    public void RoundTrip_OnIterateLens()
+    public void RoundTrip_OnEnumerateLens()
     {
         var source = "John;Paul;Alice;George;Dicky;Stuart;Pete";
         var target = new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
         var updatedTarget = new[] { "John", "George", "Alice", "Dicky", "Pete", "Gregory" };
         var updatedSource = "John;George;Alice;Dicky;Pete;Gregory";
 
-        var lens = Combinators.Iterate(";", IdentityLens.Cons(@"\w+"));
+        var lens = Combinators.Enumerate(";", IdentityLens.Cons(@"\w+"));
 
         var result = lens.CreateRight(source)
             .Bind(right => lens.PutLeft(updatedTarget, Option.Some(source)));
@@ -54,8 +54,9 @@ public class Experiments
         Assert.True(result);
         Assert.Equal(updatedSource, result.Data);
     }
+
     [Fact]
-    public void RoundTripCSV_OnIterateLens()
+    public void RoundTripCSV_OnEnumerateLens()
     {
         string sourceData =
             "John;Doe;1985;Engineering;50000\n" +
@@ -72,26 +73,29 @@ public class Experiments
 
         };
 
-        var lens = "\n" * (
-            IdentityLens.Cons(@"[^;]+")
-            & DeleteLens.Cons(";")
-            & InsertLens.Cons(@" ")
-            & IdentityLens.Cons(@"[^;]+")
-            & DeleteLens.Cons(";")
-            & InsertLens.Cons(@" ")
-            & IdentityLens.Cons(@"\d+")
-            & DeleteLens.Cons(";")
-            & InsertLens.Cons(@" ")
-            & IdentityLens.Cons(@"[^;]+")
-            & DeleteLens.Cons(";")
-            & InsertLens.Cons(@" ")
-            & IdentityLens.Cons(@"[^\n]+")
+        var lens = Symmetric.Combinators.Compose(
+            EnumerateLens.Cons(
+                "\n",
+                IdentityLens.Cons(@"[^;]+")
+                & DeleteLens.Cons(";")
+                & InsertLens.Cons(@" ")
+                & IdentityLens.Cons(@"[^;]+")
+                & DeleteLens.Cons(";")
+                & InsertLens.Cons(@" ")
+                & IdentityLens.Cons(@"\d+")
+                & DeleteLens.Cons(";")
+                & InsertLens.Cons(@" ")
+                & IdentityLens.Cons(@"[^;]+")
+                & DeleteLens.Cons(";")
+                & InsertLens.Cons(@" ")
+                & IdentityLens.Cons(@"[^\n]+")),
+            JoinLens.Cons("\n", IdentityLens.Cons(@"[^\n]+"))
         );
 
         var result = lens.CreateRight(sourceData);
 
         Assert.True(result);
-        Assert.Equal(targetData, result.Data);
+        Assert.Equal(string.Join("\n", targetData), result.Data);
     }
 
     [Fact]
@@ -189,17 +193,24 @@ public class Experiments
         var salaryRegex = @"\d+";
         var companyRegex = @"[a-zA-Z \.]+";
 
-        var nameLens = IdentityLens.Cons(nameRegex) & IdentityLens.Cons(" ") & IdentityLens.Cons(nameRegex) & DeleteLens.Cons(": ") & InsertLens.Cons(",");
-        var employeeLens = nameLens & DisconnectLens.Cons(salaryRegex, "", "unk", "") & DisconnectLens.Cons("", companyRegex, "", "UNK");
+        var nameLens =
+            IdentityLens.Cons(nameRegex) &
+            IdentityLens.Cons(" ") &
+            IdentityLens.Cons(nameRegex) &
+            DeleteLens.Cons(": ") &
+            InsertLens.Cons(",");
 
-        foreach (var (managementRow, updatedHRRow, expectedManagementRow) in Enumerable.Zip(managementData, updatedHRData, updatedManagementData))
-        {
-            var hrRow = employeeLens.CreateRight(managementRow);
-            var updatedManagmentRow = employeeLens.PutLeft(updatedHRRow, managementRow);
+        var employeeLens =
+            nameLens &
+            DisconnectLens.Cons(salaryRegex, "", "unk", "") &
+            DisconnectLens.Cons("", companyRegex, "", "UNK");
 
-            Assert.True(updatedManagmentRow);
-            Assert.Equal(expectedManagementRow, updatedManagmentRow.Data);
-        }
+        var fullLens = Symmetric.Combinators.Iterate(employeeLens);
+
+        var result = fullLens.PutLeft(updatedHRData, managementData);
+
+        Assert.True(result);
+        Assert.Equal(updatedManagementData, result.Data);
 
     }
 
@@ -245,14 +256,12 @@ public class Experiments
         var nameLens = IdentityLens.Cons(nameRegex) & IdentityLens.Cons(" ") & IdentityLens.Cons(nameRegex) & DeleteLens.Cons(": ") & InsertLens.Cons(",");
         var employeeLens = nameLens & DisconnectLens.Cons(salaryRegex, "", "unk", "") & DisconnectLens.Cons("", companyRegex, "", "UNK");
 
-        foreach (var (hrRow, updatedManagementRow, expectedHRRow) in Enumerable.Zip(HRData, updatedManagementData, updatedHRData))
-        {
-            var managementRow = employeeLens.CreateLeft(hrRow);
-            var updatedHRRow = employeeLens.PutRight(updatedManagementRow, hrRow);
+        var fullLens = Symmetric.Combinators.Iterate(employeeLens);
 
-            Assert.True(updatedHRRow);
-            Assert.Equal(expectedHRRow, updatedHRRow.Data);
-        }
+        var result = fullLens.PutRight(updatedManagementData, HRData);
+
+        Assert.True(result);
+        Assert.Equal(updatedHRData, result.Data);
     }
 
     [Fact]
@@ -263,7 +272,7 @@ public class Experiments
         var updatedTarget = new[] { "John", "George", "Alice", "Dicky", "Pete", "Gregory" };
         var updatedSource = "John;George;Alice;Dicky;Pete;Gregory";
 
-        var lens = Symmetric.Combinators.Invert(Combinators.Iterate(";", IdentityLens.Cons(@"\w+")));
+        var lens = Symmetric.Combinators.Invert(Combinators.Enumerate(";", IdentityLens.Cons(@"\w+")));
 
         var result = lens.CreateRight(target)
             .Bind(right => lens.PutLeft(updatedSource, Option.Some(Enumerable.AsEnumerable(target))));

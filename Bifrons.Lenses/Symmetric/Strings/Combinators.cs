@@ -15,12 +15,28 @@ public static class Combinators
         => ConcatLens.Cons(lhsLens, rhsLens);
 
     /// <summary>
-    /// Iterates over a string by a separator and applies a lens to each item.
+    /// Enumerates a string by a separator and applies a lens to each item.
     /// </summary>
     /// <param name="separatorRegexString">String for separator regex</param>
     /// <param name="itemLens">Item lens to be applied on each item</param>
-    public static IterateLens Iterate(string separatorRegexString, SymmetricStringLens itemLens)
-        => IterateLens.Cons(separatorRegexString, itemLens);
+    public static EnumerateLens Enumerate(string separatorRegexString, SymmetricStringLens itemLens)
+        => EnumerateLens.Cons(separatorRegexString, itemLens);
+
+    /// <summary>
+    /// Joins a string enumerable with a separator and applies a lens to each item.
+    /// </summary>
+    /// <param name="separatorRegexString">String for separator regex</param>
+    /// <param name="itemLens">Item lens to be applied on each item</param>
+    public static JoinLens Join(string separatorRegexString, SymmetricStringLens itemLens)
+        => JoinLens.Cons(separatorRegexString, itemLens);
+
+    /// <summary>
+    /// Iterates over a string by a separator and applies a lens to each item.
+    /// </summary>
+    /// <param name="separatorRegexString">String for the separator - CONSTANT</param>
+    /// <param name="itemLens">Item lens to be applied on each item</param>
+    public static IterateLens Iterate(string separator, SymmetricStringLens itemLens)
+        => IterateLens.Cons(separator, itemLens);
 
     /// <summary>
     /// Inverts a simple symmetric string lens.
