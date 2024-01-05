@@ -26,12 +26,18 @@ public class ComposeLens : SymmetricStringLens
     }
 
     public override Func<string, Option<string>, Result<string>> PutLeft =>
-        (right, left) => _lhsLens.PutLeft(right, left)
-                            .Bind(l => _rhsLens.PutLeft(l, left));
+        (right, left) =>
+            left
+            ? _rhsLens.PutLeft(right, left)
+                .Bind(l => _lhsLens.PutLeft(left.Value.Replace(_rhsLens.LeftRegex.Match(right).Value, l), left))
+            : CreateLeft(right);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
-        (left, right) => _rhsLens.PutRight(left, right)
-                            .Bind(r => _lhsLens.PutRight(r, right));
+        (left, right) =>
+            right
+            ? _lhsLens.PutRight(left, right)
+                .Bind(r => _rhsLens.PutRight(right.Value.Replace(_lhsLens.RightRegex.Match(left).Value, r), right))
+            : CreateRight(left);
 
     public override Func<string, Result<string>> CreateRight =>
         left => _lhsLens.CreateRight(left)
