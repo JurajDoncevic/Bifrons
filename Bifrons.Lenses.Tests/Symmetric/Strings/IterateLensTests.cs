@@ -2,14 +2,14 @@
 
 namespace Bifrons.Lenses.Symmetric.Strings.Tests;
 
-public class IterateLensTests : SymmetricLensTestingFramework<string, IEnumerable<string>>
+public class IterateLensTests : SymmetricLensTestingFramework<string, string>
 {
     protected override string _left => "John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete";
 
-    protected override IEnumerable<string> _right => new[] { "John", "Paul", "Alice", "George", "Dicky", "Stuart", "Pete" };
+    protected override string _right => "John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete";
 
-    protected override BaseSymmetricLens<string, IEnumerable<string>> _lens =>
-        EnumerateLens.Cons(
+    protected override BaseSymmetricLens<string, string> _lens =>
+        IterateLens.Cons(
             "\n",
             IdentityLens.Cons(@"\w+")
         );
