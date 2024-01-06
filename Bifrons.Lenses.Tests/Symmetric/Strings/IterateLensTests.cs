@@ -13,4 +13,16 @@ public class IterateLensTests : SymmetricLensTestingFramework<string, string>
             "\n",
             IdentityLens.Cons(@"\w+")
         );
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
+        => ("John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete",
+            "John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete",
+            "John\nPaul\nAlice\nGeorge\nRichard\nStuart\nPete\nRingo",
+            "John\nPaul\nAlice\nGeorge\nRichard\nStuart\nPete\nRingo");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithLeftSideUpdateData
+        => ("John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete",
+            "John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete",
+            "John\nPaul\nAlice\nGeorge\nRichard\nStuart\nPete\nRingo",
+            "John\nPaul\nAlice\nGeorge\nRichard\nStuart\nPete\nRingo");
 }

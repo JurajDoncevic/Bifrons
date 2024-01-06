@@ -9,7 +9,13 @@ public class VarDeleteLensTests : SymmetricLensTestingFramework<string, string>
     protected override string _right => "";
 
     protected override BaseSymmetricLens<string, string> _lens =>
-        VarDeleteLens.Cons(@"\d+", "0000");
+        VarDeleteLens.Cons(@"\d{4}", "0000");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
+        => ("1234", "", "", "1234");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithLeftSideUpdateData
+        => ("", "0000", "1234", "");
 
     [Fact]
     public void CreateLeftDefault()

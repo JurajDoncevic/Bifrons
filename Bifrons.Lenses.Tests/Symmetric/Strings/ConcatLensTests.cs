@@ -13,4 +13,10 @@ public class ConcatLensTests : SymmetricLensTestingFramework<string, string>
 
     protected override BaseSymmetricLens<string, string> _lens
         => DeleteLens.Cons(_numberRegex) & IdentityLens.Cons(_nameRegex) & DeleteLens.Cons(";") & InsertLens.Cons(" ") & IdentityLens.Cons(_nameRegex);
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
+        => ("12345Jane;Doe", "Jane Doe", "Janine Doe", "12345Janine;Doe");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithLeftSideUpdateData
+        => ("Jane Doe", "12345Jane;Doe", "12345Janine;Doe", "Janine Doe");
 }

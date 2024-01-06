@@ -9,7 +9,13 @@ public class VarInsertLensTests : SymmetricLensTestingFramework<string, string>
     protected override string _right => "1234";
 
     protected override BaseSymmetricLens<string, string> _lens =>
-        VarInsertLens.Cons(@"\d+", "0000");
+        VarInsertLens.Cons(@"\d{4}", "0000");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
+        => ("", "0000", "1234", "");
+
+    protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithLeftSideUpdateData
+        => ("1234", "", "", "1234");
 
     [Fact]
     public void CreateRightDefault()
