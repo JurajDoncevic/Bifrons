@@ -29,23 +29,25 @@ public class ComposeLens : SymmetricStringLens
         (right, left) =>
             left
             ? _rhsLens.PutLeft(right, left)
-                .Bind(l => _lhsLens.PutLeft(left.Value.Replace(_rhsLens.LeftRegex.Match(right).Value, l), left))
+                .Bind(midRes => _lhsLens.PutLeft(midRes, left.Map(l => _rhsLens.RightRegex.Match(l).Value)))
+                .Map(res => _rhsLens.RightRegex.Replace(left.Value, res))
             : CreateLeft(right);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
         (left, right) =>
             right
             ? _lhsLens.PutRight(left, right)
-                .Bind(r => _rhsLens.PutRight(right.Value.Replace(_lhsLens.RightRegex.Match(left).Value, r), right))
+                .Bind(midRes => _rhsLens.PutRight(midRes, right.Map(r => _lhsLens.LeftRegex.Match(r).Value)))
+                .Map(res => _lhsLens.LeftRegex.Replace(right.Value, res))
             : CreateRight(left);
 
     public override Func<string, Result<string>> CreateRight =>
         left => _lhsLens.CreateRight(left)
-                        .Bind(l => _rhsLens.CreateRight(l));
+                        .Bind(midRes => _rhsLens.CreateRight(midRes));
 
     public override Func<string, Result<string>> CreateLeft =>
         right => _rhsLens.CreateLeft(right)
-                        .Bind(r => _lhsLens.CreateLeft(r));
+                        .Bind(midRes => _lhsLens.CreateLeft(midRes));
 
     /// <summary>
     /// Constructs a sequentially composed lens.
