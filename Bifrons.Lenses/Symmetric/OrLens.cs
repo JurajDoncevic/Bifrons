@@ -22,30 +22,30 @@ public sealed class OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget>
 
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     public override Func<Either<TLeftTarget, TRightTarget>, Option<Either<TLeftSource, TRightSource>>, Result<Either<TLeftSource, TRightSource>>> PutLeft =>
-        (updatedRight, originalLeft) =>
-            updatedRight.Map(
-                leftLensRight => _lhsLens.PutLeft(leftLensRight, originalLeft.Map(l => l.Left)),
-                rightLensRight => _rhsLens.PutLeft(rightLensRight, originalLeft.Map(r => r.Right))
+        (updatedSource, originalTarget) =>
+            updatedSource.Map(
+                leftLensRight => _lhsLens.PutLeft(leftLensRight, originalTarget.Map(l => l.Left)),
+                rightLensRight => _rhsLens.PutLeft(rightLensRight, originalTarget.Map(r => r.Right))
             ).Unfold();
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     public override Func<Either<TLeftSource, TRightSource>, Option<Either<TLeftTarget, TRightTarget>>, Result<Either<TLeftTarget, TRightTarget>>> PutRight =>
-        (updatedLeft, originalRight) =>
-            updatedLeft.Map(
-                leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalRight.Map(l => l.Left)),
-                rightLensLeft => _rhsLens.PutRight(rightLensLeft, originalRight.Map(r => r.Right))
+        (updatedSource, originalTarget) =>
+            updatedSource.Map(
+                leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalTarget.Map(l => l.Left)),
+                rightLensLeft => _rhsLens.PutRight(rightLensLeft, originalTarget.Map(r => r.Right))
             ).Unfold();
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
     public override Func<Either<TLeftSource, TRightSource>, Result<Either<TLeftTarget, TRightTarget>>> CreateRight =>
-        left => left.Map(
+        source => source.Map(
             leftLensLeft => _lhsLens.CreateRight(leftLensLeft),
             rightLensLeft => _rhsLens.CreateRight(rightLensLeft)
         ).Unfold();
 
     public override Func<Either<TLeftTarget, TRightTarget>, Result<Either<TLeftSource, TRightSource>>> CreateLeft =>
-        right => right.Map(
+        source => source.Map(
             leftLensRight => _lhsLens.CreateLeft(leftLensRight),
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)
         ).Unfold();

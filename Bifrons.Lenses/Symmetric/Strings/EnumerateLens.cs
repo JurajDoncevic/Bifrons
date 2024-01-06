@@ -23,18 +23,18 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
     }
 
     public override Func<IEnumerable<string>, Option<string>, Result<string>> PutLeft =>
-        (updatedRight, originalLeft) =>
+        (updatedSource, originalTarget) =>
         {
-            if (!originalLeft)
+            if (!originalTarget)
             {
-                return CreateLeft(updatedRight);
+                return CreateLeft(updatedSource);
             }
 
-            var leftElements = originalLeft.Match(
+            var leftElements = originalTarget.Match(
                 left => _separatorRegex.Split(left).AsEnumerable(),
                 () => Enumerable.Empty<string>()
             );
-            var results = updatedRight.Mapi((idx, right) => _itemLens.PutLeft(right, leftElements.ElementAtOrDefault((int)idx) ?? Option.None<string>()))
+            var results = updatedSource.Mapi((idx, right) => _itemLens.PutLeft(right, leftElements.ElementAtOrDefault((int)idx) ?? Option.None<string>()))
                 .Unfold()
                 .Map(rs => string.Join(_separatorRegex.ToString(), rs));
 
@@ -42,16 +42,16 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
         };
 
     public override Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutRight =>
-        (updatedLeft, originalRight) =>
+        (updatedSource, originalTarget) =>
         {
-            if (!originalRight)
+            if (!originalTarget)
             {
-                return CreateRight(updatedLeft);
+                return CreateRight(updatedSource);
             }
-            var updatedItems = _separatorRegex.Split(updatedLeft).AsEnumerable();
-            var originalItems = originalRight.Match(
+            var updatedItems = _separatorRegex.Split(updatedSource).AsEnumerable();
+            var originalItems = originalTarget.Match(
                 items => items,
-                () => _separatorRegex.Split(updatedLeft).AsEnumerable()
+                () => _separatorRegex.Split(updatedSource).AsEnumerable()
             );
 
             var results = updatedItems.Mapi((idx, item) =>
@@ -64,9 +64,9 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
         };
 
     public override Func<string, Result<IEnumerable<string>>> CreateRight =>
-        left =>
+        source =>
         {
-            var items = _separatorRegex.Split(left).AsEnumerable();
+            var items = _separatorRegex.Split(source).AsEnumerable();
             var results = items.Map(_itemLens.CreateRight)
                 .Unfold();
 
@@ -75,9 +75,9 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
         };
 
     public override Func<IEnumerable<string>, Result<string>> CreateLeft =>
-        right =>
+        source =>
         {
-            var result = right.Map(_itemLens.CreateLeft)
+            var result = source.Map(_itemLens.CreateLeft)
                 .Unfold()
                 .Map(rs => string.Join(_separatorRegex.ToString(), rs));
 

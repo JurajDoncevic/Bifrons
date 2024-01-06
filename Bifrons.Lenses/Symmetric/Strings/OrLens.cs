@@ -33,27 +33,27 @@ public sealed class OrLens
     }
 
     public override Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
-        (updatedRight, originalLeft) =>
-            updatedRight.Map(
-                leftLensRight => _lhsLens.PutLeft(leftLensRight, originalLeft.Map(l => l.Left)),
-                rightLensRight => _rhsLens.PutLeft(rightLensRight, originalLeft.Map(r => r.Right))
+        (updatedSource, originalTarget) =>
+            updatedSource.Map(
+                leftLensRight => _lhsLens.PutLeft(leftLensRight, originalTarget.Map(l => l.Left)),
+                rightLensRight => _rhsLens.PutLeft(rightLensRight, originalTarget.Map(r => r.Right))
             ).Unfold();
 
     public override Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutRight =>
-        (updatedLeft, originalRight) =>
-            updatedLeft.Map(
-                leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalRight.Map(l => l.Left)),
-                rightLensLeft => _rhsLens.PutRight(rightLensLeft, originalRight.Map(r => r.Right))
+        (updatedSource, originalTarget) =>
+            updatedSource.Map(
+                leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalTarget.Map(l => l.Left)),
+                rightLensLeft => _rhsLens.PutRight(rightLensLeft, originalTarget.Map(r => r.Right))
             ).Unfold();
 
     public override Func<Either<string, string>, Result<Either<string, string>>> CreateRight =>
-        left => left.Map(
+        source => source.Map(
             leftLensLeft => _lhsLens.CreateRight(leftLensLeft),
             rightLensLeft => _rhsLens.CreateRight(rightLensLeft)
         ).Unfold();
 
     public override Func<Either<string, string>, Result<Either<string, string>>> CreateLeft =>
-        right => right.Map(
+        source => source.Map(
             leftLensRight => _lhsLens.CreateLeft(leftLensRight),
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)
         ).Unfold();

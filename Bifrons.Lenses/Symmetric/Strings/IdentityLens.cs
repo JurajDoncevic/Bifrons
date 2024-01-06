@@ -23,16 +23,16 @@ public sealed class IdentityLens : SymmetricStringLens
     }
 
     public override Func<string, Option<string>, Result<string>> PutLeft =>
-        (right, _) => Results.OnSuccess(_identityRegex.Match(right).Value);
+        (updatedSource, _) => Results.OnSuccess(_identityRegex.Match(updatedSource).Value);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
-        (left, _) => Results.OnSuccess(_identityRegex.Match(left).Value);
+        (updatedSource, _) => Results.OnSuccess(_identityRegex.Match(updatedSource).Value);
 
     public override Func<string, Result<string>> CreateRight =>
-        left => Results.OnSuccess(_identityRegex.Match(left).Value);
+        source => Results.OnSuccess(_identityRegex.Match(source).Value);
 
     public override Func<string, Result<string>> CreateLeft =>
-        right => Results.OnSuccess(_identityRegex.Match(right).Value);
+        source => Results.OnSuccess(_identityRegex.Match(source).Value);
 
     /// <summary>
     /// Constructs an identity lens.

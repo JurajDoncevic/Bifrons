@@ -12,9 +12,9 @@ public class MergeLeft : BaseSymmetricLens<string, Either<string, string>>
     }
 
     public override Func<Either<string, string>, Option<string>, Result<string>> PutLeft =>
-        (either, originalSource) => either.Match(
-            left => _stringLens.PutLeft(left, originalSource),
-            right => _stringLens.PutLeft(right, originalSource)
+        (updatedSource, originalTarget) => updatedSource.Match(
+            left => _stringLens.PutLeft(left, originalTarget),
+            right => _stringLens.PutLeft(right, originalTarget)
             );
 
     public override Func<string, Option<Either<string, string>>, Result<Either<string, string>>> PutRight =>
@@ -24,7 +24,7 @@ public class MergeLeft : BaseSymmetricLens<string, Either<string, string>>
         _ => Results.OnException<Either<string, string>>(new NotImplementedException());
 
     public override Func<Either<string, string>, Result<string>> CreateLeft =>
-        either => either.Match(
+        source => source.Match(
             left => _stringLens.CreateLeft(left),
             right => _stringLens.CreateLeft(right)
             );

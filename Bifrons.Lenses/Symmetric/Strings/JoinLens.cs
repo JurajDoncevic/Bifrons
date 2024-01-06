@@ -21,12 +21,12 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
     }
 
     public override Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutLeft =>
-        (updatedLeft, originalRight) =>
+        (updatedSource, originalTarget) =>
         {
-            var updatedItems = _separatorRegex.Split(updatedLeft).AsEnumerable();
-            var originalItems = originalRight.Match(
+            var updatedItems = _separatorRegex.Split(updatedSource).AsEnumerable();
+            var originalItems = originalTarget.Match(
                 items => items,
-                () => _separatorRegex.Split(updatedLeft).AsEnumerable()
+                () => _separatorRegex.Split(updatedSource).AsEnumerable()
             );
             var results = updatedItems.Mapi((idx, item) =>
             {
@@ -39,13 +39,13 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
 
 
     public override Func<IEnumerable<string>, Option<string>, Result<string>> PutRight =>
-        (updatedRight, originalLeft) =>
+        (updatedSource, originalTarget) =>
         {
-            var leftElements = originalLeft.Match(
-                left => _separatorRegex.Split(left).AsEnumerable(),
+            var sourceElements = originalTarget.Match(
+                source => _separatorRegex.Split(source).AsEnumerable(),
                 () => Enumerable.Empty<string>()
             );
-            var results = updatedRight.Mapi((idx, right) => _itemLens.PutLeft(right, leftElements.ElementAtOrDefault((int)idx) ?? Option.None<string>()))
+            var results = updatedSource.Mapi((idx, right) => _itemLens.PutLeft(right, sourceElements.ElementAtOrDefault((int)idx) ?? Option.None<string>()))
                 .Unfold()
                 .Map(rs => string.Join(_separatorRegex.ToString(), rs));
 
@@ -53,9 +53,9 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
         };
 
     public override Func<IEnumerable<string>, Result<string>> CreateRight =>
-        left =>
+        source =>
         {
-            var result = left.Map(_itemLens.CreateLeft)
+            var result = source.Map(_itemLens.CreateLeft)
                 .Unfold()
                 .Map(rs => string.Join(_separatorRegex.ToString(), rs));
 
@@ -63,9 +63,9 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
         };
 
     public override Func<string, Result<IEnumerable<string>>> CreateLeft =>
-        right =>
+        source =>
         {
-            var items = _separatorRegex.Split(right).AsEnumerable();
+            var items = _separatorRegex.Split(source).AsEnumerable();
             var results = items.Map(_itemLens.CreateRight)
                 .Unfold();
 

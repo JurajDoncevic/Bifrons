@@ -15,13 +15,13 @@ public class MergeRight : BaseSymmetricLens<Either<string, string>, string>
         (_, _) => Results.OnException<Either<string, string>>(new NotImplementedException());
 
     public override Func<Either<string, string>, Option<string>, Result<string>> PutRight =>
-        (either, originalSource) => either.Match(
-            left => _stringLens.PutRight(left, originalSource),
-            right => _stringLens.PutRight(right, originalSource)
+        (updatedSource, originalTarget) => updatedSource.Match(
+            left => _stringLens.PutRight(left, originalTarget),
+            right => _stringLens.PutRight(right, originalTarget)
             );
 
     public override Func<Either<string, string>, Result<string>> CreateRight =>
-        either => either.Match(
+        source => source.Match(
             left => _stringLens.CreateRight(left),
             right => _stringLens.CreateRight(right)
             );

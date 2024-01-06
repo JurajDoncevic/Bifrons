@@ -26,27 +26,27 @@ public class ComposeLens : SymmetricStringLens
     }
 
     public override Func<string, Option<string>, Result<string>> PutLeft =>
-        (right, left) =>
-            left
-            ? _rhsLens.PutLeft(right, left)
-                .Bind(midRes => _lhsLens.PutLeft(midRes, left.Map(l => _rhsLens.RightRegex.Match(l).Value)))
-                .Map(res => _rhsLens.RightRegex.Replace(left.Value, res))
-            : CreateLeft(right);
+        (updatedSource, originalTarget) =>
+            originalTarget
+            ? _rhsLens.PutLeft(updatedSource, originalTarget)
+                .Bind(midRes => _lhsLens.PutLeft(midRes, originalTarget.Map(l => _rhsLens.RightRegex.Match(l).Value)))
+                .Map(res => _rhsLens.RightRegex.Replace(originalTarget.Value, res))
+            : CreateLeft(updatedSource);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
-        (left, right) =>
-            right
-            ? _lhsLens.PutRight(left, right)
-                .Bind(midRes => _rhsLens.PutRight(midRes, right.Map(r => _lhsLens.LeftRegex.Match(r).Value)))
-                .Map(res => _lhsLens.LeftRegex.Replace(right.Value, res))
-            : CreateRight(left);
+        (updatedSource, originalTarget) =>
+            originalTarget
+            ? _lhsLens.PutRight(updatedSource, originalTarget)
+                .Bind(midRes => _rhsLens.PutRight(midRes, originalTarget.Map(r => _lhsLens.LeftRegex.Match(r).Value)))
+                .Map(res => _lhsLens.LeftRegex.Replace(originalTarget.Value, res))
+            : CreateRight(updatedSource);
 
     public override Func<string, Result<string>> CreateRight =>
-        left => _lhsLens.CreateRight(left)
+        source => _lhsLens.CreateRight(source)
                         .Bind(midRes => _rhsLens.CreateRight(midRes));
 
     public override Func<string, Result<string>> CreateLeft =>
-        right => _rhsLens.CreateLeft(right)
+        source => _rhsLens.CreateLeft(source)
                         .Bind(midRes => _lhsLens.CreateLeft(midRes));
 
     /// <summary>

@@ -21,19 +21,19 @@ public class ComposeLens<TLeft, TMid, TRight> : BaseSymmetricLens<TLeft, TRight>
 
 #pragma warning disable CS8714 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
     public override Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft =>
-        (right, left) => _rhsLens.PutLeft(right, left.Bind(l => _lhsLens.CreateRight(l).ToOption()))
-                            .Bind(l => _lhsLens.PutLeft(l, left));
+        (updatedSource, originalTarget) => _rhsLens.PutLeft(updatedSource, originalTarget.Bind(l => _lhsLens.CreateRight(l).ToOption()))
+                            .Bind(l => _lhsLens.PutLeft(l, originalTarget));
 
     public override Func<TLeft, Option<TRight>, Result<TRight>> PutRight =>
-        (left, right) => _lhsLens.PutRight(left, right.Bind(r => _rhsLens.CreateLeft(r).ToOption()))
-                            .Bind(r => _rhsLens.PutRight(r, right));
+        (updatedSource, originalTarget) => _lhsLens.PutRight(updatedSource, originalTarget.Bind(r => _rhsLens.CreateLeft(r).ToOption()))
+                            .Bind(r => _rhsLens.PutRight(r, originalTarget));
 #pragma warning restore CS8714 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
     public override Func<TLeft, Result<TRight>> CreateRight =>
-        left => _lhsLens.CreateRight(left)
+        source => _lhsLens.CreateRight(source)
                         .Bind(_rhsLens.CreateRight);
 
     public override Func<TRight, Result<TLeft>> CreateLeft =>
-        right => _rhsLens.CreateLeft(right)
+        source => _rhsLens.CreateLeft(source)
                         .Bind(_lhsLens.CreateLeft);
 }
 
