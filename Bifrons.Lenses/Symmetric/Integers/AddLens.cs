@@ -16,7 +16,7 @@ public sealed class AddLens : SymmetricIntegerLens
         (updatedSource, _) => Results.OnSuccess(updatedSource + _addValue);
 
     public override Func<int, Result<int>> CreateRight => 
-        source => Results.OnSuccess(_addValue + source);
+        source => Results.OnSuccess(source + _addValue);
 
     public override Func<int, Result<int>> CreateLeft => 
         source => Results.OnSuccess(source - _addValue);
