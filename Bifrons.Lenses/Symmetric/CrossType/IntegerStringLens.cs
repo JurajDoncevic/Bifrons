@@ -53,8 +53,6 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
 
 public sealed class StringIntegerLens : InvertLens<string, int>
 {
-    private readonly Regex _numberRegex = new(@"-?\d+");
-
     private StringIntegerLens() : base(IntegerStringLens.Cons())
     {
     }
