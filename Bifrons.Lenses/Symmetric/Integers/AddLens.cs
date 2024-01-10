@@ -1,10 +1,10 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Integers;
 
-public sealed class AddLens : SymmetricIntegerLens
+public class AddLens : SymmetricIntegerLens
 {
     private readonly int _addValue;
 
-    private AddLens(int addValue)
+    protected AddLens(int addValue)
     {
         _addValue = addValue;
     }
