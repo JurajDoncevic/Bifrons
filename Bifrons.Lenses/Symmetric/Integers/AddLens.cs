@@ -18,16 +18,16 @@ public class AddLens : SymmetricIntegerLens
     }
 
     public override Func<int, Option<int>, Result<int>> PutLeft => 
-        (updatedSource, _) => Results.Success(updatedSource - _addValue);
+        (updatedSource, _) => Result.Success(updatedSource - _addValue);
 
     public override Func<int, Option<int>, Result<int>> PutRight => 
-        (updatedSource, _) => Results.Success(updatedSource + _addValue);
+        (updatedSource, _) => Result.Success(updatedSource + _addValue);
 
     public override Func<int, Result<int>> CreateRight => 
-        source => Results.Success(source + _addValue);
+        source => Result.Success(source + _addValue);
 
     public override Func<int, Result<int>> CreateLeft => 
-        source => Results.Success(source - _addValue);
+        source => Result.Success(source - _addValue);
 
     /// <summary>
     /// Constructs an addition lens

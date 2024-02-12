@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Base;
 
-public static class Results
+public static class Result
 {
     #region LIFTING
     /// <summary>
@@ -122,9 +122,9 @@ public static class Results
     /// <returns></returns>
     public static Result<R> Map<T, R>(this Result<T> result, Func<T, R> map)
         => result.Match(
-            onSuccess: data => Results.Success(map(data)),
-            onFailure: message => Results.Failure<R>(message),
-            onException: exception => Results.Exception<R>(exception)
+            onSuccess: data => Result.Success(map(data)),
+            onFailure: message => Result.Failure<R>(message),
+            onException: exception => Result.Exception<R>(exception)
         );
 
     /// <summary>
@@ -153,8 +153,8 @@ public static class Results
     public static Result<R> Bind<T, R>(this Result<T> result, Func<T, Result<R>> bind)
         => result.Match(
             onSuccess: data => bind(data),
-            onFailure: message => Results.Failure<R>(message),
-            onException: exception => Results.Exception<R>(exception)
+            onFailure: message => Result.Failure<R>(message),
+            onException: exception => Result.Exception<R>(exception)
         );
 
     /// <summary>
@@ -202,23 +202,23 @@ public static class Results
         }
 
         if (exceptions.Count > 0)
-            return Results.Exception<IEnumerable<T>>(new AggregateException(exceptions), string.Join("\n", messages));
+            return Result.Exception<IEnumerable<T>>(new AggregateException(exceptions), string.Join("\n", messages));
         if (messages.Count > 0)
-            return Results.Failure<IEnumerable<T>>(string.Join("\n", messages));
-        return Results.Success<IEnumerable<T>>(data);
+            return Result.Failure<IEnumerable<T>>(string.Join("\n", messages));
+        return Result.Success<IEnumerable<T>>(data);
     }
 
     public static Result<Either<TLeft, TRight>> Unfold<TLeft, TRight>(this Either<Result<TLeft>, Result<TRight>> target)
         => target.Match(
             left => left.Match(
-                value => Results.Success(Either.Left<TLeft, TRight>(value)),
-                _ => Results.Failure<Either<TLeft, TRight>>("Left result is a failure"),
-                ex => Results.Exception<Either<TLeft, TRight>>(ex, "Left result is an exception:")
+                value => Result.Success(Either.Left<TLeft, TRight>(value)),
+                _ => Result.Failure<Either<TLeft, TRight>>("Left result is a failure"),
+                ex => Result.Exception<Either<TLeft, TRight>>(ex, "Left result is an exception:")
             ),
             right => right.Match(
-                value => Results.Success(Either.Right<TLeft, TRight>(value)),
-                _ => Results.Failure<Either<TLeft, TRight>>("Right result is a failure"),
-                ex => Results.Exception<Either<TLeft, TRight>>(ex, "Right result is an exception")
+                value => Result.Success(Either.Right<TLeft, TRight>(value)),
+                _ => Result.Failure<Either<TLeft, TRight>>("Right result is a failure"),
+                ex => Result.Exception<Either<TLeft, TRight>>(ex, "Right result is an exception")
             )
         );
 }

@@ -18,10 +18,10 @@ public class MergeLeft : BaseSymmetricLens<string, Either<string, string>>
             );
 
     public override Func<string, Option<Either<string, string>>, Result<Either<string, string>>> PutRight =>
-        (_, _) => Results.Exception<Either<string, string>>(new NotImplementedException());
+        (_, _) => Result.Exception<Either<string, string>>(new NotImplementedException());
 
     public override Func<string, Result<Either<string, string>>> CreateRight =>
-        _ => Results.Exception<Either<string, string>>(new NotImplementedException());
+        _ => Result.Exception<Either<string, string>>(new NotImplementedException());
 
     public override Func<Either<string, string>, Result<string>> CreateLeft =>
         source => source.Match(
