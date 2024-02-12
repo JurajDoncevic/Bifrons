@@ -12,7 +12,7 @@ public class MergeRight : BaseSymmetricLens<Either<string, string>, string>
     }
 
     public override Func<string, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
-        (_, _) => Results.OnException<Either<string, string>>(new NotImplementedException());
+        (_, _) => Results.Exception<Either<string, string>>(new NotImplementedException());
 
     public override Func<Either<string, string>, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) => updatedSource.Match(
@@ -27,7 +27,7 @@ public class MergeRight : BaseSymmetricLens<Either<string, string>, string>
             );
 
     public override Func<string, Result<Either<string, string>>> CreateLeft =>
-        _ => Results.OnException<Either<string, string>>(new NotImplementedException());
+        _ => Results.Exception<Either<string, string>>(new NotImplementedException());
 
     public static MergeRight Cons(OrLens orLens, SymmetricStringLens stringLens)
         => new MergeRight(orLens, stringLens);

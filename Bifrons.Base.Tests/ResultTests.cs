@@ -5,7 +5,7 @@ public class ResultTests
     [Fact]
     public void CreateSuccess_WithObject()
     {
-        var result = Results.OnSuccess("Hello");
+        var result = Results.Success("Hello");
         Assert.True(result.IsSuccess);
         Assert.Equal("Hello", result.Data);
     }
@@ -14,7 +14,7 @@ public class ResultTests
     public void CreateSuccess_WithValue()
     {
         int x = 42;
-        var result = Results.OnSuccess(x);
+        var result = Results.Success(x);
         Assert.True(result.IsSuccess);
         Assert.Equal(x, result.Data);
     }
@@ -24,7 +24,7 @@ public class ResultTests
     public void CreateFailure_WithValue()
     {
         var failureMessage = "Failure";
-        var result = Results.OnFailure<int>(failureMessage);
+        var result = Results.Failure<int>(failureMessage);
         Assert.False(result.IsSuccess);
         Assert.Equal(failureMessage, result.Message);
     }
@@ -33,7 +33,7 @@ public class ResultTests
     public void CreateFailure_WithObject()
     {
         var failureMessage = "Failure";
-        var result = Results.OnFailure<object>(failureMessage);
+        var result = Results.Failure<object>(failureMessage);
         Assert.False(result.IsSuccess);
         Assert.Equal(failureMessage, result.Message);
     }
@@ -42,7 +42,7 @@ public class ResultTests
     public void CreateException_WithValue()
     {
         var exception = new Exception("Failure");
-        var result = Results.OnException<int>(exception);
+        var result = Results.Exception<int>(exception);
         Assert.False(result.IsSuccess);
         Assert.Equal(exception, result.Exception);
     }
@@ -51,7 +51,7 @@ public class ResultTests
     public void CreateException_WithObject()
     {
         var exception = new Exception("Failure");
-        var result = Results.OnException<object>(exception);
+        var result = Results.Exception<object>(exception);
         Assert.False(result.IsSuccess);
         Assert.Equal(exception, result.Exception);
     }
@@ -59,7 +59,7 @@ public class ResultTests
     [Fact]
     public void CreateSuccess_WithNull_AsFailure()
     {
-        var result = Results.OnSuccess<string>(null!);
+        var result = Results.Success<string>(null!);
         Assert.False(result.IsSuccess);
         Assert.Null(result.Data);
     }
@@ -68,7 +68,7 @@ public class ResultTests
     public void MapSuccess_WithObject()
     {
         var x = "Hello";
-        var result = Results.OnSuccess(x);
+        var result = Results.Success(x);
         var mapped = result.Map(s => s.Length);
         Assert.True(mapped.IsSuccess);
         Assert.Equal(x.Length, mapped.Data);
@@ -78,7 +78,7 @@ public class ResultTests
     public void MapSuccess_ToFailure_WithNullObject()
     {
         var x = "Hello";
-        var result = Results.OnSuccess(x);
+        var result = Results.Success(x);
         var mapped = result
             .Map(s => s + "\n")
             .Map(i => (string)null!);
@@ -89,10 +89,10 @@ public class ResultTests
     public void BindSuccess_WithObject()
     {
         var x = "Hello";
-        var result = Results.OnSuccess(x);
+        var result = Results.Success(x);
         var binded = result
-            .Bind(s => Results.OnSuccess(s + " "))
-            .Bind(s => Results.OnSuccess(s + "World"));
+            .Bind(s => Results.Success(s + " "))
+            .Bind(s => Results.Success(s + "World"));
 
         Assert.True(binded.IsSuccess);
         Assert.Equal("Hello World", binded.Data);
@@ -102,10 +102,10 @@ public class ResultTests
     public void BindSuccess_WithFailure()
     {
         var x = "Hello";
-        var result = Results.OnSuccess(x);
+        var result = Results.Success(x);
         var binded = result
-            .Bind(s => Results.OnFailure<string>("Failure"))
-            .Bind(s => Results.OnSuccess(s + "World"));
+            .Bind(s => Results.Failure<string>("Failure"))
+            .Bind(s => Results.Success(s + "World"));
 
         Assert.False(binded.IsSuccess);
     }
@@ -124,7 +124,7 @@ public class ResultTests
         var result = Results.AsResult<string>(
             () =>
             {
-                return Results.OnFailure<string>("Failure");
+                return Results.Failure<string>("Failure");
                 #pragma warning disable CS0162
                 return "Hello";
                 #pragma warning restore CS0162

@@ -30,19 +30,19 @@ public class DisconnectLens : SymmetricStringLens
     }
     public override Func<string, Option<string>, Result<string>> PutLeft =>
         (updatedSource, originalTarget) => originalTarget
-            ? Results.OnSuccess(_leftRegex.Match(originalTarget.Value).Value)
+            ? Results.Success(_leftRegex.Match(originalTarget.Value).Value)
             : CreateLeft(updatedSource);
 
     public override Func<string, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) => originalTarget
-            ? Results.OnSuccess(_rightRegex.Match(originalTarget.Value).Value)
+            ? Results.Success(_rightRegex.Match(originalTarget.Value).Value)
             : CreateRight(updatedSource);
 
     public override Func<string, Result<string>> CreateRight =>
-        source => Results.OnSuccess(_rightDefault);
+        source => Results.Success(_rightDefault);
 
     public override Func<string, Result<string>> CreateLeft =>
-        source => Results.OnSuccess(_leftDefault);
+        source => Results.Success(_leftDefault);
 
     /// <summary>
     /// Constructs a DisconnectLens.

@@ -22,9 +22,9 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
             var match = _numberRegex.Match(updatedSource);
             if (!match.Success)
             {
-                return Results.OnFailure<int>("No integer found in string");
+                return Results.Failure<int>("No integer found in string");
             }
-            return Results.OnSuccess(int.Parse(match.Value));
+            return Results.Success(int.Parse(match.Value));
         };
 
     public override Func<int, Option<string>, Result<string>> PutRight =>
@@ -41,7 +41,7 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
         };
 
     public override Func<int, Result<string>> CreateRight =>
-        source => Results.OnSuccess(source.ToString());
+        source => Results.Success(source.ToString());
 
     public override Func<string, Result<int>> CreateLeft =>
         source =>
@@ -49,9 +49,9 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
             var match = _numberRegex.Match(source);
             if (!match.Success)
             {
-                return Results.OnFailure<int>("No integer found in string");
+                return Results.Failure<int>("No integer found in string");
             }
-            return Results.OnSuccess(int.Parse(match.Value));
+            return Results.Success(int.Parse(match.Value));
         };
     
     /// <summary>

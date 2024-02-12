@@ -84,8 +84,8 @@ public readonly struct Result<TData>
     /// <param name="data"></param>
     public static implicit operator Result<TData>(TData data)
         => data != null
-            ? Results.OnSuccess(data)
-            : Results.OnFailure<TData>();
+            ? Results.Success(data)
+            : Results.Failure<TData>();
 
     public override readonly bool Equals(object? obj)
     {

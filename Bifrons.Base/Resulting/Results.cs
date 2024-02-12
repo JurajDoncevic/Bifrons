@@ -10,7 +10,7 @@ public static class Results
     /// <param name="data">Result data</param>
     /// <param name="message">Outcome message</param>
     /// <returns></returns>
-    public static Result<TData> OnSuccess<TData>(TData? data, string message = "Operation successful")
+    public static Result<TData> Success<TData>(TData? data, string message = "Operation successful")
         => new(data, ResultTypes.SUCCESS, message, null);
 
     /// <summary>
@@ -19,7 +19,7 @@ public static class Results
     /// <typeparam name="TData"></typeparam>
     /// <param name="message">Outcome message</param>
     /// <returns></returns>
-    public static Result<TData> OnFailure<TData>(string? message = null)
+    public static Result<TData> Failure<TData>(string? message = null)
         => new(default, ResultTypes.FAILURE, message); // default give null for ref types
 
     /// <summary>
@@ -29,7 +29,7 @@ public static class Results
     /// <param name="exception">The thrown exception</param>
     /// <param name="message">Outcome message</param>
     /// <returns></returns>
-    public static Result<TData> OnException<TData>(Exception exception, string? message = null)
+    public static Result<TData> Exception<TData>(Exception exception, string? message = null)
     {
         exception ??= new Exception("Unknown exception");
         return new Result<TData>(default, ResultTypes.EXCEPTION, message, exception);
@@ -49,7 +49,7 @@ public static class Results
         }
         catch (Exception e)
         {
-            return OnException<T>(e);
+            return Exception<T>(e);
         }
     }
 
@@ -67,7 +67,7 @@ public static class Results
         }
         catch (Exception e)
         {
-            return OnException<T>(e);
+            return Exception<T>(e);
         }
     }
 
@@ -85,7 +85,7 @@ public static class Results
     /// <param name="onFailure"></param>
     /// <param name="onException"></param>
     /// <returns></returns>
-    /// <exception cref="Exception">Only if an unknown result type appears</exception>
+    /// <exception cref="System.Exception">Only if an unknown result type appears</exception>
     public static R Match<T, R>(this Result<T> result, Func<T, R> onSuccess, Func<string, R> onFailure, Func<Exception, R>? onException = null)
         => result.ResultType switch
         {
@@ -105,7 +105,7 @@ public static class Results
     /// <param name="onFailure"></param>
     /// <param name="onException"></param>
     /// <returns></returns>
-    /// <exception cref="Exception">Only if an unknown result type appears</exception>
+    /// <exception cref="System.Exception">Only if an unknown result type appears</exception>
     public static async Task<R> Match<T, R>(this Task<Result<T>> result, Func<T, R> onSuccess, Func<string, R> onFailure, Func<Exception, R>? onException = null)
         => await result.ContinueWith(t => t.Result.Match(onSuccess, onFailure, onException));
 
@@ -122,9 +122,9 @@ public static class Results
     /// <returns></returns>
     public static Result<R> Map<T, R>(this Result<T> result, Func<T, R> map)
         => result.Match(
-            onSuccess: data => Results.OnSuccess(map(data)),
-            onFailure: message => Results.OnFailure<R>(message),
-            onException: exception => Results.OnException<R>(exception)
+            onSuccess: data => Results.Success(map(data)),
+            onFailure: message => Results.Failure<R>(message),
+            onException: exception => Results.Exception<R>(exception)
         );
 
     /// <summary>
@@ -153,8 +153,8 @@ public static class Results
     public static Result<R> Bind<T, R>(this Result<T> result, Func<T, Result<R>> bind)
         => result.Match(
             onSuccess: data => bind(data),
-            onFailure: message => Results.OnFailure<R>(message),
-            onException: exception => Results.OnException<R>(exception)
+            onFailure: message => Results.Failure<R>(message),
+            onException: exception => Results.Exception<R>(exception)
         );
 
     /// <summary>
@@ -202,23 +202,23 @@ public static class Results
         }
 
         if (exceptions.Count > 0)
-            return Results.OnException<IEnumerable<T>>(new AggregateException(exceptions), string.Join("\n", messages));
+            return Results.Exception<IEnumerable<T>>(new AggregateException(exceptions), string.Join("\n", messages));
         if (messages.Count > 0)
-            return Results.OnFailure<IEnumerable<T>>(string.Join("\n", messages));
-        return Results.OnSuccess<IEnumerable<T>>(data);
+            return Results.Failure<IEnumerable<T>>(string.Join("\n", messages));
+        return Results.Success<IEnumerable<T>>(data);
     }
 
     public static Result<Either<TLeft, TRight>> Unfold<TLeft, TRight>(this Either<Result<TLeft>, Result<TRight>> target)
         => target.Match(
             left => left.Match(
-                value => Results.OnSuccess(Either.Left<TLeft, TRight>(value)),
-                _ => Results.OnFailure<Either<TLeft, TRight>>("Left result is a failure"),
-                ex => Results.OnException<Either<TLeft, TRight>>(ex, "Left result is an exception:")
+                value => Results.Success(Either.Left<TLeft, TRight>(value)),
+                _ => Results.Failure<Either<TLeft, TRight>>("Left result is a failure"),
+                ex => Results.Exception<Either<TLeft, TRight>>(ex, "Left result is an exception:")
             ),
             right => right.Match(
-                value => Results.OnSuccess(Either.Right<TLeft, TRight>(value)),
-                _ => Results.OnFailure<Either<TLeft, TRight>>("Right result is a failure"),
-                ex => Results.OnException<Either<TLeft, TRight>>(ex, "Right result is an exception")
+                value => Results.Success(Either.Right<TLeft, TRight>(value)),
+                _ => Results.Failure<Either<TLeft, TRight>>("Right result is a failure"),
+                ex => Results.Exception<Either<TLeft, TRight>>(ex, "Right result is an exception")
             )
         );
 }
