@@ -1,5 +1,8 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Integers;
 
+/// <summary>
+/// Describes an identity lens. The identity lens propagates integer data.
+/// <c>id()</c>
 public sealed class IdentityLens : SymmetricIntegerLens
 {
     public override Func<int, Option<int>, Result<int>> PutLeft => 
@@ -14,5 +17,8 @@ public sealed class IdentityLens : SymmetricIntegerLens
     public override Func<int, Result<int>> CreateLeft => 
         source => source;
 
+    /// <summary>
+    /// Constructs an identity lens.
+    /// </summary>
     public static IdentityLens Cons() => new();
 }
