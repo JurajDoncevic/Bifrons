@@ -1,4 +1,5 @@
 ﻿
+using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.Symmetric.DateTimes;
 using Bifrons.Lenses.Symmetric.Decimals;
 using Bifrons.Lenses.Symmetric.Integers;
@@ -7,20 +8,20 @@ using Bifrons.Lenses.Symmetric.Strings;
 namespace Bifrons.Lenses.Symmetric.Relational;
 
 public class ColumnLens<T>
-    : BaseSymmetricLens<T, T>
+    : BaseSymmetricLens<Column<T>, Column<T>>
     where T : notnull
 {
     private readonly string _columnName;
 
     private readonly BaseSymmetricLens<T, T> _dataLens;
 
-    public override Func<T, Option<T>, Result<T>> PutLeft => throw new NotImplementedException();
+    public override Func<Column<T>, Option<Column<T>>, Result<Column<T>>> PutLeft => throw new NotImplementedException();
 
-    public override Func<T, Option<T>, Result<T>> PutRight => throw new NotImplementedException();
+    public override Func<Column<T>, Option<Column<T>>, Result<Column<T>>> PutRight => throw new NotImplementedException();
 
-    public override Func<T, Result<T>> CreateRight => throw new NotImplementedException();
+    public override Func<Column<T>, Result<Column<T>>> CreateRight => throw new NotImplementedException();
 
-    public override Func<T, Result<T>> CreateLeft => throw new NotImplementedException();
+    public override Func<Column<T>, Result<Column<T>>> CreateLeft => throw new NotImplementedException();
 
     private ColumnLens(string columnName, BaseSymmetricLens<T, T> dataLens)
     {
@@ -38,7 +39,7 @@ public class ColumnLens<T>
 
     public static ColumnLens<string> ConsOnString(string columnName)
         => new(columnName, Strings.IdentityLens.Cons(".*"));
-    
+
     public static ColumnLens<int> Cons(string columnName, SymmetricIntegerLens dataLens)
         => new(columnName, dataLens);
 
