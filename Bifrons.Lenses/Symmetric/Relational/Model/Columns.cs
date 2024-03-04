@@ -1,4 +1,4 @@
-﻿using Bifrons.Lenses.Relational.Model;
+﻿using Bifrons.Lenses.Symmetric.Relational.Model;
 
 namespace Bifrons.Lenses;
 

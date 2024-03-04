@@ -1,4 +1,4 @@
-﻿namespace Bifrons.Lenses.Relational.Model;
+﻿namespace Bifrons.Lenses.Symmetric.Relational.Model;
 
 public enum DataTypes
 {
