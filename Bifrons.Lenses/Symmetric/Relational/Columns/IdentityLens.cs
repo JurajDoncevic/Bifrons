@@ -8,29 +8,27 @@ using Bifrons.Lenses.Symmetric.Strings;
 namespace Bifrons.Lenses.Symmetric.Relational.Columns
 ;
 
-public sealed class IdentityLens<TSrc, TDest> : SymmetricColumnLens<TSrc, TDest>
+public sealed class IdentityLens<TSrc, TTgt> : SymmetricColumnLens
 {
     private readonly string _columnName;
 
-    private readonly BaseSymmetricLens<TSrc, TDest> _dataLens;
+    private readonly BaseSymmetricLens<TSrc, TTgt> _dataLens;
 
-    public override Func<Column<TDest>, Option<Column<TSrc>>, Result<Column<TSrc>>> PutLeft => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Option<Column<TDest>>, Result<Column<TDest>>> PutRight => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Result<Column<TDest>>> CreateRight => throw new NotImplementedException();
-
-    public override Func<Column<TDest>, Result<Column<TSrc>>> CreateLeft => throw new NotImplementedException();
-
-    private IdentityLens(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
+    private IdentityLens(string columnName, BaseSymmetricLens<TSrc, TTgt> dataLens)
     {
         _columnName = columnName;
         _dataLens = dataLens;
     }
 
+    public override Func<Column, Option<Column>, Result<Column>> PutLeft => throw new NotImplementedException();
 
+    public override Func<Column, Option<Column>, Result<Column>> PutRight => throw new NotImplementedException();
 
-    public static IdentityLens<TSrc, TDest> Cons(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
+    public override Func<Column, Result<Column>> CreateRight => throw new NotImplementedException();
+
+    public override Func<Column, Result<Column>> CreateLeft => throw new NotImplementedException();
+
+    public static IdentityLens<TSrc, TTgt> Cons(string columnName, BaseSymmetricLens<TSrc, TTgt> dataLens)
         => new(columnName, dataLens);
 
     public static IdentityLens<string, string> Cons(string columnName, SymmetricStringLens dataLens)

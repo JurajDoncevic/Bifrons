@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public abstract class SymmetricColumnLens<TSrc, TDest> : BaseSymmetricLens<Column<TSrc>, Column<TDest>>
+public abstract class SymmetricColumnLens : BaseSymmetricLens<Column, Column>
 {
 }
 

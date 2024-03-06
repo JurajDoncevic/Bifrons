@@ -1,46 +1,26 @@
-﻿using Bifrons.Lenses.Symmetric.DateTimes;
-using Bifrons.Lenses.Symmetric.Decimals;
-using Bifrons.Lenses.Symmetric.Integers;
-using Bifrons.Lenses.Symmetric.Relational.Model;
-using Bifrons.Lenses.Symmetric.Strings;
+﻿using Bifrons.Lenses.Symmetric.Relational.Model;
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class DeleteLens<TSrc, TDest> : SymmetricColumnLens<TSrc, TDest>
+public sealed class DeleteLens : SymmetricColumnLens
 {
     private readonly string _columnName;
 
-    private readonly BaseSymmetricLens<TSrc, TDest> _dataLens;
-
-    public override Func<Column<TDest>, Option<Column<TSrc>>, Result<Column<TSrc>>> PutLeft => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Option<Column<TDest>>, Result<Column<TDest>>> PutRight => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Result<Column<TDest>>> CreateRight => throw new NotImplementedException();
-
-    public override Func<Column<TDest>, Result<Column<TSrc>>> CreateLeft => throw new NotImplementedException();
-
-    private DeleteLens(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
+    private DeleteLens(string columnName)
     {
         _columnName = columnName;
-        _dataLens = dataLens;
     }
 
-    public static DeleteLens<TSrc, TDest> Cons(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Option<Column>, Result<Column>> PutLeft => throw new NotImplementedException();
 
-    public static DeleteLens<string, string> Cons(string columnName, SymmetricStringLens dataLens)
-        => new(columnName, dataLens);
-    
-    public static DeleteLens<int, int> Cons(string columnName, SymmetricIntegerLens dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Option<Column>, Result<Column>> PutRight => throw new NotImplementedException();
 
-    public static DeleteLens<double, double> Cons(string columnName, SymmetricDecimalLens dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Result<Column>> CreateRight => throw new NotImplementedException();
 
-    public static DeleteLens<DateTime, DateTime> Cons(string columnName, SymmetricDateTimeLens dataLens)
-        => new(columnName, dataLens);
-    
+    public override Func<Column, Result<Column>> CreateLeft => throw new NotImplementedException();
+
+    public static DeleteLens Cons(string columnName)
+        => new(columnName);
 
 }
 

@@ -6,40 +6,25 @@ using Bifrons.Lenses.Symmetric.Strings;
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class InsertLens<TSrc, TDest> : SymmetricColumnLens<TSrc, TDest>
+public sealed class InsertLens : SymmetricColumnLens
 {
     private readonly string _columnName;
 
-    private readonly BaseSymmetricLens<TSrc, TDest> _dataLens;
-
-    public override Func<Column<TDest>, Option<Column<TSrc>>, Result<Column<TSrc>>> PutLeft => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Option<Column<TDest>>, Result<Column<TDest>>> PutRight => throw new NotImplementedException();
-
-    public override Func<Column<TSrc>, Result<Column<TDest>>> CreateRight => throw new NotImplementedException();
-
-    public override Func<Column<TDest>, Result<Column<TSrc>>> CreateLeft => throw new NotImplementedException();
-
-    private InsertLens(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
+    private InsertLens(string columnName)
     {
         _columnName = columnName;
-        _dataLens = dataLens;
     }
 
-    public static InsertLens<TSrc, TDest> Cons(string columnName, BaseSymmetricLens<TSrc, TDest> dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Option<Column>, Result<Column>> PutLeft => throw new NotImplementedException();
 
-    public static InsertLens<string, string> Cons(string columnName, SymmetricStringLens dataLens)
-        => new(columnName, dataLens);
-    
-    public static InsertLens<int, int> Cons(string columnName, SymmetricIntegerLens dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Option<Column>, Result<Column>> PutRight => throw new NotImplementedException();
 
-    public static InsertLens<double, double> Cons(string columnName, SymmetricDecimalLens dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Result<Column>> CreateRight => throw new NotImplementedException();
 
-    public static InsertLens<DateTime, DateTime> Cons(string columnName, SymmetricDateTimeLens dataLens)
-        => new(columnName, dataLens);
+    public override Func<Column, Result<Column>> CreateLeft => throw new NotImplementedException();
+
+    public static InsertLens Cons(string columnName)
+        => new(columnName);
     
     
 

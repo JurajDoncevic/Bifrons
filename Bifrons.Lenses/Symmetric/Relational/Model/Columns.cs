@@ -2,30 +2,30 @@
 
 namespace Bifrons.Lenses;
 
-public sealed class IntegerColumn : Column<int>
+public sealed class IntegerColumn : Column
 {
-    public IntegerColumn(string name, int data) : base(name, DataTypes.INT, data)
+    public IntegerColumn(string name) : base(name, DataTypes.INT)
     {
     }
 }
 
-public sealed class DecimalColumn : Column<decimal>
+public sealed class DecimalColumn : Column
 {
-    public DecimalColumn(string name, decimal data) : base(name, DataTypes.DECIMAL, data)
+    public DecimalColumn(string name) : base(name, DataTypes.DECIMAL)
     {
     }
 }
 
-public sealed class StringColumn : Column<string>
+public sealed class StringColumn : Column
 {
-    public StringColumn(string name, string data) : base(name, DataTypes.STRING, data)
+    public StringColumn(string name) : base(name, DataTypes.STRING)
     {
     }
 }
 
-public sealed class DateTimeColumn : Column<DateTime>
+public sealed class DateTimeColumn : Column
 {
-    public DateTimeColumn(string name, DateTime data) : base(name, DataTypes.DATETIME, data)
+    public DateTimeColumn(string name) : base(name, DataTypes.DATETIME)
     {
     }
 }
