@@ -20,9 +20,9 @@ public abstract class Column
         return dataType switch
         {
             DataTypes.STRING => typeof(string),
-            DataTypes.INT => typeof(int),
+            DataTypes.INTEGER => typeof(int),
             DataTypes.DECIMAL => typeof(double),
-            //DataTypes.BOOL => typeof(bool),
+            DataTypes.BOOLEAN => typeof(bool),
             DataTypes.DATETIME => typeof(DateTime),
             _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType, null)
         };
@@ -33,9 +33,9 @@ public abstract class Column
         return type switch
         {
             Type t when t == typeof(string) => DataTypes.STRING,
-            Type t when t == typeof(int) => DataTypes.INT,
+            Type t when t == typeof(int) => DataTypes.INTEGER,
             Type t when t == typeof(double) => DataTypes.DECIMAL,
-            //Type t when t == typeof(bool) => DataTypes.BOOL,
+            Type t when t == typeof(bool) => DataTypes.BOOLEAN,
             Type t when t == typeof(DateTime) => DataTypes.DATETIME,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };

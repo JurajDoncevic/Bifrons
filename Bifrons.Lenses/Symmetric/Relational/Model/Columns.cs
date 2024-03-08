@@ -4,7 +4,7 @@ namespace Bifrons.Lenses;
 
 public sealed class IntegerColumn : Column
 {
-    public IntegerColumn(string name) : base(name, DataTypes.INT)
+    public IntegerColumn(string name) : base(name, DataTypes.INTEGER)
     {
     }
 }
@@ -19,6 +19,13 @@ public sealed class DecimalColumn : Column
 public sealed class StringColumn : Column
 {
     public StringColumn(string name) : base(name, DataTypes.STRING)
+    {
+    }
+}
+
+public sealed class BooleanColumn : Column
+{
+    public BooleanColumn(string name) : base(name, DataTypes.BOOLEAN)
     {
     }
 }

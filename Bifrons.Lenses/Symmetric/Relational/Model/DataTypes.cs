@@ -2,8 +2,9 @@
 
 public enum DataTypes
 {
-    INT,
+    INTEGER,
     DECIMAL,
     STRING,
+    BOOLEAN,
     DATETIME,
 }
