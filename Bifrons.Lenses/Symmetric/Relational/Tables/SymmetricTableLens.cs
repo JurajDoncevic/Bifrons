@@ -1,6 +1,8 @@
-﻿namespace Bifrons.Lenses;
+﻿using Bifrons.Lenses.Symmetric.Relational.Model;
 
-public abstract class SymmetricTableLens
+namespace Bifrons.Lenses.Symmetric.Relational.Tables;
+
+public abstract class SymmetricTableLens : BaseSymmetricLens<Table, Table>
 {
 
 }
