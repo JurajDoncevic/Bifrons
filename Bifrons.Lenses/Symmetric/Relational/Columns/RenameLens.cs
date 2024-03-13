@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class RenameLens<TSrc, TTgt> : SymmetricColumnLens
+public sealed class RenameLens : SymmetricColumnLens
 {
     private readonly string _sourceColumnName;
     private readonly string _targetColumnName;
@@ -21,7 +21,7 @@ public sealed class RenameLens<TSrc, TTgt> : SymmetricColumnLens
 
     public override Func<Column, Result<Column>> CreateLeft => throw new NotImplementedException();
 
-    public static RenameLens<TSrc, TTgt> Cons(string sourceColumnName, string targetColumnName)
+    public static RenameLens Cons(string sourceColumnName, string targetColumnName)
         => new(sourceColumnName, targetColumnName);
     
 
