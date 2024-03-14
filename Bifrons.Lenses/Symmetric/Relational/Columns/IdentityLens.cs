@@ -12,13 +12,25 @@ public sealed class IdentityLens : SymmetricColumnLens
         _columnName = columnName;
     }
 
-    public override Func<Column, Option<Column>, Result<Column>> PutLeft => throw new NotImplementedException();
+    public override Func<Column, Option<Column>, Result<Column>> PutLeft => 
+        (updatedSource, originalTarget) => 
+            originalTarget.Match(
+                target => Result.Success(target),
+                () => Result.Success(Column.Cons(_columnName, updatedSource.DataType))
+                );
 
-    public override Func<Column, Option<Column>, Result<Column>> PutRight => throw new NotImplementedException();
+    public override Func<Column, Option<Column>, Result<Column>> PutRight => 
+        (updatedSource, originalTarget) => 
+            originalTarget.Match(
+                target => Result.Success(target),
+                () => Result.Success(Column.Cons(_columnName, updatedSource.DataType))
+                );
 
-    public override Func<Column, Result<Column>> CreateRight => throw new NotImplementedException();
+    public override Func<Column, Result<Column>> CreateRight => 
+        source => Result.Success(Column.Cons(_columnName, source.DataType));
 
-    public override Func<Column, Result<Column>> CreateLeft => throw new NotImplementedException();
+    public override Func<Column, Result<Column>> CreateLeft => 
+        source => Result.Success(Column.Cons(_columnName, source.DataType));
 
     public static IdentityLens Cons(string columnName)
         => new(columnName);

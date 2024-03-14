@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Relational.Model;
 
-public abstract class Column
+public class Column
 {
     protected readonly string _name;
     protected readonly DataTypes _dataType;
@@ -13,6 +13,11 @@ public abstract class Column
         _name = name;
         _dataType = dataType;
         _type = ToType(dataType);
+    }
+
+    public static Column Cons(string name, DataTypes dataType)
+    {
+        return new Column(name, dataType);
     }
 
     public static Type ToType(DataTypes dataType)
@@ -39,5 +44,14 @@ public abstract class Column
             Type t when t == typeof(DateTime) => DataTypes.DATETIME,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Column column)
+        {
+            return column._name == _name && column._dataType == _dataType;
+        }
+        return false;
     }
 }
