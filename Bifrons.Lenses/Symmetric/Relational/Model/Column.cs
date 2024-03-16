@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Relational.Model;
 
-public class Column
+public abstract class Column
 {
     protected readonly string _name;
     protected readonly DataTypes _dataType;
@@ -15,10 +15,16 @@ public class Column
         _type = ToType(dataType);
     }
 
-    public static Column Cons(string name, DataTypes dataType)
+    public static Column Cons(string name, DataTypes dataType) => dataType switch
     {
-        return new Column(name, dataType);
-    }
+        DataTypes.STRING => StringColumn.Cons(name),
+        DataTypes.INTEGER => IntegerColumn.Cons(name),
+        DataTypes.DECIMAL => DecimalColumn.Cons(name),
+        DataTypes.BOOLEAN => BooleanColumn.Cons(name),
+        DataTypes.DATETIME => DateTimeColumn.Cons(name),
+        DataTypes.UNIT => UnitColumn.Cons(name),
+        _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType, null)
+    };
 
     public static Type ToType(DataTypes dataType)
     {
@@ -53,5 +59,20 @@ public class Column
             return column._name == _name && column._dataType == _dataType;
         }
         return false;
+    }
+
+    public static bool operator ==(Column left, Column right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Column left, Column right)
+    {
+        return !(left == right);
+    }
+
+    public override int GetHashCode()
+    {
+        return _name.GetHashCode() ^ _dataType.GetHashCode();
     }
 }

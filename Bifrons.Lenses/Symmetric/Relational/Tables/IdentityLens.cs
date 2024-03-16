@@ -7,6 +7,9 @@ public sealed class IdentityLens : SymmetricTableLens
     private readonly string _tableName;
     private readonly List<SymmetricColumnLens> _symmetricColumnLenses;
 
+    public override string TargetTableName => _tableName;
+    public IReadOnlyList<SymmetricColumnLens> SymmetricColumnLenses => _symmetricColumnLenses;
+
     private IdentityLens(string tableName, IEnumerable<SymmetricColumnLens> symmetricColumnLenses)
     {
         _tableName = tableName;
@@ -21,9 +24,9 @@ public sealed class IdentityLens : SymmetricTableLens
 
     public override Func<Table, Result<Table>> CreateLeft => throw new NotImplementedException();
 
-    public static IdentityLens Cons(string tableName, IEnumerable<SymmetricColumnLens>? symmetricColumnLenses = null) 
+    public static IdentityLens Cons(string tableName, IEnumerable<SymmetricColumnLens>? symmetricColumnLenses = null)
         => new(tableName, symmetricColumnLenses ?? []);
 
-    public static IdentityLens Cons(string tableName, params SymmetricColumnLens[] symmetricColumnLenses) 
+    public static IdentityLens Cons(string tableName, params SymmetricColumnLens[] symmetricColumnLenses)
         => new(tableName, symmetricColumnLenses);
 }

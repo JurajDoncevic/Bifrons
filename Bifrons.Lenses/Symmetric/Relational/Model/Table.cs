@@ -9,9 +9,12 @@ public sealed class Table
 
     public IReadOnlyList<Column> Columns => _columns;
 
-    public Table(string name, List<Column>? columns = null)
+    private Table(string name, IEnumerable<Column> columns)
     {
         _name = name;
-        _columns = columns ?? new List<Column>();
+        _columns = columns.ToList();
     }
+
+    public static Table Cons(string name, IEnumerable<Column>? columns = null)
+        => new(name, columns ?? []);
 }

@@ -4,5 +4,6 @@ namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
 public abstract class SymmetricColumnLens : BaseSymmetricLens<Column, Column>
 {
+    public abstract string TargetColumnName { get; }
 }
 

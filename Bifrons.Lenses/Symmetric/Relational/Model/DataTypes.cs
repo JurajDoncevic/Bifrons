@@ -7,4 +7,5 @@ public enum DataTypes
     STRING,
     BOOLEAN,
     DATETIME,
+    UNIT
 }

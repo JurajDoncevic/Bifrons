@@ -2,37 +2,37 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class IdentityLens : SymmetricColumnLens
+public class DisconnectLens : SymmetricColumnLens
 {
+    private readonly Column _leftDefault;
+    private readonly Column _rightDefault;
     private readonly string _columnName;
 
     public override string TargetColumnName => _columnName;
 
-    private IdentityLens(string columnName)
+    protected DisconnectLens(string columnName, Column leftDefault, Column rightDefault)
     {
         _columnName = columnName;
+        _rightDefault = rightDefault;
+        _leftDefault = leftDefault;
     }
 
     public override Func<Column, Option<Column>, Result<Column>> PutLeft =>
         (updatedSource, originalTarget) =>
             originalTarget.Match(
                 target => Result.Success(target),
-                () => Result.Success(Column.Cons(_columnName, updatedSource.DataType))
-                );
+                () => CreateLeft(updatedSource)
+            );
 
     public override Func<Column, Option<Column>, Result<Column>> PutRight =>
         (updatedSource, originalTarget) =>
             originalTarget.Match(
                 target => Result.Success(target),
-                () => Result.Success(Column.Cons(_columnName, updatedSource.DataType))
-                );
-
+                () => CreateRight(updatedSource)
+            );
     public override Func<Column, Result<Column>> CreateRight =>
-        source => Result.Success(Column.Cons(_columnName, source.DataType));
+        source => Result.Success(_rightDefault);
 
     public override Func<Column, Result<Column>> CreateLeft =>
-        source => Result.Success(Column.Cons(_columnName, source.DataType));
-
-    public static IdentityLens Cons(string columnName)
-        => new(columnName);
+        source => Result.Success(_leftDefault);
 }
