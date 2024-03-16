@@ -1,7 +1,4 @@
-﻿using Bifrons.Lenses.Symmetric.Relational.Model;
-using Bifrons.Lenses.Symmetric.Relational.Columns;
-
-namespace Bifrons.Lenses.Symmetric.Relational.Model;
+﻿namespace Bifrons.Lenses.Symmetric.Relational.Model;
 
 public sealed class IntegerColumn : Column
 {
@@ -9,7 +6,7 @@ public sealed class IntegerColumn : Column
     {
     }
 
-    public static IntegerColumn Cons(string name) => new IntegerColumn(name);
+    public static IntegerColumn Cons(string name) => new(name);
 }
 
 public sealed class DecimalColumn : Column
@@ -18,7 +15,7 @@ public sealed class DecimalColumn : Column
     {
     }
 
-    public static DecimalColumn Cons(string name) => new DecimalColumn(name);
+    public static DecimalColumn Cons(string name) => new(name);
 }
 
 public sealed class StringColumn : Column
@@ -27,7 +24,7 @@ public sealed class StringColumn : Column
     {
     }
 
-    public static StringColumn Cons(string name) => new StringColumn(name);
+    public static StringColumn Cons(string name) => new(name);
 }
 
 public sealed class BooleanColumn : Column
@@ -36,7 +33,7 @@ public sealed class BooleanColumn : Column
     {
     }
 
-    public static BooleanColumn Cons(string name) => new BooleanColumn(name);
+    public static BooleanColumn Cons(string name) => new(name);
 }
 
 public sealed class DateTimeColumn : Column
@@ -45,7 +42,7 @@ public sealed class DateTimeColumn : Column
     {
     }
 
-    public static DateTimeColumn Cons(string name) => new DateTimeColumn(name);
+    public static DateTimeColumn Cons(string name) => new(name);
 }
 
 /// <summary>
@@ -57,5 +54,5 @@ public sealed class UnitColumn : Column
     {
     }
 
-    public static UnitColumn Cons(string name) => new UnitColumn(name);
+    public static UnitColumn Cons(string name) => new(name);
 }

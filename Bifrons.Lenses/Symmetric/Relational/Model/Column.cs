@@ -35,6 +35,7 @@ public abstract class Column
             DataTypes.DECIMAL => typeof(double),
             DataTypes.BOOLEAN => typeof(bool),
             DataTypes.DATETIME => typeof(DateTime),
+            DataTypes.UNIT => typeof(Unit),
             _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType, null)
         };
     }
@@ -48,6 +49,7 @@ public abstract class Column
             Type t when t == typeof(double) => DataTypes.DECIMAL,
             Type t when t == typeof(bool) => DataTypes.BOOLEAN,
             Type t when t == typeof(DateTime) => DataTypes.DATETIME,
+            Type t when t == typeof(Unit) => DataTypes.UNIT,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
