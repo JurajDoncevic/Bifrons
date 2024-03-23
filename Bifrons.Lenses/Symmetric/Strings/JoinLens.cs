@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Lens that joins a list of strings into a single string, and vice-versa.
 /// <c>join(R, L), L : IEnumerable&lt;string&gt; <=> string, join: IEnumerable <=> string</c>
 /// </summary>
-public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
+public class JoinLens : ISimpleSymmetricLens<IEnumerable<string>, string>
 {
     private readonly Regex _separatorRegex;
     private readonly SymmetricStringLens _itemLens;
@@ -20,7 +20,7 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
         _itemLens = itemLens;
     }
 
-    public override Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutLeft =>
+    public Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutLeft =>
         (updatedSource, originalTarget) =>
         {
             var updatedItems = _separatorRegex.Split(updatedSource).AsEnumerable();
@@ -38,7 +38,7 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
         };
 
 
-    public override Func<IEnumerable<string>, Option<string>, Result<string>> PutRight =>
+    public Func<IEnumerable<string>, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) =>
         {
             var sourceElements = originalTarget.Match(
@@ -52,7 +52,7 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
             return results;
         };
 
-    public override Func<IEnumerable<string>, Result<string>> CreateRight =>
+    public Func<IEnumerable<string>, Result<string>> CreateRight =>
         source =>
         {
             var result = source.Map(_itemLens.CreateLeft)
@@ -62,7 +62,7 @@ public class JoinLens : BaseSymmetricLens<IEnumerable<string>, string>
             return result;
         };
 
-    public override Func<string, Result<IEnumerable<string>>> CreateLeft =>
+    public Func<string, Result<IEnumerable<string>>> CreateLeft =>
         source =>
         {
             var items = _separatorRegex.Split(source).AsEnumerable();

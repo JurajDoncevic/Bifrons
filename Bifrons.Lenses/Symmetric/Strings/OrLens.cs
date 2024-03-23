@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Describes a lens union combinator.
 /// </summary>
 public sealed class OrLens
-    : BaseSymmetricLens<Either<string, string>, Either<string, string>>
+    : ISimpleSymmetricLens<Either<string, string>, Either<string, string>>
 {
     private readonly SymmetricStringLens _lhsLens;
     private readonly SymmetricStringLens _rhsLens;
@@ -32,27 +32,27 @@ public sealed class OrLens
         _rhsLens = rhsLens;
     }
 
-    public override Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
+    public Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
         (updatedSource, originalTarget) =>
             updatedSource.Map(
                 leftLensRight => _lhsLens.PutLeft(leftLensRight, originalTarget.Map(l => l.Left)),
                 rightLensRight => _rhsLens.PutLeft(rightLensRight, originalTarget.Map(r => r.Right))
             ).Unfold();
 
-    public override Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutRight =>
+    public Func<Either<string, string>, Option<Either<string, string>>, Result<Either<string, string>>> PutRight =>
         (updatedSource, originalTarget) =>
             updatedSource.Map(
                 leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalTarget.Map(l => l.Left)),
                 rightLensLeft => _rhsLens.PutRight(rightLensLeft, originalTarget.Map(r => r.Right))
             ).Unfold();
 
-    public override Func<Either<string, string>, Result<Either<string, string>>> CreateRight =>
+    public Func<Either<string, string>, Result<Either<string, string>>> CreateRight =>
         source => source.Map(
             leftLensLeft => _lhsLens.CreateRight(leftLensLeft),
             rightLensLeft => _rhsLens.CreateRight(rightLensLeft)
         ).Unfold();
 
-    public override Func<Either<string, string>, Result<Either<string, string>>> CreateLeft =>
+    public Func<Either<string, string>, Result<Either<string, string>>> CreateLeft =>
         source => source.Map(
             leftLensRight => _lhsLens.CreateLeft(leftLensRight),
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)

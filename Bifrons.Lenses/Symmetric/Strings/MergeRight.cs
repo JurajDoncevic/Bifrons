@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Strings;
 
-public class MergeRight : BaseSymmetricLens<Either<string, string>, string>
+public class MergeRight : ISimpleSymmetricLens<Either<string, string>, string>
 {
     private readonly OrLens _orLens;
     private readonly SymmetricStringLens _stringLens;
@@ -11,22 +11,22 @@ public class MergeRight : BaseSymmetricLens<Either<string, string>, string>
         _stringLens = stringLens;
     }
 
-    public override Func<string, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
+    public Func<string, Option<Either<string, string>>, Result<Either<string, string>>> PutLeft =>
         (_, _) => Result.Exception<Either<string, string>>(new NotImplementedException());
 
-    public override Func<Either<string, string>, Option<string>, Result<string>> PutRight =>
+    public Func<Either<string, string>, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) => updatedSource.Match(
             left => _stringLens.PutRight(left, originalTarget),
             right => _stringLens.PutRight(right, originalTarget)
             );
 
-    public override Func<Either<string, string>, Result<string>> CreateRight =>
+    public Func<Either<string, string>, Result<string>> CreateRight =>
         source => source.Match(
             left => _stringLens.CreateRight(left),
             right => _stringLens.CreateRight(right)
             );
 
-    public override Func<string, Result<Either<string, string>>> CreateLeft =>
+    public Func<string, Result<Either<string, string>>> CreateLeft =>
         _ => Result.Exception<Either<string, string>>(new NotImplementedException());
 
     public static MergeRight Cons(OrLens orLens, SymmetricStringLens stringLens)

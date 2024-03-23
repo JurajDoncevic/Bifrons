@@ -89,7 +89,7 @@ public static class Combinators
     /// Concatenates two simple symmetric string lenses to a anonymous <c>SymmetricLens</c>. Lens regexes have to take into account the preceding lens regexes of the concat.
     /// e.g. <c>id(\w+) | id((?!\w+\s)\w+)</c> is a valid lens, but <c>id(\w+) | id(\w+)</c> is not.
     /// </summary>
-    public static BaseSymmetricLens<string, string> ConcatAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+    public static ISimpleSymmetricLens<string, string> ConcatAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
     {
         Func<string, Result<string>> createLeft = originalLeft =>
         {
@@ -189,7 +189,7 @@ public static class Combinators
     /// </summary>
     /// <param name="separatorRegexString">String for separator regex</param>
     /// <param name="itemLens">Item lens to be applied on each item</param>
-    public static BaseSymmetricLens<string, IEnumerable<string>> IterateAnon(string separatorRegexString, SymmetricStringLens itemLens)
+    public static ISimpleSymmetricLens<string, IEnumerable<string>> IterateAnon(string separatorRegexString, SymmetricStringLens itemLens)
     {
         System.Text.RegularExpressions.Regex separatorRegex = new System.Text.RegularExpressions.Regex(separatorRegexString);
 
@@ -258,7 +258,7 @@ public static class Combinators
     /// Inverts a simple symmetric string lens to a anonymous <c>SymmetricLens</c>.
     /// </summary> 
     /// <param name="originalLens">The original lens to invert</param>
-    public static BaseSymmetricLens<string, string> InvertAnon(SymmetricStringLens originalLens)
+    public static ISimpleSymmetricLens<string, string> InvertAnon(SymmetricStringLens originalLens)
     {
         Func<string, Result<string>> createLeft = originalLeft =>
         {
@@ -352,7 +352,7 @@ public static class Combinators
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    public static BaseSymmetricLens<string, string> ComposeAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
+    public static ISimpleSymmetricLens<string, string> ComposeAnon(SymmetricStringLens lhsLens, SymmetricStringLens rhsLens)
     {
         Func<string, Result<string>> createLeft = originalLeft =>
         {

@@ -5,7 +5,7 @@ namespace Bifrons.Lenses.Symmetric.CrossType;
 /// <summary>
 /// Describes an integer-string lens that tranforms integers to strings and vice versa.
 /// IntStr : int <=> string
-public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
+public sealed class IntegerStringLens : ISimpleSymmetricLens<int, string>
 {
     private readonly Regex _numberRegex = new(@"-?\d+");
 
@@ -16,7 +16,7 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
     {
     }
 
-    public override Func<string, Option<int>, Result<int>> PutLeft =>
+    public Func<string, Option<int>, Result<int>> PutLeft =>
         (updatedSource, _) =>
         {
             var match = _numberRegex.Match(updatedSource);
@@ -27,7 +27,7 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
             return Result.Success(int.Parse(match.Value));
         };
 
-    public override Func<int, Option<string>, Result<string>> PutRight =>
+    public Func<int, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) =>
         {
             if (!originalTarget)
@@ -40,10 +40,10 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
             return Result.AsResult<string>(() => _numberRegex.Replace(originalTarget.Value, updatedSourceString, 1));
         };
 
-    public override Func<int, Result<string>> CreateRight =>
+    public Func<int, Result<string>> CreateRight =>
         source => Result.Success(source.ToString());
 
-    public override Func<string, Result<int>> CreateLeft =>
+    public Func<string, Result<int>> CreateLeft =>
         source =>
         {
             var match = _numberRegex.Match(source);
@@ -53,7 +53,7 @@ public sealed class IntegerStringLens : BaseSymmetricLens<int, string>
             }
             return Result.Success(int.Parse(match.Value));
         };
-    
+
     /// <summary>
     /// Constructs an integer-string lens
     /// </summary>

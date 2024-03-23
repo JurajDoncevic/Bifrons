@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// A simple symmetric string lens that iterates over a string and applies a lens to each item.
 /// <c>enumerate(R, L), L : string <=> string, enumerate: string <=> IEnumerable</c>
 /// </summary>
-public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
+public class EnumerateLens : ISimpleSymmetricLens<string, IEnumerable<string>>
 {
     private readonly Regex _separatorRegex;
     private readonly SymmetricStringLens _itemLens;
@@ -22,7 +22,7 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
         _itemLens = itemLens;
     }
 
-    public override Func<IEnumerable<string>, Option<string>, Result<string>> PutLeft =>
+    public Func<IEnumerable<string>, Option<string>, Result<string>> PutLeft =>
         (updatedSource, originalTarget) =>
         {
             if (!originalTarget)
@@ -41,7 +41,7 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
             return results;
         };
 
-    public override Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutRight =>
+    public Func<string, Option<IEnumerable<string>>, Result<IEnumerable<string>>> PutRight =>
         (updatedSource, originalTarget) =>
         {
             if (!originalTarget)
@@ -63,7 +63,7 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
             return results;
         };
 
-    public override Func<string, Result<IEnumerable<string>>> CreateRight =>
+    public Func<string, Result<IEnumerable<string>>> CreateRight =>
         source =>
         {
             var items = _separatorRegex.Split(source).AsEnumerable();
@@ -74,7 +74,7 @@ public class EnumerateLens : BaseSymmetricLens<string, IEnumerable<string>>
 
         };
 
-    public override Func<IEnumerable<string>, Result<string>> CreateLeft =>
+    public Func<IEnumerable<string>, Result<string>> CreateLeft =>
         source =>
         {
             var result = source.Map(_itemLens.CreateLeft)

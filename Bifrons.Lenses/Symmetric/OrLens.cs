@@ -4,24 +4,24 @@
 /// Describes a lens union combinator.
 /// </summary>
 public sealed class OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget>
-    : BaseSymmetricLens<Either<TLeftSource, TRightSource>, Either<TLeftTarget, TRightTarget>>
+    : ISimpleSymmetricLens<Either<TLeftSource, TRightSource>, Either<TLeftTarget, TRightTarget>>
 {
-    private readonly BaseSymmetricLens<TLeftSource, TLeftTarget> _lhsLens;
-    private readonly BaseSymmetricLens<TRightSource, TRightTarget> _rhsLens;
+    private readonly ISimpleSymmetricLens<TLeftSource, TLeftTarget> _lhsLens;
+    private readonly ISimpleSymmetricLens<TRightSource, TRightTarget> _rhsLens;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="lhsLens">Left-hand side lens operand</param>
     /// <param name="rhsLens">Right-hand side lens operand</param>
-    internal OrLens(BaseSymmetricLens<TLeftSource, TLeftTarget> lhsLens, BaseSymmetricLens<TRightSource, TRightTarget> rhsLens)
+    internal OrLens(ISimpleSymmetricLens<TLeftSource, TLeftTarget> lhsLens, ISimpleSymmetricLens<TRightSource, TRightTarget> rhsLens)
     {
         _lhsLens = lhsLens;
         _rhsLens = rhsLens;
     }
 
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-    public override Func<Either<TLeftTarget, TRightTarget>, Option<Either<TLeftSource, TRightSource>>, Result<Either<TLeftSource, TRightSource>>> PutLeft =>
+    public Func<Either<TLeftTarget, TRightTarget>, Option<Either<TLeftSource, TRightSource>>, Result<Either<TLeftSource, TRightSource>>> PutLeft =>
         (updatedSource, originalTarget) =>
             updatedSource.Map(
                 leftLensRight => _lhsLens.PutLeft(leftLensRight, originalTarget.Map(l => l.Left)),
@@ -30,7 +30,7 @@ public sealed class OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget>
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-    public override Func<Either<TLeftSource, TRightSource>, Option<Either<TLeftTarget, TRightTarget>>, Result<Either<TLeftTarget, TRightTarget>>> PutRight =>
+    public Func<Either<TLeftSource, TRightSource>, Option<Either<TLeftTarget, TRightTarget>>, Result<Either<TLeftTarget, TRightTarget>>> PutRight =>
         (updatedSource, originalTarget) =>
             updatedSource.Map(
                 leftLensLeft => _lhsLens.PutRight(leftLensLeft, originalTarget.Map(l => l.Left)),
@@ -38,13 +38,13 @@ public sealed class OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget>
             ).Unfold();
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
-    public override Func<Either<TLeftSource, TRightSource>, Result<Either<TLeftTarget, TRightTarget>>> CreateRight =>
+    public Func<Either<TLeftSource, TRightSource>, Result<Either<TLeftTarget, TRightTarget>>> CreateRight =>
         source => source.Map(
             leftLensLeft => _lhsLens.CreateRight(leftLensLeft),
             rightLensLeft => _rhsLens.CreateRight(rightLensLeft)
         ).Unfold();
 
-    public override Func<Either<TLeftTarget, TRightTarget>, Result<Either<TLeftSource, TRightSource>>> CreateLeft =>
+    public Func<Either<TLeftTarget, TRightTarget>, Result<Either<TLeftSource, TRightSource>>> CreateLeft =>
         source => source.Map(
             leftLensRight => _lhsLens.CreateLeft(leftLensRight),
             rightLensRight => _rhsLens.CreateLeft(rightLensRight)
@@ -62,7 +62,7 @@ public static class OrLens
     /// <param name="leftLens">Left-hand side lens operand</param>
     /// <param name="rightLens">Right-hand side lens operand</param>
     public static OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget> Cons<TLeftSource, TRightSource, TLeftTarget, TRightTarget>(
-        BaseSymmetricLens<TLeftSource, TLeftTarget> leftLens,
-        BaseSymmetricLens<TRightSource, TRightTarget> rightLens)
+        ISimpleSymmetricLens<TLeftSource, TLeftTarget> leftLens,
+        ISimpleSymmetricLens<TRightSource, TRightTarget> rightLens)
         => new(leftLens, rightLens);
 }

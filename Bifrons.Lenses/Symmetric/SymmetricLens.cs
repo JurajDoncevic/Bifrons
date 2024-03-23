@@ -8,7 +8,7 @@ public static class SymmetricLens
     /// <summary>
     /// Constructs an anonymous simple symmetric lens from the given functions
     /// </summary>
-    public static BaseSymmetricLens<TLeft, TRight> Cons<TLeft, TRight>(
+    public static ISimpleSymmetricLens<TLeft, TRight> Cons<TLeft, TRight>(
         Func<TRight, Option<TLeft>, Result<TLeft>> putLeft,
         Func<TLeft, Option<TRight>, Result<TRight>> putRight,
         Func<TLeft, Result<TRight>> createRight,
@@ -21,7 +21,7 @@ public static class SymmetricLens
 /// </summary>
 /// <typeparam name="TLeft"></typeparam>
 /// <typeparam name="TRight"></typeparam>
-public sealed class SymmetricLens<TLeft, TRight> : BaseSymmetricLens<TLeft, TRight>
+public sealed class SymmetricLens<TLeft, TRight> : ISimpleSymmetricLens<TLeft, TRight>
 {
     private Func<TRight, Option<TLeft>, Result<TLeft>> putLeft;
     private Func<TLeft, Option<TRight>, Result<TRight>> putRight;
@@ -43,11 +43,11 @@ public sealed class SymmetricLens<TLeft, TRight> : BaseSymmetricLens<TLeft, TRig
         this.createLeft = createLeft;
     }
 
-    public override Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft => putLeft;
+    public Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft => putLeft;
 
-    public override Func<TLeft, Option<TRight>, Result<TRight>> PutRight => putRight;
+    public Func<TLeft, Option<TRight>, Result<TRight>> PutRight => putRight;
 
-    public override Func<TLeft, Result<TRight>> CreateRight => createRight;
+    public Func<TLeft, Result<TRight>> CreateRight => createRight;
 
-    public override Func<TRight, Result<TLeft>> CreateLeft => createLeft;
+    public Func<TRight, Result<TLeft>> CreateLeft => createLeft;
 }

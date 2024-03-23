@@ -8,7 +8,7 @@ public class IterateLensTests : SymmetricLensTestingFramework<string, string>
 
     protected override string _right => "John\nPaul\nAlice\nGeorge\nDicky\nStuart\nPete";
 
-    protected override BaseSymmetricLens<string, string> _lens =>
+    protected override ISimpleSymmetricLens<string, string> _lens =>
         IterateLens.Cons(
             "\n",
             IdentityLens.Cons(@"\w+")

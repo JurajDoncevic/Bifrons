@@ -11,7 +11,7 @@ public class DisconnectLensTests : SymmetricLensTestingFramework<string, string>
     private readonly string _salaryRegex = @"[1-9][0-9]*€";
     private readonly string _anythingRegex = @"";
 
-    protected override BaseSymmetricLens<string, string> _lens => DisconnectLens.Cons(_salaryRegex, _anythingRegex, "unk", "");
+    protected override ISimpleSymmetricLens<string, string> _lens => DisconnectLens.Cons(_salaryRegex, _anythingRegex, "unk", "");
 
     protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
         => ("15000€", "", "anything ", "15000€");

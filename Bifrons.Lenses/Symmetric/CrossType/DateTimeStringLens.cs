@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric;
 /// Describes a date-time-string lens that tranforms date-times to strings and vice versa.
 /// DateTimeStr : DateTime <=> string
 /// </summary>
-public sealed class DateTimeStringLens : BaseSymmetricLens<DateTime, string>
+public sealed class DateTimeStringLens : ISimpleSymmetricLens<DateTime, string>
 {
     private readonly Regex _dateTimeRegex;
 
@@ -19,7 +19,7 @@ public sealed class DateTimeStringLens : BaseSymmetricLens<DateTime, string>
         _dateTimeRegex = new Regex(dateTimeRegexString);
     }
 
-    public override Func<string, Option<DateTime>, Result<DateTime>> PutLeft => 
+    public Func<string, Option<DateTime>, Result<DateTime>> PutLeft =>
         (updatedSource, _) =>
         {
             var match = _dateTimeRegex.Match(updatedSource);
@@ -30,7 +30,7 @@ public sealed class DateTimeStringLens : BaseSymmetricLens<DateTime, string>
             return Result.Success(DateTime.Parse(match.Value));
         };
 
-    public override Func<DateTime, Option<string>, Result<string>> PutRight =>
+    public Func<DateTime, Option<string>, Result<string>> PutRight =>
         (updatedSource, originalTarget) =>
         {
             if (!originalTarget)
@@ -43,10 +43,10 @@ public sealed class DateTimeStringLens : BaseSymmetricLens<DateTime, string>
             return Result.AsResult<string>(() => _dateTimeRegex.Replace(originalTarget.Value, updatedSourceString, 1));
         };
 
-    public override Func<DateTime, Result<string>> CreateRight =>
+    public Func<DateTime, Result<string>> CreateRight =>
         source => Result.Success(source.ToString());
 
-    public override Func<string, Result<DateTime>> CreateLeft => 
+    public Func<string, Result<DateTime>> CreateLeft =>
         source =>
         {
             var match = _dateTimeRegex.Match(source);
@@ -61,7 +61,7 @@ public sealed class DateTimeStringLens : BaseSymmetricLens<DateTime, string>
     /// Constructs a date-time-string lens
     /// </summary>
     /// <param name="dateTimeRegexString">The regex string to use for date-time matching</param>
-    public static DateTimeStringLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}") 
+    public static DateTimeStringLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
         => new(dateTimeRegexString);
 }
 
@@ -83,6 +83,6 @@ public sealed class StringDateTimeLens : InvertLens<string, DateTime>
     /// Constructs a string-date-time lens
     /// </summary>
     /// <param name="dateTimeRegexString">The regex string to use for date-time matching</param>
-    public static StringDateTimeLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}") 
+    public static StringDateTimeLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
         => new(dateTimeRegexString);
 }

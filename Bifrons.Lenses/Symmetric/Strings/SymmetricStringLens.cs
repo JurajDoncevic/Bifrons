@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Abstract class describing a simple symmetric lens between two strings.
 /// <c>L : string <=> string</c>
 /// </summary>
-public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
+public abstract class SymmetricStringLens : ISimpleSymmetricLens<string, string>
 {
     /// <summary>
     /// Regex describing the strings on the left-hand side of the lens.
@@ -16,6 +16,11 @@ public abstract class SymmetricStringLens : BaseSymmetricLens<string, string>
     /// Regex describing the strings on the right-hand side of the lens.
     /// </summary>
     public abstract Regex RightRegex { get; }
+
+    public abstract Func<string, Option<string>, Result<string>> PutLeft { get; }
+    public abstract Func<string, Option<string>, Result<string>> PutRight { get; }
+    public abstract Func<string, Result<string>> CreateRight { get; }
+    public abstract Func<string, Result<string>> CreateLeft { get; }
 
     /// <summary>
     /// Concatenates two simple symmetric string lenses. Lens regexes have to take into account the preceding lens regexes.

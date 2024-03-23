@@ -71,7 +71,7 @@ public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricL
     protected abstract (TRight originalSource, TLeft expectedOriginalTarget, TLeft updatedTarget, TRight expectedUpdatedSource) _roundTripWithLeftSideUpdateData { get; }
 
 
-    protected abstract BaseSymmetricLens<TLeft, TRight> _lens { get; }
+    protected abstract ISimpleSymmetricLens<TLeft, TRight> _lens { get; }
 
     public override void CreatePutLRTest()
     {

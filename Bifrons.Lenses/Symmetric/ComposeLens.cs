@@ -3,36 +3,36 @@
 /// <summary>
 /// Composition of two symmetric lenses.
 /// </summary>
-public class ComposeLens<TLeft, TMid, TRight> : BaseSymmetricLens<TLeft, TRight>
+public class ComposeLens<TLeft, TMid, TRight> : ISimpleSymmetricLens<TLeft, TRight>
 {
-    private readonly BaseSymmetricLens<TLeft, TMid> _lhsLens;
-    private readonly BaseSymmetricLens<TMid, TRight> _rhsLens;
+    private readonly ISimpleSymmetricLens<TLeft, TMid> _lhsLens;
+    private readonly ISimpleSymmetricLens<TMid, TRight> _rhsLens;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    internal ComposeLens(BaseSymmetricLens<TLeft, TMid> lhsLens, BaseSymmetricLens<TMid, TRight> rhsLens)
+    internal ComposeLens(ISimpleSymmetricLens<TLeft, TMid> lhsLens, ISimpleSymmetricLens<TMid, TRight> rhsLens)
     {
         _lhsLens = lhsLens;
         _rhsLens = rhsLens;
     }
 
 #pragma warning disable CS8714 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-    public override Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft =>
+    public Func<TRight, Option<TLeft>, Result<TLeft>> PutLeft =>
         (updatedSource, originalTarget) => _rhsLens.PutLeft(updatedSource, originalTarget.Bind(l => _lhsLens.CreateRight(l).ToOption()))
                             .Bind(l => _lhsLens.PutLeft(l, originalTarget));
 
-    public override Func<TLeft, Option<TRight>, Result<TRight>> PutRight =>
+    public Func<TLeft, Option<TRight>, Result<TRight>> PutRight =>
         (updatedSource, originalTarget) => _lhsLens.PutRight(updatedSource, originalTarget.Bind(r => _rhsLens.CreateLeft(r).ToOption()))
                             .Bind(r => _rhsLens.PutRight(r, originalTarget));
 #pragma warning restore CS8714 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-    public override Func<TLeft, Result<TRight>> CreateRight =>
+    public Func<TLeft, Result<TRight>> CreateRight =>
         source => _lhsLens.CreateRight(source)
                         .Bind(_rhsLens.CreateRight);
 
-    public override Func<TRight, Result<TLeft>> CreateLeft =>
+    public Func<TRight, Result<TLeft>> CreateLeft =>
         source => _rhsLens.CreateLeft(source)
                         .Bind(_lhsLens.CreateLeft);
 }
@@ -47,6 +47,6 @@ public static class ComposeLens
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    public static BaseSymmetricLens<TLeft, TRight> Cons<TLeft, TMid, TRight>(this BaseSymmetricLens<TLeft, TMid> lhsLens, BaseSymmetricLens<TMid, TRight> rhsLens)
+    public static ISimpleSymmetricLens<TLeft, TRight> Cons<TLeft, TMid, TRight>(this ISimpleSymmetricLens<TLeft, TMid> lhsLens, ISimpleSymmetricLens<TMid, TRight> rhsLens)
         => new ComposeLens<TLeft, TMid, TRight>(lhsLens, rhsLens);
 }
