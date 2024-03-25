@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class RenameLens : SymmetricColumnLens
+public sealed class RenameLens : IdentityLens
 {
     private readonly string _sourceColumnName;
     private readonly string _targetColumnName;
@@ -10,7 +10,7 @@ public sealed class RenameLens : SymmetricColumnLens
     public string SourceColumnName => _sourceColumnName;
     public override string TargetColumnName => _targetColumnName;
 
-    private RenameLens(string sourceColumnName, string targetColumnName)
+    private RenameLens(string sourceColumnName, string targetColumnName) : base(sourceColumnName)
     {
         _sourceColumnName = sourceColumnName;
         _targetColumnName = targetColumnName;

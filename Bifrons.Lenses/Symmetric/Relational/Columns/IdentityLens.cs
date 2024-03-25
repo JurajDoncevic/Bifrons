@@ -2,13 +2,13 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public sealed class IdentityLens : SymmetricColumnLens
+public class IdentityLens : SymmetricColumnLens
 {
     private readonly string _columnName;
 
     public override string TargetColumnName => _columnName;
 
-    private IdentityLens(string columnName)
+    protected IdentityLens(string columnName)
     {
         _columnName = columnName;
     }
