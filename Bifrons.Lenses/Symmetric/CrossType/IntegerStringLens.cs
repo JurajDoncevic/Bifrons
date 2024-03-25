@@ -5,7 +5,7 @@ namespace Bifrons.Lenses.Symmetric.CrossType;
 /// <summary>
 /// Describes an integer-string lens that tranforms integers to strings and vice versa.
 /// IntStr : int <=> string
-public sealed class IntegerStringLens : ISimpleSymmetricLens<int, string>
+public sealed class IntegerStringLens : ISymmetricLens<int, string>
 {
     private readonly Regex _numberRegex = new(@"-?\d+");
 

@@ -3,17 +3,17 @@
 /// <summary>
 /// Composition of two symmetric lenses.
 /// </summary>
-public class ComposeLens<TLeft, TMid, TRight> : ISimpleSymmetricLens<TLeft, TRight>
+public class ComposeLens<TLeft, TMid, TRight> : ISymmetricLens<TLeft, TRight>
 {
-    private readonly ISimpleSymmetricLens<TLeft, TMid> _lhsLens;
-    private readonly ISimpleSymmetricLens<TMid, TRight> _rhsLens;
+    private readonly ISymmetricLens<TLeft, TMid> _lhsLens;
+    private readonly ISymmetricLens<TMid, TRight> _rhsLens;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    internal ComposeLens(ISimpleSymmetricLens<TLeft, TMid> lhsLens, ISimpleSymmetricLens<TMid, TRight> rhsLens)
+    internal ComposeLens(ISymmetricLens<TLeft, TMid> lhsLens, ISymmetricLens<TMid, TRight> rhsLens)
     {
         _lhsLens = lhsLens;
         _rhsLens = rhsLens;
@@ -47,6 +47,6 @@ public static class ComposeLens
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    public static ISimpleSymmetricLens<TLeft, TRight> Cons<TLeft, TMid, TRight>(this ISimpleSymmetricLens<TLeft, TMid> lhsLens, ISimpleSymmetricLens<TMid, TRight> rhsLens)
+    public static ISymmetricLens<TLeft, TRight> Cons<TLeft, TMid, TRight>(this ISymmetricLens<TLeft, TMid> lhsLens, ISymmetricLens<TMid, TRight> rhsLens)
         => new ComposeLens<TLeft, TMid, TRight>(lhsLens, rhsLens);
 }

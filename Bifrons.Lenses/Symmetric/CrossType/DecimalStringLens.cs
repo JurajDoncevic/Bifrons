@@ -6,7 +6,7 @@ namespace Bifrons.Lenses;
 /// Describes a decimal-string lens that tranforms decimals to strings and vice versa.
 /// DecStr : decimal <=> string
 /// </summary>
-public sealed class DecimalStringLens : ISimpleSymmetricLens<double, string>
+public sealed class DecimalStringLens : ISymmetricLens<double, string>
 {
     private DecimalStringLens()
     {

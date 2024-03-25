@@ -8,7 +8,7 @@ public class OrLensTests : SymmetricLensTestingFramework<Either<string, string>,
 
     protected override Either<string, string> _right => Either.Right<string, string>("123");
 
-    protected override ISimpleSymmetricLens<Either<string, string>, Either<string, string>> _lens =>
+    protected override ISymmetricLens<Either<string, string>, Either<string, string>> _lens =>
         IdentityLens.Cons(@"\w+") | IdentityLens.Cons(@"\d+");
 
     protected override (Either<string, string> originalSource, Either<string, string> expectedOriginalTarget, Either<string, string> updatedTarget, Either<string, string> expectedUpdatedSource) _roundTripWithRightSideUpdateData

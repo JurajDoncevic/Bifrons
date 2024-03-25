@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Symmetric.Strings;
 
-public class MergeLeft : ISimpleSymmetricLens<string, Either<string, string>>
+public class MergeLeft : ISymmetricLens<string, Either<string, string>>
 {
     private readonly OrLens _orLens;
     private readonly SymmetricStringLens _stringLens;

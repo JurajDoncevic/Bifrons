@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TLeft">Left type</typeparam>
 /// <typeparam name="TRight">Right type</typeparam>
-public interface ISimpleSymmetricLens<TLeft, TRight>
+public interface ISymmetricLens<TLeft, TRight>
 {
     /// <summary>
     /// <c>putL : Y -> Option X -> Result X</c>
@@ -33,7 +33,7 @@ public interface ISimpleSymmetricLens<TLeft, TRight>
     /// Inverts the lens
     /// </summary>
     /// <param name="originalLens">The original lens to invert</param>
-    public static InvertLens<TRight, TLeft> operator !(ISimpleSymmetricLens<TLeft, TRight> originalLens)
+    public static InvertLens<TRight, TLeft> operator !(ISymmetricLens<TLeft, TRight> originalLens)
         => InvertLens.Cons(originalLens);
 
 }

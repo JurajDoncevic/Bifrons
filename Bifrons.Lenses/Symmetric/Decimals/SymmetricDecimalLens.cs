@@ -5,7 +5,7 @@ namespace Bifrons.Lenses.Symmetric.Decimals;
 /// Abstract class describing a simple symmetric lens between two decimals.
 /// <c>L : decimal <=> decimal</c>
 /// </summary>
-public abstract class SymmetricDecimalLens : ISimpleSymmetricLens<double, double>
+public abstract class SymmetricDecimalLens : ISymmetricLens<double, double>
 {
     public abstract Func<double, Option<double>, Result<double>> PutLeft { get; }
     public abstract Func<double, Option<double>, Result<double>> PutRight { get; }

@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Abstract class describing a simple symmetric lens between two strings.
 /// <c>L : string <=> string</c>
 /// </summary>
-public abstract class SymmetricStringLens : ISimpleSymmetricLens<string, string>
+public abstract class SymmetricStringLens : ISymmetricLens<string, string>
 {
     /// <summary>
     /// Regex describing the strings on the left-hand side of the lens.

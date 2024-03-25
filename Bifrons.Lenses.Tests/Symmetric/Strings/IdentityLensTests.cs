@@ -9,7 +9,7 @@ public class IdentityLensTests : SymmetricLensTestingFramework<string, string>
     protected override string _right => "Hello, World!";
 
     private readonly string _greetingRegex = @"Hello, [a-zA-Z]+!";
-    protected override ISimpleSymmetricLens<string, string> _lens => IdentityLens.Cons(_greetingRegex);
+    protected override ISymmetricLens<string, string> _lens => IdentityLens.Cons(_greetingRegex);
 
     protected override (string originalSource, string expectedOriginalTarget, string updatedTarget, string expectedUpdatedSource) _roundTripWithRightSideUpdateData
         => ("Hello, World!", "Hello, World!", "Hello, Universe!", "Hello, Universe!");

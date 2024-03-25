@@ -11,7 +11,7 @@ public static class Combinators
     /// <typeparam name="TLeft"></typeparam>
     /// <typeparam name="TRight"></typeparam>
     /// <param name="lens">Original lens</param>
-    public static InvertLens<TRight, TLeft> Invert<TLeft, TRight>(this ISimpleSymmetricLens<TLeft, TRight> lens)
+    public static InvertLens<TRight, TLeft> Invert<TLeft, TRight>(this ISymmetricLens<TLeft, TRight> lens)
         => InvertLens.Cons(lens);
 
     /// <summary>
@@ -19,9 +19,9 @@ public static class Combinators
     /// </summary>
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
-    public static ISimpleSymmetricLens<TLeft, TRight> Compose<TLeft, TMid, TRight>(
-        this ISimpleSymmetricLens<TLeft, TMid> lhsLens,
-        ISimpleSymmetricLens<TMid, TRight> rhsLens)
+    public static ISymmetricLens<TLeft, TRight> Compose<TLeft, TMid, TRight>(
+        this ISymmetricLens<TLeft, TMid> lhsLens,
+        ISymmetricLens<TMid, TRight> rhsLens)
         => ComposeLens.Cons(lhsLens, rhsLens);
 
     /// <summary>
@@ -34,8 +34,8 @@ public static class Combinators
     /// <param name="lhsLens">Left-hand side operand lens</param>
     /// <param name="rhsLens">Right-hand side operand lens</param>
     public static OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget> Or<TLeftSource, TRightSource, TLeftTarget, TRightTarget>(
-        this ISimpleSymmetricLens<TLeftSource, TLeftTarget> lhsLens,
-        ISimpleSymmetricLens<TRightSource, TRightTarget> rhsLens)
+        this ISymmetricLens<TLeftSource, TLeftTarget> lhsLens,
+        ISymmetricLens<TRightSource, TRightTarget> rhsLens)
         => OrLens.Cons(lhsLens, rhsLens);
 
 
@@ -46,6 +46,6 @@ public static class Combinators
     /// <typeparam name="TRight"></typeparam>
     /// <param name="itemLens">Item lens to be applied on each item</param>
     public static IterateLens<TLeft, TRight> Iterate<TLeft, TRight>(
-        ISimpleSymmetricLens<TLeft, TRight> itemLens)
+        ISymmetricLens<TLeft, TRight> itemLens)
         => IterateLens.Cons(itemLens);
 }

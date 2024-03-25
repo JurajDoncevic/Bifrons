@@ -16,7 +16,7 @@ public class _Experiments
         var col_address = Columns.DeleteLens.Cons("Address");
         var col_email = Columns.InsertLens.Cons("Email");
         var col_phone = Columns.DeleteLens.Cons("Phone");
-        var tbl_people = Tables.IdentityLens.Cons("People", col_id, col_firstName, col_lastName, col_dateOfBirth); 
+        var tbl_people = Tables.IdentityLens.Cons("People", col_id, col_firstName, col_lastName, col_dateOfBirth);
 
         //------------------ Roles table ------------------
         var col_roleId = Columns.IdentityLens.Cons("Id");

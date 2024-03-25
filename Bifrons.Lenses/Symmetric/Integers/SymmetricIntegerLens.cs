@@ -5,7 +5,7 @@ namespace Bifrons.Lenses.Symmetric.Integers;
 /// Abstract class describing a simple symmetric lens between two integers.
 /// <c>L : int <=> int</c>
 /// </summary>
-public abstract class SymmetricIntegerLens : ISimpleSymmetricLens<int, int>
+public abstract class SymmetricIntegerLens : ISymmetricLens<int, int>
 {
     public abstract Func<int, Option<int>, Result<int>> PutLeft { get; }
     public abstract Func<int, Option<int>, Result<int>> PutRight { get; }

@@ -8,7 +8,7 @@ public static class SymmetricLens
     /// <summary>
     /// Constructs an anonymous simple symmetric lens from the given functions
     /// </summary>
-    public static ISimpleSymmetricLens<TLeft, TRight> Cons<TLeft, TRight>(
+    public static ISymmetricLens<TLeft, TRight> Cons<TLeft, TRight>(
         Func<TRight, Option<TLeft>, Result<TLeft>> putLeft,
         Func<TLeft, Option<TRight>, Result<TRight>> putRight,
         Func<TLeft, Result<TRight>> createRight,
@@ -21,7 +21,7 @@ public static class SymmetricLens
 /// </summary>
 /// <typeparam name="TLeft"></typeparam>
 /// <typeparam name="TRight"></typeparam>
-public sealed class SymmetricLens<TLeft, TRight> : ISimpleSymmetricLens<TLeft, TRight>
+public sealed class SymmetricLens<TLeft, TRight> : ISymmetricLens<TLeft, TRight>
 {
     private Func<TRight, Option<TLeft>, Result<TLeft>> putLeft;
     private Func<TLeft, Option<TRight>, Result<TRight>> putRight;

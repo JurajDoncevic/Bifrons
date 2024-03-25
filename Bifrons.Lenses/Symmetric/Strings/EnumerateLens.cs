@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// A simple symmetric string lens that iterates over a string and applies a lens to each item.
 /// <c>enumerate(R, L), L : string <=> string, enumerate: string <=> IEnumerable</c>
 /// </summary>
-public class EnumerateLens : ISimpleSymmetricLens<string, IEnumerable<string>>
+public class EnumerateLens : ISymmetricLens<string, IEnumerable<string>>
 {
     private readonly Regex _separatorRegex;
     private readonly SymmetricStringLens _itemLens;

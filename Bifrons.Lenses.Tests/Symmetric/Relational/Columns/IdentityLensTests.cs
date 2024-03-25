@@ -17,5 +17,5 @@ public class IdentityLensTests : SymmetricLensTestingFramework<Column, Column>
     protected override (Column originalSource, Column expectedOriginalTarget, Column updatedTarget, Column expectedUpdatedSource) _roundTripWithLeftSideUpdateData
         => (Column.Cons("StringColumn", DataTypes.STRING), Column.Cons("StringColumn", DataTypes.STRING), Column.Cons("StringColumn", DataTypes.STRING), Column.Cons("StringColumn", DataTypes.STRING));
 
-    protected override ISimpleSymmetricLens<Column, Column> _lens => IdentityLens.Cons("StringColumn");
+    protected override ISymmetricLens<Column, Column> _lens => IdentityLens.Cons("StringColumn");
 }

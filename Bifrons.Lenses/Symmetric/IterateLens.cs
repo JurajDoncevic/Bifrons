@@ -5,11 +5,11 @@ namespace Bifrons.Lenses;
 /// <summary>
 /// Describes a lens that iterates over an IEnumerable and applies a lens to each item
 /// </summary>
-public class IterateLens<TLeft, TRight> : ISimpleSymmetricLens<IEnumerable<TLeft>, IEnumerable<TRight>>
+public class IterateLens<TLeft, TRight> : ISymmetricLens<IEnumerable<TLeft>, IEnumerable<TRight>>
 {
-    private readonly ISimpleSymmetricLens<TLeft, TRight> _itemLens;
+    private readonly ISymmetricLens<TLeft, TRight> _itemLens;
 
-    internal IterateLens(ISimpleSymmetricLens<TLeft, TRight> itemLens)
+    internal IterateLens(ISymmetricLens<TLeft, TRight> itemLens)
     {
         _itemLens = itemLens;
     }
@@ -78,6 +78,6 @@ public static class IterateLens
     /// Iterates over an IEnumerable and applies a lens to each item
     /// </summary>
     /// <param name="itemLens">Individual item lens</param>
-    public static IterateLens<TLeft, TRight> Cons<TLeft, TRight>(ISimpleSymmetricLens<TLeft, TRight> itemLens)
+    public static IterateLens<TLeft, TRight> Cons<TLeft, TRight>(ISymmetricLens<TLeft, TRight> itemLens)
         => new(itemLens);
 }

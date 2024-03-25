@@ -3,15 +3,15 @@
 /// <summary>
 /// Describes an invert lens. L : R <=> L
 /// </summary>
-public class InvertLens<TLeft, TRight> : ISimpleSymmetricLens<TLeft, TRight>
+public class InvertLens<TLeft, TRight> : ISymmetricLens<TLeft, TRight>
 {
-    private readonly ISimpleSymmetricLens<TRight, TLeft> _originalLens;
+    private readonly ISymmetricLens<TRight, TLeft> _originalLens;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="originalLens">The original lens to invert</param>
-    internal InvertLens(ISimpleSymmetricLens<TRight, TLeft> originalLens)
+    internal InvertLens(ISymmetricLens<TRight, TLeft> originalLens)
     {
         _originalLens = originalLens;
     }
@@ -34,6 +34,6 @@ public static class InvertLens
     /// Constructs an invert lens
     /// </summary>
     /// <param name="originalLens">The original lens to invert</param>
-    public static InvertLens<TRight, TLeft> Cons<TRight, TLeft>(ISimpleSymmetricLens<TLeft, TRight> originalLens)
+    public static InvertLens<TRight, TLeft> Cons<TRight, TLeft>(ISymmetricLens<TLeft, TRight> originalLens)
         => new(originalLens);
 }

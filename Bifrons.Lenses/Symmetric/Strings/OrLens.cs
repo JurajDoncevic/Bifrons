@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Describes a lens union combinator.
 /// </summary>
 public sealed class OrLens
-    : ISimpleSymmetricLens<Either<string, string>, Either<string, string>>
+    : ISymmetricLens<Either<string, string>, Either<string, string>>
 {
     private readonly SymmetricStringLens _lhsLens;
     private readonly SymmetricStringLens _rhsLens;

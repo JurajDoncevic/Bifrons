@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric;
 /// Describes a date-time-string lens that tranforms date-times to strings and vice versa.
 /// DateTimeStr : DateTime <=> string
 /// </summary>
-public sealed class DateTimeStringLens : ISimpleSymmetricLens<DateTime, string>
+public sealed class DateTimeStringLens : ISymmetricLens<DateTime, string>
 {
     private readonly Regex _dateTimeRegex;
 

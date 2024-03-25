@@ -4,17 +4,17 @@
 /// Describes a lens union combinator.
 /// </summary>
 public sealed class OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget>
-    : ISimpleSymmetricLens<Either<TLeftSource, TRightSource>, Either<TLeftTarget, TRightTarget>>
+    : ISymmetricLens<Either<TLeftSource, TRightSource>, Either<TLeftTarget, TRightTarget>>
 {
-    private readonly ISimpleSymmetricLens<TLeftSource, TLeftTarget> _lhsLens;
-    private readonly ISimpleSymmetricLens<TRightSource, TRightTarget> _rhsLens;
+    private readonly ISymmetricLens<TLeftSource, TLeftTarget> _lhsLens;
+    private readonly ISymmetricLens<TRightSource, TRightTarget> _rhsLens;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="lhsLens">Left-hand side lens operand</param>
     /// <param name="rhsLens">Right-hand side lens operand</param>
-    internal OrLens(ISimpleSymmetricLens<TLeftSource, TLeftTarget> lhsLens, ISimpleSymmetricLens<TRightSource, TRightTarget> rhsLens)
+    internal OrLens(ISymmetricLens<TLeftSource, TLeftTarget> lhsLens, ISymmetricLens<TRightSource, TRightTarget> rhsLens)
     {
         _lhsLens = lhsLens;
         _rhsLens = rhsLens;
@@ -62,7 +62,7 @@ public static class OrLens
     /// <param name="leftLens">Left-hand side lens operand</param>
     /// <param name="rightLens">Right-hand side lens operand</param>
     public static OrLens<TLeftSource, TRightSource, TLeftTarget, TRightTarget> Cons<TLeftSource, TRightSource, TLeftTarget, TRightTarget>(
-        ISimpleSymmetricLens<TLeftSource, TLeftTarget> leftLens,
-        ISimpleSymmetricLens<TRightSource, TRightTarget> rightLens)
+        ISymmetricLens<TLeftSource, TLeftTarget> leftLens,
+        ISymmetricLens<TRightSource, TRightTarget> rightLens)
         => new(leftLens, rightLens);
 }

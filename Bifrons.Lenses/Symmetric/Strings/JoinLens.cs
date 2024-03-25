@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.Symmetric.Strings;
 /// Lens that joins a list of strings into a single string, and vice-versa.
 /// <c>join(R, L), L : IEnumerable&lt;string&gt; <=> string, join: IEnumerable <=> string</c>
 /// </summary>
-public class JoinLens : ISimpleSymmetricLens<IEnumerable<string>, string>
+public class JoinLens : ISymmetricLens<IEnumerable<string>, string>
 {
     private readonly Regex _separatorRegex;
     private readonly SymmetricStringLens _itemLens;

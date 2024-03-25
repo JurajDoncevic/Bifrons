@@ -14,5 +14,5 @@ public class SubLensTests : SymmetricLensTestingFramework<int, int>
     protected override (int originalSource, int expectedOriginalTarget, int updatedTarget, int expectedUpdatedSource) _roundTripWithLeftSideUpdateData
         => (1, 6, 9, 4);
 
-    protected override ISimpleSymmetricLens<int, int> _lens => SubLens.Cons(5);
+    protected override ISymmetricLens<int, int> _lens => SubLens.Cons(5);
 }

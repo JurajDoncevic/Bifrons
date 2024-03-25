@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Columns;
 
-public abstract class SymmetricColumnLens : ISimpleSymmetricLens<Column, Column>
+public abstract class SymmetricColumnLens : ISymmetricLens<Column, Column>
 {
     public abstract string TargetColumnName { get; }
     public abstract Func<Column, Option<Column>, Result<Column>> PutLeft { get; }
