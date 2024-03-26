@@ -88,3 +88,44 @@ public abstract class DataColumnLens<TLeftDataColumn, TRightDataColumn, TLeftDat
                 .Map(leftData => new DataColumn<TLeftData>(leftColumn, leftData) as TLeftDataColumn));
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
 }
+
+
+public sealed class IntegerDataColumnLens : DataColumnLens<IntegerDataColumn, IntegerDataColumn, int, int>
+{
+    public IntegerDataColumnLens(string targetColumnName, SymmetricColumnLens columnLens, ISymmetricLens<int, int> dataLens) 
+        : base(targetColumnName, columnLens, dataLens)
+    {
+    }
+}
+
+public sealed class StringDataColumnLens : DataColumnLens<StringDataColumn, StringDataColumn, string, string>
+{
+    public StringDataColumnLens(string targetColumnName, SymmetricColumnLens columnLens, ISymmetricLens<string, string> dataLens) 
+        : base(targetColumnName, columnLens, dataLens)
+    {
+    }
+}
+
+public sealed class BooleanDataColumnLens : DataColumnLens<BooleanDataColumn, BooleanDataColumn, bool, bool>
+{
+    public BooleanDataColumnLens(string targetColumnName, SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens) 
+        : base(targetColumnName, columnLens, dataLens)
+    {
+    }
+}
+
+public sealed class DateTimeDataColumnLens : DataColumnLens<DateTimeDataColumn, DateTimeDataColumn, DateTime, DateTime>
+{
+    public DateTimeDataColumnLens(string targetColumnName, SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens) 
+        : base(targetColumnName, columnLens, dataLens)
+    {
+    }
+}
+
+public sealed class DecimalDataColumnLens : DataColumnLens<DecimalDataColumn, DecimalDataColumn, double, double>
+{
+    public DecimalDataColumnLens(string targetColumnName, SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens) 
+        : base(targetColumnName, columnLens, dataLens)
+    {
+    }
+}
