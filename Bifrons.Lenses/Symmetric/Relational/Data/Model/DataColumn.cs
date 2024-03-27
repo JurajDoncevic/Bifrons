@@ -2,14 +2,21 @@
 
 namespace Bifrons.Lenses.Symmetric.Relational.Data.Model;
 
+public interface IDataColumn 
+{
+    Column Column { get; }
+    DataTypes DataType { get; }
+}
 
-public class DataColumn<TData>
+public class DataColumn<TData> : IDataColumn
 {
     private readonly Column _column;
     private readonly TData _data;
 
     public Column Column => _column;
     public TData Data => _data;
+
+    public DataTypes DataType => typeof(TData).ToDataType();
 
     public DataColumn(Column column, TData data)
     {
