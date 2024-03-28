@@ -17,4 +17,7 @@ public sealed class Table
 
     public static Table Cons(string name, IEnumerable<Column>? columns = null)
         => new(name, columns ?? []);
+
+    public static Table Cons(string name, params Column[] columns)
+        => new(name, columns ?? []);
 }

@@ -11,9 +11,9 @@ public static class Enumerables
     /// <param name="target"></param>
     /// <param name="func"></param>
     /// <returns>Mapped enumerable</returns>
-    public static IEnumerable<R> Mapi<T, R>(this IEnumerable<T> target, Func<long, T, R> func)
+    public static IEnumerable<R> Mapi<T, R>(this IEnumerable<T> target, Func<int, T, R> func)
     {
-        long idx = 0;
+        int idx = 0;
         foreach (var t in target)
         {
             yield return func(idx, t);

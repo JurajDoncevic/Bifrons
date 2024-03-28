@@ -1,15 +1,16 @@
-﻿using Bifrons.Lenses.Relational.Model;
+﻿using Bifrons.Lenses.Relational.Columns;
+using Bifrons.Lenses.Relational.Model;
 
 namespace Bifrons.Lenses.Relational.Tables;
 
-public sealed class RenameLens : SymmetricTableLens
+public sealed class RenameLens : IdentityLens
 {
     private readonly string _sourceTableName;
     private readonly string _targetTableName;
 
     public override string TargetTableName => _sourceTableName;
 
-    private RenameLens(string sourceTableName, string targetTableName)
+    private RenameLens(string sourceTableName, string targetTableName, IEnumerable<SymmetricColumnLens> symmetricColumnLenses) : base(sourceTableName, symmetricColumnLenses)
     {
         _sourceTableName = sourceTableName;
         _targetTableName = targetTableName;
@@ -35,6 +36,9 @@ public sealed class RenameLens : SymmetricTableLens
     public override Func<Table, Result<Table>> CreateLeft =>
         source => Result.Success(Table.Cons(_sourceTableName, source.Columns));
 
-    public static RenameLens Cons(string sourceTableName, string destinationTableName)
-        => new(sourceTableName, destinationTableName);
+    public static RenameLens Cons(string sourceTableName, string destinationTableName, IEnumerable<SymmetricColumnLens>? symmetricColumnLenses = null)
+        => new(sourceTableName, destinationTableName, symmetricColumnLenses ?? []);
+    
+    public static RenameLens Cons(string sourceTableName, string destinationTableName, params SymmetricColumnLens[] symmetricColumnLenses)
+        => new(sourceTableName, destinationTableName, symmetricColumnLenses ?? []);
 }

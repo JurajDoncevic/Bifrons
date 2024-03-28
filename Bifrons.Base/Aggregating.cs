@@ -76,7 +76,7 @@ public static class Aggregating
     /// <param name="initalizer">Initial value</param>
     /// <param name="foldingFunc">Accumulation function</param>
     /// <returns></returns>
-    public static async Task<R> Foldi<T, R>(this Task<IEnumerable<T>> ts, R seed, Func<long, T, R, R> foldingFunc)
+    public static async Task<R> Foldi<T, R>(this Task<IEnumerable<T>> ts, R seed, Func<int, T, R, R> foldingFunc)
     {
         R result = seed;
         var _ts = await ts;
