@@ -9,16 +9,21 @@ namespace Bifrons.Lenses.Relational.Columns;
 public sealed class InsertLens : SymmetricColumnLens
 {
     private readonly string _columnName;
-
+    private readonly DataTypes _defaultDataType;
     public override string TargetColumnName => _columnName;
+    /// <summary>
+    /// Default data type for the column that is to be inserted on the right
+    /// </summary>
+    public DataTypes DefaultDataType => _defaultDataType;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="columnName">Target column name</param>
-    private InsertLens(string columnName)
+    private InsertLens(string columnName, DataTypes defaultDataType = DataTypes.UNIT)
     {
         _columnName = columnName;
+        _defaultDataType = defaultDataType;
     }
 
     public override Func<Column, Option<Column>, Result<Column>> PutLeft =>
@@ -36,7 +41,7 @@ public sealed class InsertLens : SymmetricColumnLens
                 );
 
     public override Func<Column, Result<Column>> CreateRight =>
-        source => Result.Success(Column.Cons(_columnName, source.DataType));
+        source => Result.Success(Column.Cons(_columnName, _defaultDataType));
 
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(UnitColumn.Cons(_columnName) as Column);
@@ -44,8 +49,8 @@ public sealed class InsertLens : SymmetricColumnLens
     /// <summary>
     /// Constructs a new InsertLens
     /// </summary>
-    public static InsertLens Cons(string columnName)
-        => new(columnName);
+    public static InsertLens Cons(string columnName, DataTypes defaultDataType = DataTypes.UNIT)
+        => new(columnName, defaultDataType);
 
 
 

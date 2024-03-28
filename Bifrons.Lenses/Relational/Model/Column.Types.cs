@@ -54,5 +54,5 @@ public sealed class UnitColumn : Column
     {
     }
 
-    public static UnitColumn Cons(string name) => new(name);
+    public static UnitColumn Cons(string name = "UNIT") => new(name);
 }
