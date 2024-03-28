@@ -1,0 +1,32 @@
+﻿using Bifrons.Lenses.Relational.Model;
+using Bifrons.Lenses.Relational.Columns;
+namespace Bifrons.Lenses.Relational.Tables;
+
+public sealed class IdentityLens : SymmetricTableLens
+{
+    private readonly string _tableName;
+    private readonly List<SymmetricColumnLens> _symmetricColumnLenses;
+
+    public override string TargetTableName => _tableName;
+    public IReadOnlyList<SymmetricColumnLens> SymmetricColumnLenses => _symmetricColumnLenses;
+
+    private IdentityLens(string tableName, IEnumerable<SymmetricColumnLens> symmetricColumnLenses)
+    {
+        _tableName = tableName;
+        _symmetricColumnLenses = symmetricColumnLenses.ToList();
+    }
+
+    public override Func<Table, Option<Table>, Result<Table>> PutLeft => throw new NotImplementedException();
+
+    public override Func<Table, Option<Table>, Result<Table>> PutRight => throw new NotImplementedException();
+
+    public override Func<Table, Result<Table>> CreateRight => throw new NotImplementedException();
+
+    public override Func<Table, Result<Table>> CreateLeft => throw new NotImplementedException();
+
+    public static IdentityLens Cons(string tableName, IEnumerable<SymmetricColumnLens>? symmetricColumnLenses = null)
+        => new(tableName, symmetricColumnLenses ?? []);
+
+    public static IdentityLens Cons(string tableName, params SymmetricColumnLens[] symmetricColumnLenses)
+        => new(tableName, symmetricColumnLenses);
+}

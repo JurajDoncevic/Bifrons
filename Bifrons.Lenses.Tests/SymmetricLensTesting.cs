@@ -1,4 +1,4 @@
-﻿using Bifrons.Lenses.Symmetric;
+﻿using Bifrons.Lenses;
 
 namespace Bifrons.Lenses.Tests;
 
