@@ -2,6 +2,10 @@
 
 namespace Bifrons.Lenses.Relational.Columns;
 
+/// <summary>
+/// Column disconnect lens. This lens is used to represent a column that is disconnected during a transformation.
+/// disconnect: Column <=> Column
+/// </summary>
 public class DisconnectLens : SymmetricColumnLens
 {
     private readonly Column _leftDefault;
@@ -10,6 +14,12 @@ public class DisconnectLens : SymmetricColumnLens
 
     public override string TargetColumnName => _columnName;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="columnName">Target column name</param>
+    /// <param name="leftDefault">Default column for the left side</param>
+    /// <param name="rightDefault">Default column for the right side</param>
     protected DisconnectLens(string columnName, Column leftDefault, Column rightDefault)
     {
         _columnName = columnName;
@@ -35,4 +45,13 @@ public class DisconnectLens : SymmetricColumnLens
 
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(_leftDefault);
+
+    /// <summary>
+    /// Constructs a new DisconnectLens
+    /// </summary>
+    /// <param name="columnName">Target column name</param>
+    /// <param name="leftDefault">Default column for the left side</param>
+    /// <param name="rightDefault">Default column for the right side</param>
+    public static DisconnectLens Cons(string columnName, Column leftDefault, Column rightDefault)
+        => new(columnName, leftDefault, rightDefault);
 }

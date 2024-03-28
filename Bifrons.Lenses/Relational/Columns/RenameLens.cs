@@ -2,42 +2,56 @@
 
 namespace Bifrons.Lenses.Relational.Columns;
 
+/// <summary>
+/// Column rename lens. This lens is used to represent a column that is renamed during a transformation.
+/// rename: Column <=> Column
+/// </summary>
 public sealed class RenameLens : IdentityLens
 {
-    private readonly string _sourceColumnName;
-    private readonly string _targetColumnName;
+    private readonly string _leftColumnName;
+    private readonly string _rightColumnName;
 
-    public string SourceColumnName => _sourceColumnName;
-    public override string TargetColumnName => _targetColumnName;
+    public string LeftColumnName => _leftColumnName;
+    public string RightColumnName => _rightColumnName;
 
-    private RenameLens(string sourceColumnName, string targetColumnName) : base(sourceColumnName)
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="leftColumnName">Left column name</param>
+    /// <param name="rightColumnName">Right column name</param>
+    private RenameLens(string leftColumnName, string rightColumnName) : base(leftColumnName)
     {
-        _sourceColumnName = sourceColumnName;
-        _targetColumnName = targetColumnName;
+        _leftColumnName = leftColumnName ?? Guid.NewGuid().ToString();
+        _rightColumnName = rightColumnName ?? Guid.NewGuid().ToString();
     }
 
     public override Func<Column, Option<Column>, Result<Column>> PutLeft =>
         (updatedSource, originalTarget) =>
             originalTarget.Match(
-                target => Result.Success(Column.Cons(_sourceColumnName, target.DataType)),
+                target => Result.Success(Column.Cons(_leftColumnName, target.DataType)),
                 () => CreateLeft(updatedSource)
             );
 
     public override Func<Column, Option<Column>, Result<Column>> PutRight =>
         (updatedSource, originalTarget) =>
             originalTarget.Match(
-                target => Result.Success(Column.Cons(_targetColumnName, target.DataType)),
+                target => Result.Success(Column.Cons(_rightColumnName, target.DataType)),
                 () => CreateRight(updatedSource)
             );
 
     public override Func<Column, Result<Column>> CreateRight =>
-        source => Result.Success(Column.Cons(_targetColumnName, source.DataType));
+        source => Result.Success(Column.Cons(_rightColumnName, source.DataType));
 
     public override Func<Column, Result<Column>> CreateLeft =>
-        source => Result.Success(Column.Cons(_sourceColumnName, source.DataType));
+        source => Result.Success(Column.Cons(_leftColumnName, source.DataType));
 
-    public static RenameLens Cons(string sourceColumnName, string targetColumnName)
-        => new(sourceColumnName, targetColumnName);
+    /// <summary>
+    /// Constructs a new RenameLens
+    /// </summary>
+    /// <param name="leftColumnName">Left column name</param>
+    /// <param name="rightColumnName">Right column name</param>
+    public static RenameLens Cons(string leftColumnName, string rightColumnName)
+        => new(leftColumnName, rightColumnName);
 
 
 }

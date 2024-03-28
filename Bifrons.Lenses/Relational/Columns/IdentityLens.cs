@@ -2,12 +2,20 @@
 
 namespace Bifrons.Lenses.Relational.Columns;
 
+/// <summary>
+/// Column identity lens. This lens is used to represent a column that is not changed during a transformation.
+/// id: Column <=> Column
+/// </summary>
 public class IdentityLens : SymmetricColumnLens
 {
     private readonly string _columnName;
 
     public override string TargetColumnName => _columnName;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="columnName">Target column name</param>
     protected IdentityLens(string columnName)
     {
         _columnName = columnName;
@@ -33,6 +41,12 @@ public class IdentityLens : SymmetricColumnLens
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(Column.Cons(_columnName, source.DataType));
 
+
+    /// <summary>
+    /// Constructs a new IdentityLens
+    /// </summary>
+    /// <param name="columnName"></param>
+    /// <returns></returns>
     public static IdentityLens Cons(string columnName)
         => new(columnName);
 }
