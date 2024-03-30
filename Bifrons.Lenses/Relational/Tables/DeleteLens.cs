@@ -6,7 +6,8 @@ public sealed class DeleteLens : SymmetricTableLens
 {
     private readonly string _tableName;
 
-    public override string TargetTableName => _tableName;
+    public override string MatchesTableNameLeft => _tableName;
+    public override string MatchesTableNameRight => Table.DEFAULT_NAME;
 
     public DeleteLens(string tableName)
     {

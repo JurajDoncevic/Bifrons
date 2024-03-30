@@ -10,7 +10,7 @@ public sealed class DeleteLensTests : SymmetricLensTestingFramework<Column, Colu
     protected override Column _right => UnitColumn.Cons("TestColumn");
 
     protected override (Column originalSource, Column expectedOriginalTarget, Column updatedTarget, Column expectedUpdatedSource) _roundTripWithRightSideUpdateData 
-        => (_left, _right, _right, _left);
+        => (_left, UnitColumn.Cons(), UnitColumn.Cons("Test"), _left);
 
     protected override (Column originalSource, Column expectedOriginalTarget, Column updatedTarget, Column expectedUpdatedSource) _roundTripWithLeftSideUpdateData
         => (_right, UnitColumn.Cons("TestColumn"), StringColumn.Cons("TestedColumn"), _right);

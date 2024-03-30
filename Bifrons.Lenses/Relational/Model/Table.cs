@@ -2,8 +2,11 @@
 
 public sealed class Table
 {
+    public const string DEFAULT_NAME = "";
     private readonly string _name;
     private readonly List<Column> _columns;
+
+    private readonly bool IsUnit;
 
     public string Name => _name;
 
@@ -11,10 +14,11 @@ public sealed class Table
 
     public Option<Column> this[string columnName] => _columns.FirstOrDefault(column => column.Name == columnName) ?? Option.None<Column>();
 
-    private Table(string name, IEnumerable<Column> columns)
+    private Table(string name, IEnumerable<Column> columns, bool isUnit = false)
     {
         _name = name;
         _columns = columns.ToList();
+        IsUnit = isUnit;
     }
 
     public override bool Equals(object? obj)
@@ -51,5 +55,8 @@ public sealed class Table
 
     public static Table Cons(string name, params Column[] columns)
         => new(name, columns ?? []);
+
+    public static Table ConsUnit()
+        => new(Table.DEFAULT_NAME, [], true);
 
 }

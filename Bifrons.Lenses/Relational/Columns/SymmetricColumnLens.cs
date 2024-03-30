@@ -9,9 +9,23 @@ namespace Bifrons.Lenses.Relational.Columns;
 public abstract class SymmetricColumnLens : ISymmetricLens<Column, Column>
 {
     /// <summary>
-    /// The name of the column that this lens operates on.
+    /// The name of the column that this lens operates on the Left.
     /// </summary>
-    public abstract string TargetColumnName { get; }
+    public abstract string MatchesColumnNameLeft { get; }
+    /// <summary>
+    /// The name of the column that this lens operates on the Right.
+    /// </summary>
+    public abstract string MatchesColumnNameRight { get; }
+
+    /// <summary>
+    /// Whether the lens matches a specific column on the Left.
+    /// </summary>
+    public abstract bool MatchesLeft { get; }
+
+    /// <summary>
+    /// Whether the lens matches a specific column on the Right.
+    /// </summary>
+    public abstract bool MatchesRight { get; }
 
     public abstract Func<Column, Option<Column>, Result<Column>> PutLeft { get; }
     public abstract Func<Column, Option<Column>, Result<Column>> PutRight { get; }

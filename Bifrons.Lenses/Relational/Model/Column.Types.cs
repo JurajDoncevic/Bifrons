@@ -50,7 +50,7 @@ public sealed class DateTimeColumn : Column
 /// </summary>
 public sealed class UnitColumn : Column
 {
-    public const string DEFAULT_NAME = "UNIT";
+    public const string DEFAULT_NAME = "";
 
     private UnitColumn(string name) : base(name, DataTypes.UNIT)
     {

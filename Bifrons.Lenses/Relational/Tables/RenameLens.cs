@@ -8,9 +8,8 @@ public sealed class RenameLens : IdentityLens
     private readonly string _sourceTableName;
     private readonly string _targetTableName;
 
-    public override string TargetTableName => _sourceTableName;
-
-    private RenameLens(string sourceTableName, string targetTableName, IEnumerable<SymmetricColumnLens> symmetricColumnLenses) : base(sourceTableName, symmetricColumnLenses)
+    private RenameLens(string sourceTableName, string targetTableName, IEnumerable<SymmetricColumnLens> symmetricColumnLenses) 
+        : base(sourceTableName, symmetricColumnLenses)
     {
         _sourceTableName = sourceTableName;
         _targetTableName = targetTableName;

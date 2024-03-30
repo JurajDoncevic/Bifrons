@@ -13,7 +13,7 @@ public sealed class InsertLensTests : SymmetricLensTestingFramework<Column, Colu
         => (_left, _right, _right, _left);
 
     protected override (Column originalSource, Column expectedOriginalTarget, Column updatedTarget, Column expectedUpdatedSource) _roundTripWithLeftSideUpdateData 
-        => (_right, UnitColumn.Cons("TestColumn"), UnitColumn.Cons("TestedColumn"), _right);
+        => (_right, UnitColumn.Cons(), UnitColumn.Cons("Test"), _right);
 
     protected override ISymmetricLens<Column, Column> _lens => InsertLens.Cons(_right.Name, _right.DataType);
 }

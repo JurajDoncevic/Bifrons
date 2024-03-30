@@ -7,7 +7,8 @@ public sealed class InsertLens : SymmetricTableLens
     private readonly string _tableName;
     private readonly List<Columns.InsertLens> _symmetricColumnLenses;
 
-    public override string TargetTableName => _tableName;
+    public override string MatchesTableNameLeft => _tableName;
+    public override string MatchesTableNameRight => Table.DEFAULT_NAME;
     public IReadOnlyList<Columns.InsertLens> SymmetricColumnLenses => _symmetricColumnLenses;
 
     private InsertLens(string tableName, IEnumerable<Columns.InsertLens> symmetricColumnLenses)

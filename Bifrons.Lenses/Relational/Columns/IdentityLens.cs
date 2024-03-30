@@ -10,7 +10,12 @@ public class IdentityLens : SymmetricColumnLens
 {
     private readonly string _columnName;
 
-    public override string TargetColumnName => _columnName;
+    public override string MatchesColumnNameLeft => _columnName;
+    public override string MatchesColumnNameRight => _columnName;
+
+    public override bool MatchesLeft => true;
+
+    public override bool MatchesRight => true;
 
     /// <summary>
     /// Constructor

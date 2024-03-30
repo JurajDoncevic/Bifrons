@@ -8,11 +8,17 @@ namespace Bifrons.Lenses.Relational.Columns;
 /// </summary>
 public class DisconnectLens : SymmetricColumnLens
 {
-    private readonly Column _leftDefault;
-    private readonly Column _rightDefault;
-    private readonly string _columnName;
+    private readonly DataTypes _leftDataTypeDefault;
+    private readonly DataTypes _rightDataTypeDefault;
+    protected readonly string _leftColumnName;
+    protected readonly string _rightColumnName;
 
-    public override string TargetColumnName => _columnName;
+    public override string MatchesColumnNameLeft => _leftColumnName;
+    public override string MatchesColumnNameRight => _rightColumnName;
+
+    public override bool MatchesLeft => !_leftColumnName.Equals(UnitColumn.DEFAULT_NAME);
+
+    public override bool MatchesRight => !_rightColumnName.Equals(UnitColumn.DEFAULT_NAME);
 
     /// <summary>
     /// Constructor
@@ -20,11 +26,12 @@ public class DisconnectLens : SymmetricColumnLens
     /// <param name="columnName">Target column name</param>
     /// <param name="leftDefault">Default column for the left side</param>
     /// <param name="rightDefault">Default column for the right side</param>
-    protected DisconnectLens(string columnName, Column leftDefault, Column rightDefault)
+    protected DisconnectLens(string leftColumnName, string rightColumnName, DataTypes leftDataTypeDefault, DataTypes rightDataTypeDefault)
     {
-        _columnName = columnName;
-        _rightDefault = rightDefault;
-        _leftDefault = leftDefault;
+        _leftColumnName = leftColumnName;
+        _rightColumnName = rightColumnName;
+        _leftDataTypeDefault = leftDataTypeDefault;
+        _rightDataTypeDefault = rightDataTypeDefault;
     }
 
     public override Func<Column, Option<Column>, Result<Column>> PutLeft =>
@@ -41,17 +48,19 @@ public class DisconnectLens : SymmetricColumnLens
                 () => CreateRight(updatedSource)
             );
     public override Func<Column, Result<Column>> CreateRight =>
-        source => Result.Success(_rightDefault);
+        source => Result.Success(Column.Cons(_rightColumnName, _rightDataTypeDefault));
 
     public override Func<Column, Result<Column>> CreateLeft =>
-        source => Result.Success(_leftDefault);
+        source => Result.Success(Column.Cons(_leftColumnName, _leftDataTypeDefault));
+
 
     /// <summary>
     /// Constructs a new DisconnectLens
     /// </summary>
-    /// <param name="columnName">Target column name</param>
-    /// <param name="leftDefault">Default column for the left side</param>
-    /// <param name="rightDefault">Default column for the right side</param>
-    public static DisconnectLens Cons(string columnName, Column leftDefault, Column rightDefault)
-        => new(columnName, leftDefault, rightDefault);
+    /// <param name="leftColumnName">Left column name</param>
+    /// <param name="rightColumnName">Right column name</param>
+    /// <param name="leftDefault">Default data type for the left column</param>
+    /// <param name="rightDefault">Default data type for the right column</param>
+    public static DisconnectLens Cons(string leftColumnName, string rightColumnName, DataTypes leftDefault = DataTypes.UNIT, DataTypes rightDefault = DataTypes.UNIT)
+        => new(leftColumnName, rightColumnName, leftDefault, rightDefault);
 }

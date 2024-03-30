@@ -11,9 +11,6 @@ public sealed class RenameLens : IdentityLens
     private readonly string _leftColumnName;
     private readonly string _rightColumnName;
 
-    public string LeftColumnName => _leftColumnName;
-    public string RightColumnName => _rightColumnName;
-
     /// <summary>
     /// Constructor
     /// </summary>
