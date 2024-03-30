@@ -55,7 +55,7 @@ public class IdentityLensTests : SymmetricLensTestingFramework<Table, Table>
                 Columns.IdentityLens.Cons("Id"),
                 Columns.RenameLens.Cons("Name", "QualName"),
                 Columns.DeleteLens.Cons("Alias"),
-                Columns.InsertLens.Cons("Description"),
+                Columns.InsertLens.Cons("Description", DataTypes.STRING),
                 Columns.IdentityLens.Cons("CreatedOn")
             );
 }
