@@ -50,9 +50,11 @@ public sealed class DateTimeColumn : Column
 /// </summary>
 public sealed class UnitColumn : Column
 {
+    public const string DEFAULT_NAME = "UNIT";
+
     private UnitColumn(string name) : base(name, DataTypes.UNIT)
     {
     }
 
-    public static UnitColumn Cons(string name = "UNIT") => new(name);
+    public static UnitColumn Cons(string name = UnitColumn.DEFAULT_NAME) => new(name);
 }

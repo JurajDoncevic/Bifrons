@@ -26,6 +26,10 @@ public abstract class Column
         _ => throw new ArgumentOutOfRangeException(nameof(dataType), dataType, null)
     };
 
+    public override string ToString()
+    {
+        return $"({_name} : {_dataType})";
+    }
     public override bool Equals(object? obj)
     {
         if (obj is Column column)
