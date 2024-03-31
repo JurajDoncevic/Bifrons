@@ -29,7 +29,7 @@ public sealed class DeleteLens : SymmetricTableLens
                 );
 
     public override Func<Table, Result<Table>> CreateRight =>
-        source => Table.Cons("UNIT");
+        source => Table.ConsUnit();
 
     public override Func<Table, Result<Table>> CreateLeft =>
         source => Table.Cons(_tableName, source.Columns);

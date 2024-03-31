@@ -35,7 +35,7 @@ public sealed class InsertLens : SymmetricTableLens
         source => Table.Cons(_tableName, source.Columns);
 
     public override Func<Table, Result<Table>> CreateLeft =>
-        source => Table.Cons("UNIT");
+        source => Table.ConsUnit();
 
     public static InsertLens Cons(string tableName, IEnumerable<Columns.InsertLens>? symmetricColumnLenses = null)
         => new(tableName, symmetricColumnLenses ?? []);
