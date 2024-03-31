@@ -9,6 +9,7 @@ namespace Bifrons.Lenses.Relational.Columns;
 public sealed class InsertLens : DisconnectLens
 {
     private readonly DataTypes _columnDataType;
+    private readonly string _columnName;
     /// <summary>
     /// Default data type for the column that is to be inserted on the right
     /// </summary>
@@ -22,6 +23,12 @@ public sealed class InsertLens : DisconnectLens
         : base(UnitColumn.DEFAULT_NAME, columnName, DataTypes.UNIT, columnDataType)
     {
         _columnDataType = columnDataType;
+        _columnName = columnName;
+    }
+
+    public override string ToString()
+    {
+        return $"[insert('{_columnName}'): Column <=> Column]";
     }
 
     /// <summary>

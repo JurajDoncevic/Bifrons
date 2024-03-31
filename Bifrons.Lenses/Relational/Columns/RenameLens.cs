@@ -11,6 +11,9 @@ public sealed class RenameLens : IdentityLens
     private readonly string _leftColumnName;
     private readonly string _rightColumnName;
 
+    public override string MatchesColumnNameLeft => _leftColumnName;
+    public override string MatchesColumnNameRight => _rightColumnName;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -41,6 +44,12 @@ public sealed class RenameLens : IdentityLens
 
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(Column.Cons(_leftColumnName, source.DataType));
+
+
+    public override string ToString()
+    {
+        return $"[rename('{_leftColumnName}', '{_rightColumnName}'): Column <=> Column]";
+    }
 
     /// <summary>
     /// Constructs a new RenameLens

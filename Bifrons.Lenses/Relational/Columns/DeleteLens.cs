@@ -8,6 +8,7 @@ namespace Bifrons.Lenses.Relational.Columns;
 /// </summary>
 public sealed class DeleteLens : DisconnectLens
 {
+    private readonly string _columnName;
 
     /// <summary>
     /// Constructor
@@ -16,6 +17,12 @@ public sealed class DeleteLens : DisconnectLens
     private DeleteLens(string columnName)
         : base(columnName, UnitColumn.DEFAULT_NAME, DataTypes.UNIT, DataTypes.UNIT)
     {
+        _columnName = columnName;
+    }
+
+    public override string ToString()
+    {
+        return $"[delete('{_columnName}'): Column <=> Column]";
     }
 
     /// <summary>

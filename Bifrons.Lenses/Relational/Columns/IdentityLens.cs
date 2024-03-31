@@ -46,6 +46,10 @@ public class IdentityLens : SymmetricColumnLens
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(Column.Cons(_columnName, source.DataType));
 
+    public override string ToString()
+    {
+        return $"[id('{_columnName}'): Column <=> Column]";
+    }
 
     /// <summary>
     /// Constructs a new IdentityLens

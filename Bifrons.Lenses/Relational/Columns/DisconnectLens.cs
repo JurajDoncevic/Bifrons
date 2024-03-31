@@ -53,6 +53,11 @@ public class DisconnectLens : SymmetricColumnLens
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(Column.Cons(_leftColumnName, _leftDataTypeDefault));
 
+    public override string ToString()
+    {
+        return $"[disconnect('{_leftColumnName}'|'{_rightColumnName}'): Column <=> Column]";
+    }
+
 
     /// <summary>
     /// Constructs a new DisconnectLens

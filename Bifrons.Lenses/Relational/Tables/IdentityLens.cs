@@ -18,67 +18,124 @@ public class IdentityLens : SymmetricTableLens
         _columnLenses = columnLenses.ToList();
     }
 
-    public override Func<Table, Option<Table>, Result<Table>> PutLeft => 
-        (source, target) => target.Match(
-            t => t.Columns.Count == _columnLenses.Count(l => l.MatchesRight) // identity, rename, and insert lenses refer to the target columns
-                ? _columnLenses.Fold(
-                        Enumerable.Empty<Result<Column>>(),
-                        (lens, columns) => columns.Append(
-                            t[lens.MatchesColumnNameRight].Match(
-                                col => lens.PutLeft(col, source[lens.MatchesColumnNameLeft]), 
-                                () => Result.Failure<Column>($"Column '{lens.MatchesColumnNameRight}' not found for lens"))
-                            )
-                        )
-                    .Unfold()
-                    .Map(columns => Table.Cons(_tableName, columns))
-                : Result.Failure<Table>($"The number of columns in the target table '{_tableName}' does not match the number of symmetric column lenses in the identity lens targeting '{_tableName}'"),
-            () => CreateLeft(source)
-            );
+    public override Func<Table, Option<Table>, Result<Table>> PutLeft =>
+        (updatedSource, originalTarget) => 
+        {
+            if (!originalTarget)
+            {
+                return CreateLeft(updatedSource);
+            }
+            var results = Enumerable.Empty<Result<Column>>();
+            foreach (var lens in _columnLenses)
+            {
+                if (lens.MatchesRight)
+                {
+                    if (!updatedSource[lens.MatchesColumnNameRight])
+                    {
+                        return Result.Failure<Table>($"Column '{lens.MatchesColumnNameRight}' not found for lens {this}.");
+                    }
+
+                    results = lens.PutLeft(updatedSource[lens.MatchesColumnNameRight].Value, originalTarget.Value[lens.MatchesColumnNameLeft]).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while putting left column '{lens.MatchesColumnNameRight}'.")));
+                } else
+                {
+                    results = lens.PutLeft(UnitColumn.Cons(), originalTarget.Value[lens.MatchesColumnNameLeft]).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while putting left column '{lens.MatchesColumnNameLeft}'.")));
+                }
+            }
+            return results.Unfold().Map(columns => Table.Cons(_tableName, columns.Where(col => col != UnitColumn.Cons())));
+        };
 
     public override Func<Table, Option<Table>, Result<Table>> PutRight =>
-        (source, target) => target.Match(
-            t => t.Columns.Count == _columnLenses.Count(l => l.MatchesLeft) // identity, rename, and delete lenses refer to the source columns
-                ? _columnLenses.Fold(
-                        Enumerable.Empty<Result<Column>>(),
-                        (lens, columns) => columns.Append(
-                            t[lens.MatchesColumnNameLeft].Match(
-                                col => lens.PutRight(col, source[lens.MatchesColumnNameRight]), 
-                                () => Result.Failure<Column>($"Column '{lens.MatchesColumnNameLeft}' not found"))
-                            )
-                        )
-                    .Unfold()
-                    .Map(columns => Table.Cons(_tableName, columns))
-                : Result.Failure<Table>($"The number of columns in the target table '{_tableName}' does not match the number of symmetric column lenses in the identity lens targeting '{_tableName}'"),
-            () => CreateRight(source)
-            );
+        (updatedSource, originalTarget) =>
+        {
+            if (!originalTarget)
+            {
+                return CreateRight(updatedSource);
+            }
+            var results = Enumerable.Empty<Result<Column>>();
+            foreach (var lens in _columnLenses)
+            {
+                if (lens.MatchesLeft)
+                {
+                    if (!updatedSource[lens.MatchesColumnNameLeft])
+                    {
+                        return Result.Failure<Table>($"Column '{lens.MatchesColumnNameLeft}' not found for lens {this}.");
+                    }
+
+                    results = lens.PutRight(updatedSource[lens.MatchesColumnNameLeft].Value, originalTarget.Value[lens.MatchesColumnNameRight]).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while putting right column '{lens.MatchesColumnNameLeft}'."))
+                    );
+                } else
+                {
+                    results = lens.PutRight(UnitColumn.Cons(), originalTarget.Value[lens.MatchesColumnNameRight]).Match(
+                        col => results = results.Append(Result.Success(col)),
+                        msg => results = results.Append(Result.Failure<Column>($"Error while putting right column '{lens.MatchesColumnNameRight}'."))
+                    );
+                }
+            }
+            return results.Unfold().Map(columns => Table.Cons(_tableName, columns.Where(col => col != UnitColumn.Cons())));
+        };
+
 
     public override Func<Table, Result<Table>> CreateRight =>
-        source => source.Columns.Count == _columnLenses.Count(l => l.MatchesLeft) // identity, rename, and delete lenses refer to the source columns
-            ? _columnLenses.Fold(
-                    Enumerable.Empty<Result<Column>>(),
-                    (lens, columns) => columns.Append(
-                        source[lens.MatchesColumnNameLeft].Match(
-                            col => lens.CreateRight(col), 
-                            () => Result.Failure<Column>($"Column '{lens.MatchesColumnNameLeft}' not found"))
-                        )
-                    )
-                .Unfold()
-                .Map(columns => Table.Cons(_tableName, columns))
-            : Result.Failure<Table>($"The number of columns in the source table '{source.Name}' does not match the number of symmetric column lenses in the identity lens targeting '{_tableName}'");
+        source => 
+        {
+            var results = Enumerable.Empty<Result<Column>>();
+            foreach (var lens in _columnLenses)
+            {
+                if (lens.MatchesLeft)
+                {
+                    if (!source[lens.MatchesColumnNameLeft])
+                    {
+                        return Result.Failure<Table>($"Column '{lens.MatchesColumnNameLeft}' not found for lens {this}.");
+                    }
 
-    public override Func<Table, Result<Table>> CreateLeft => 
-        source => source.Columns.Count == _columnLenses.Count(l => l.MatchesRight) // identity, rename, and insert lenses refer to the target columns
-            ? _columnLenses.Fold(
-                    Enumerable.Empty<Result<Column>>(),
-                    (lens, columns) => columns.Append(
-                        source[lens.MatchesColumnNameRight].Match(
-                            col => lens.CreateLeft(col), 
-                            () => Result.Failure<Column>($"Column '{lens.MatchesColumnNameRight}' not found for lens"))
-                        )
-                    )
-                .Unfold()
-                .Map(columns => Table.Cons(_tableName, columns))
-            : Result.Failure<Table>($"The number of columns in the source table '{source.Name}' does not match the number of symmetric column lenses in the identity lens targeting '{_tableName}'");
+                    results = lens.CreateRight(source[lens.MatchesColumnNameLeft].Value).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while creating right column '{lens.MatchesColumnNameLeft}'."))
+                    );
+                } else
+                {
+                    results = lens.CreateRight(UnitColumn.Cons()).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while creating right column '{lens.MatchesColumnNameRight}'."))
+                    );
+                }
+            }
+            return results.Unfold().Map(columns => Table.Cons(_tableName, columns.Where(col => col != UnitColumn.Cons())));
+        };
+
+    public override Func<Table, Result<Table>> CreateLeft =>
+        source => 
+        {
+            var results = Enumerable.Empty<Result<Column>>();
+            foreach (var lens in _columnLenses)
+            {
+                if (lens.MatchesRight)
+                {
+                    if (!source[lens.MatchesColumnNameRight])
+                    {
+                        return Result.Failure<Table>($"Column '{lens.MatchesColumnNameRight}' not found for lens {this}.");
+                    }
+
+                    results = lens.CreateLeft(source[lens.MatchesColumnNameRight].Value).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while creating left column '{lens.MatchesColumnNameRight}'."))
+                    );
+                } else
+                {
+                    results = lens.CreateLeft(UnitColumn.Cons()).Match(
+                        col => results.Append(Result.Success(col)),
+                        msg => results.Append(Result.Failure<Column>($"Error while creating left column '{lens.MatchesColumnNameLeft}'."))
+                    );
+                }
+            }
+            return results.Unfold().Map(columns => Table.Cons(_tableName, columns.Where(col => col != UnitColumn.Cons())));
+        };
 
     public static IdentityLens Cons(string tableName, IEnumerable<SymmetricColumnLens>? columnLenses = null)
         => new(tableName, columnLenses ?? []);

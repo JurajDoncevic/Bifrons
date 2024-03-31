@@ -47,7 +47,16 @@ public class IdentityLensTests : SymmetricLensTestingFramework<Table, Table>
         => (_left, _right, _updatedRight, _left);
 
     protected override (Table originalSource, Table expectedOriginalTarget, Table updatedTarget, Table expectedUpdatedSource) _roundTripWithLeftSideUpdateData 
-        => (_right, _left, _updatedLeft, _right);
+        => (_right, 
+            Table.Cons( // because Alias DataType can't be determined R -> L 
+                "TestTable", 
+                IntegerColumn.Cons("Id"),
+                StringColumn.Cons("Name"),
+                UnitColumn.Cons("Alias"),
+                DateTimeColumn.Cons("CreatedOn")
+            ), 
+            _updatedLeft, 
+            _right);
 
     protected override ISymmetricLens<Table, Table> _lens 
         => IdentityLens.Cons(
