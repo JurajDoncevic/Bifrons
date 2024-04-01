@@ -1,9 +1,14 @@
 ﻿namespace Bifrons.Lenses.Relational.Model;
 
 /// <summary>
+/// Column type tag interface.
+/// </summary>
+public interface IColumn<TData> { }
+
+/// <summary>
 /// Represents an integer column in a table.
 /// </summary>
-public sealed class IntegerColumn : Column
+public sealed class IntegerColumn : Column, IColumn<int>
 {
     /// <summary>
     /// Constructor.
@@ -23,7 +28,7 @@ public sealed class IntegerColumn : Column
 /// <summary>
 /// Represents a decimal column in a table.
 /// </summary>
-public sealed class DecimalColumn : Column
+public sealed class DecimalColumn : Column, IColumn<double>
 {
     /// <summary>
     /// Constructor.
@@ -43,7 +48,7 @@ public sealed class DecimalColumn : Column
 /// <summary>
 /// Represents a string column in a table.
 /// </summary>
-public sealed class StringColumn : Column
+public sealed class StringColumn : Column, IColumn<string>
 {
     /// <summary>
     /// Constructor.
@@ -63,7 +68,7 @@ public sealed class StringColumn : Column
 /// <summary>
 /// Represents a boolean column in a table.
 /// </summary>
-public sealed class BooleanColumn : Column
+public sealed class BooleanColumn : Column, IColumn<bool>
 {
     /// <summary>
     /// Constructor.
@@ -83,7 +88,7 @@ public sealed class BooleanColumn : Column
 /// <summary>
 /// Represents a date time column in a table.
 /// </summary>
-public sealed class DateTimeColumn : Column
+public sealed class DateTimeColumn : Column, IColumn<DateTime>
 {
     /// <summary>
     /// Constructor.
@@ -103,7 +108,7 @@ public sealed class DateTimeColumn : Column
 /// <summary>
 /// Column that represents a unit of data. This is useful for representing a column that is not included in a schema, but when there is a need for a placeholder.
 /// </summary>
-public sealed class UnitColumn : Column
+public sealed class UnitColumn : Column, IColumn<Unit>
 {
     public const string UNIT_NAME = "";
 
