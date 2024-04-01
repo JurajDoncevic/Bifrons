@@ -9,11 +9,11 @@ namespace Bifrons.Lenses.Relational.Columns;
 public abstract class SymmetricColumnLens : ISymmetricLens<Column, Column>
 {
     /// <summary>
-    /// The name of the column that this lens operates on the Left.
+    /// The name of the column that this lens matches on the Left.
     /// </summary>
     public abstract string MatchesColumnNameLeft { get; }
     /// <summary>
-    /// The name of the column that this lens operates on the Right.
+    /// The name of the column that this lens matches on the Right.
     /// </summary>
     public abstract string MatchesColumnNameRight { get; }
 

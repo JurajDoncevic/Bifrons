@@ -2,6 +2,10 @@
 using Bifrons.Lenses.Relational.Columns;
 namespace Bifrons.Lenses.Relational.Tables;
 
+/// <summary>
+/// Table identity lens. This lens is used to "copy" a table.
+/// id: Table <=> Table
+/// </summary>
 public class IdentityLens : SymmetricTableLens
 {
     private readonly string _tableName;
@@ -12,8 +16,20 @@ public class IdentityLens : SymmetricTableLens
     public override bool MatchesLeft => true;
     public override bool MatchesRight => true;
 
+    /// <summary>
+    /// Name of the table matched by the lens.
+    /// </summary>
+    public string TableName => _tableName;
+    /// <summary>
+    /// Column lenses that match and transform columns between the tables.
+    /// </summary>
     public IReadOnlyList<SymmetricColumnLens> ColumnLenses => _columnLenses;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="tableName">Name of the table matched by the lens.</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables.</param>
     protected IdentityLens(string tableName, IEnumerable<SymmetricColumnLens> columnLenses)
     {
         _tableName = tableName;
@@ -143,9 +159,19 @@ public class IdentityLens : SymmetricTableLens
             return results.Unfold().Map(columns => Table.Cons(_tableName, columns.Where(col => col != UnitColumn.Cons())));
         };
 
+    /// <summary>
+    /// Constructs a new identity lens
+    /// </summary>
+    /// <param name="tableName">Name of the table matched by the lens</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables</param>
     public static IdentityLens Cons(string tableName, IEnumerable<SymmetricColumnLens>? columnLenses = null)
         => new(tableName, columnLenses ?? []);
 
+    /// <summary>
+    /// Constructs a new identity lens
+    /// </summary>
+    /// <param name="tableName">Name of the table matched by the lens</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables</param>
     public static IdentityLens Cons(string tableName, params SymmetricColumnLens[] columnLenses)
         => new(tableName, columnLenses);
 }

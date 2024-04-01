@@ -1,5 +1,8 @@
 ﻿namespace Bifrons.Lenses.Relational.Model;
 
+/// <summary>
+/// Represents the data types of columns.
+/// </summary>
 public enum DataTypes
 {
     INTEGER,
@@ -10,8 +13,17 @@ public enum DataTypes
     UNIT
 }
 
+/// <summary>
+/// Extension methods for <see cref="DataTypes"/>.
+/// </summary>
 public static class DataTypesExtensions 
 {
+    /// <summary>
+    /// Converts a <see cref="DataTypes"/> to a <see cref="Type"/>.
+    /// </summary>
+    /// <param name="dataType">Data type to convert</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static Type ToType(this DataTypes dataType)
     {
         return dataType switch
@@ -26,6 +38,12 @@ public static class DataTypesExtensions
         };
     }
 
+    /// <summary>
+    /// Converts a <see cref="Type"/> to a <see cref="DataTypes"/>.
+    /// </summary>
+    /// <param name="type">Type to convert</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static DataTypes ToDataType(this Type type)
     {
         return type switch

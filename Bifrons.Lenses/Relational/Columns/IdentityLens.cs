@@ -49,8 +49,7 @@ public class IdentityLens : SymmetricColumnLens
     /// <summary>
     /// Constructs a new IdentityLens
     /// </summary>
-    /// <param name="columnName"></param>
-    /// <returns></returns>
+    /// <param name="columnName">Target column name</param>
     public static IdentityLens Cons(string columnName)
         => new(columnName);
 }

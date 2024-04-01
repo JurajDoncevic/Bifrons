@@ -1,5 +1,8 @@
 ﻿namespace Bifrons.Lenses.Relational.Model;
 
+/// <summary>
+/// Represents a column in a table.
+/// </summary>
 public abstract class Column
 {
     protected readonly string _name;
@@ -8,6 +11,11 @@ public abstract class Column
     public DataTypes DataType => _dataType;
     public string Name => _name;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="name"><Column name/param>
+    /// <param name="dataType">Column data type</param>
     protected Column(string name, DataTypes dataType)
     {
         _name = name;
@@ -15,6 +23,9 @@ public abstract class Column
         _type = dataType.ToType();
     }
 
+    /// <summary>
+    /// Constructs a concrete column type based on the data type.
+    /// </summary>
     public static Column Cons(string name, DataTypes dataType) => dataType switch
     {
         DataTypes.STRING => StringColumn.Cons(name),

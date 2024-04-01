@@ -2,6 +2,9 @@
 
 namespace Bifrons.Lenses.Relational.Tables;
 
+/// <summary>
+/// Table disconnect lens. This lens is used to disconnect a table from another table.
+/// </summary>
 public class DisconnectLens : SymmetricTableLens
 {
     private readonly string _leftTableName;
@@ -14,6 +17,13 @@ public class DisconnectLens : SymmetricTableLens
     public override bool MatchesLeft => !_leftTableDefault.IsUnit;
     public override bool MatchesRight => !_rightTableDefault.IsUnit;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="leftTableName">Name of the left table matched by the lens</param>
+    /// <param name="rightTableName">Name of the right table matched by the lens</param>
+    /// <param name="leftTableDefault">Default table for the left side</param>
+    /// <param name="rightTableDefault">Default table for the right side</param>
     protected DisconnectLens(string leftTableName, string rightTableName, Table leftTableDefault, Table rightTableDefault)
     {
         _leftTableName = leftTableName;
@@ -42,7 +52,13 @@ public class DisconnectLens : SymmetricTableLens
     public override Func<Table, Result<Table>> CreateLeft => 
         source => Result.Success(_leftTableDefault);
 
-
+    /// <summary>
+    /// Constructs a new disconnect lens.
+    /// </summary>
+    /// <param name="leftTableName">Name of the left table matched by the lens</param>
+    /// <param name="rightTableName">Name of the right table matched by the lens</param>
+    /// <param name="leftTableDefault">Default table for the left side</param>
+    /// <param name="rightTableDefault">Default table for the right side</param>
     public static DisconnectLens Cons(string leftTableName, string rightTableName, Table leftTableDefault, Table rightTableDefault)
         => new(leftTableName, rightTableName, leftTableDefault, rightTableDefault);
 }

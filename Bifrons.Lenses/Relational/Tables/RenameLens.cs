@@ -3,6 +3,10 @@ using Bifrons.Lenses.Relational.Model;
 
 namespace Bifrons.Lenses.Relational.Tables;
 
+/// <summary>
+/// Table rename lens. This lens is used to rename a table or match tables with different names.
+/// rename: Table <=> Table
+/// </summary>
 public sealed class RenameLens : IdentityLens
 {
     private readonly string _leftTableName;
@@ -14,6 +18,12 @@ public sealed class RenameLens : IdentityLens
     public override bool MatchesLeft => true;
     public override bool MatchesRight => true;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="leftTableName">Name of the left table matched by the lens</param>
+    /// <param name="rightTableName">Name of the right table matched by the lens</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables</param>
     private RenameLens(string leftTableName, string rightTableName, IEnumerable<SymmetricColumnLens> columnLenses) 
         : base(leftTableName, columnLenses)
     {
@@ -86,7 +96,6 @@ public sealed class RenameLens : IdentityLens
             return results.Unfold().Map(columns => Table.Cons(_rightTableName, columns.Where(col => col != UnitColumn.Cons())));
         };
 
-
     public override Func<Table, Result<Table>> CreateRight =>
         source =>
         {
@@ -145,9 +154,21 @@ public sealed class RenameLens : IdentityLens
             return results.Unfold().Map(columns => Table.Cons(_leftTableName, columns.Where(col => col != UnitColumn.Cons())));
         };
 
+    /// <summary>
+    /// Constructs a new rename lens
+    /// </summary>
+    /// <param name="leftTableName">Name of the left table matched by the lens</param>
+    /// <param name="rightTableName">Name of the right table matched by the lens</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables</param>
     public static RenameLens Cons(string leftTableName, string rightTableName, IEnumerable<SymmetricColumnLens>? columnLenses = null)
         => new(leftTableName, rightTableName, columnLenses ?? []);
 
+    /// <summary>
+    /// Constructs a new rename lens
+    /// </summary>
+    /// <param name="leftTableName">Name of the left table matched by the lens</param>
+    /// <param name="rightTableName">Name of the right table matched by the lens</param>
+    /// <param name="columnLenses">Column lenses that match and transform columns between the tables</param>
     public static RenameLens Cons(string leftTableName, string rightTableName, params SymmetricColumnLens[] columnLenses)
         => new(leftTableName, rightTableName, columnLenses);
 }
