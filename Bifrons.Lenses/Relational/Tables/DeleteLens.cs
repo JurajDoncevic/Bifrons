@@ -2,37 +2,16 @@
 
 namespace Bifrons.Lenses.Relational.Tables;
 
-public sealed class DeleteLens : SymmetricTableLens
+public sealed class DeleteLens : DisconnectLens
 {
     private readonly string _tableName;
+    public string TableName => _tableName;
 
-    public override string MatchesTableNameLeft => _tableName;
-    public override string MatchesTableNameRight => Table.DEFAULT_NAME;
-
-    public DeleteLens(string tableName)
+    private DeleteLens(string tableName)
+        : base(tableName, Table.UNIT_NAME, Table.ConsUnit(tableName), Table.ConsUnit())
     {
         _tableName = tableName;
     }
-
-    public override Func<Table, Option<Table>, Result<Table>> PutLeft =>
-        (updatedSource, originalTarget) =>
-            originalTarget.Match(
-                target => Result.Success(target),
-                () => CreateLeft(updatedSource)
-                );
-
-    public override Func<Table, Option<Table>, Result<Table>> PutRight =>
-        (updatedSource, originalTarget) =>
-            originalTarget.Match(
-                target => Result.Success(target),
-                () => CreateRight(updatedSource)
-                );
-
-    public override Func<Table, Result<Table>> CreateRight =>
-        source => Table.ConsUnit();
-
-    public override Func<Table, Result<Table>> CreateLeft =>
-        source => Table.Cons(_tableName, source.Columns);
 
     public static DeleteLens Cons(string tableName)
         => new(tableName);

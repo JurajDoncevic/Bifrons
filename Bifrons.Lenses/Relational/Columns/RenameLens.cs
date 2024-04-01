@@ -46,11 +46,6 @@ public sealed class RenameLens : IdentityLens
         source => Result.Success(Column.Cons(_leftColumnName, source.DataType));
 
 
-    public override string ToString()
-    {
-        return $"[rename('{_leftColumnName}', '{_rightColumnName}'): Column <=> Column]";
-    }
-
     /// <summary>
     /// Constructs a new RenameLens
     /// </summary>

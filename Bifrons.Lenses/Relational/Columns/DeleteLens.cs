@@ -15,14 +15,9 @@ public sealed class DeleteLens : DisconnectLens
     /// </summary>
     /// <param name="columnName">Target column name</param>
     private DeleteLens(string columnName)
-        : base(columnName, UnitColumn.DEFAULT_NAME, DataTypes.UNIT, DataTypes.UNIT)
+        : base(columnName, UnitColumn.UNIT_NAME, DataTypes.UNIT, DataTypes.UNIT)
     {
         _columnName = columnName;
-    }
-
-    public override string ToString()
-    {
-        return $"[delete('{_columnName}'): Column <=> Column]";
     }
 
     /// <summary>

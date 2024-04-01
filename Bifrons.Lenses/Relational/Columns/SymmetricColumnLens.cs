@@ -31,5 +31,14 @@ public abstract class SymmetricColumnLens : ISymmetricLens<Column, Column>
     public abstract Func<Column, Option<Column>, Result<Column>> PutRight { get; }
     public abstract Func<Column, Result<Column>> CreateRight { get; }
     public abstract Func<Column, Result<Column>> CreateLeft { get; }
+
+    public override string ToString() 
+    {
+        return $"[{this.GetType().Name[..^4]}(" 
+                + (MatchesLeft ? $"'{MatchesColumnNameLeft}'" : "")
+                + (MatchesLeft && MatchesRight ? ", " : "")
+                + (MatchesRight ? $"'{MatchesColumnNameRight}'" : "")
+                + "): Column <=> Column]";
+    }
 }
 

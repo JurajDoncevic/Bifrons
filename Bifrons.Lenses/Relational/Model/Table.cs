@@ -2,15 +2,14 @@
 
 public sealed class Table
 {
-    public const string DEFAULT_NAME = "";
+    public const string UNIT_NAME = "";
     private readonly string _name;
     private readonly List<Column> _columns;
-
-    private readonly bool IsUnit;
+    private readonly bool _isUnit;
 
     public string Name => _name;
-
     public IReadOnlyList<Column> Columns => _columns;
+    public bool IsUnit => _isUnit;
 
     public Option<Column> this[string columnName] => _columns.FirstOrDefault(column => column.Name == columnName) ?? Option.None<Column>();
 
@@ -18,7 +17,7 @@ public sealed class Table
     {
         _name = name;
         _columns = columns.ToList();
-        IsUnit = isUnit;
+        _isUnit = isUnit;
     }
 
     public override bool Equals(object? obj)
@@ -56,7 +55,7 @@ public sealed class Table
     public static Table Cons(string name, params Column[] columns)
         => new(name, columns ?? []);
 
-    public static Table ConsUnit()
-        => new(Table.DEFAULT_NAME, [], true);
+    public static Table ConsUnit(string name = UNIT_NAME)
+        => new(name, [], true);
 
 }

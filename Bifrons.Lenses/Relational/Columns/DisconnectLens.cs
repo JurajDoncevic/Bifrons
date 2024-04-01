@@ -10,15 +10,15 @@ public class DisconnectLens : SymmetricColumnLens
 {
     private readonly DataTypes _leftDataTypeDefault;
     private readonly DataTypes _rightDataTypeDefault;
-    protected readonly string _leftColumnName;
-    protected readonly string _rightColumnName;
+    private readonly string _leftColumnName;
+    private readonly string _rightColumnName;
 
     public override string MatchesColumnNameLeft => _leftColumnName;
     public override string MatchesColumnNameRight => _rightColumnName;
 
-    public override bool MatchesLeft => !_leftColumnName.Equals(UnitColumn.DEFAULT_NAME);
+    public override bool MatchesLeft => !_leftColumnName.Equals(UnitColumn.UNIT_NAME);
 
-    public override bool MatchesRight => !_rightColumnName.Equals(UnitColumn.DEFAULT_NAME);
+    public override bool MatchesRight => !_rightColumnName.Equals(UnitColumn.UNIT_NAME);
 
     /// <summary>
     /// Constructor
@@ -52,11 +52,6 @@ public class DisconnectLens : SymmetricColumnLens
 
     public override Func<Column, Result<Column>> CreateLeft =>
         source => Result.Success(Column.Cons(_leftColumnName, _leftDataTypeDefault));
-
-    public override string ToString()
-    {
-        return $"[disconnect('{_leftColumnName}'|'{_rightColumnName}'): Column <=> Column]";
-    }
 
 
     /// <summary>

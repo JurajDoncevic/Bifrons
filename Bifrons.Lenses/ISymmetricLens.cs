@@ -25,11 +25,6 @@ public interface ISymmetricLens<TLeft, TRight>
     public abstract Func<TRight, Result<TLeft>> CreateLeft { get; }
 
     /// <summary>
-    /// Constructor
-    /// </summary>
-    //protected IBaseSymmetricLens() { }
-
-    /// <summary>
     /// Inverts the lens
     /// </summary>
     /// <param name="originalLens">The original lens to invert</param>

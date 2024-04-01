@@ -3,11 +3,11 @@ using Bifrons.Lenses.Tests;
 
 namespace Bifrons.Lenses.Relational.Tables.Tests;
 
-public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Table>
+public sealed class RenameLensTests : SymmetricLensTestingFramework<Table, Table>
 {
     protected override Table _left 
         => Table.Cons(
-                "TestTable", 
+                "LeftTestTable", 
                 IntegerColumn.Cons("Id"),
                 StringColumn.Cons("Name"),
                 StringColumn.Cons("Alias"),
@@ -16,7 +16,7 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Tab
 
     protected override Table _right 
         => Table.Cons(
-                "TestTable",
+                "RightTestTable",
                 IntegerColumn.Cons("Id"),
                 StringColumn.Cons("QualName"),
                 StringColumn.Cons("Description"),
@@ -25,7 +25,7 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Tab
     
     private readonly Table _updatedLeft
         = Table.Cons(
-                "UpdatedTable",
+                "LeftUpdatedTable",
                 IntegerColumn.Cons("Id"),
                 StringColumn.Cons("Name"),
                 StringColumn.Cons("Alias"),
@@ -34,7 +34,7 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Tab
 
     private readonly Table _updatedRight 
         = Table.Cons(
-                "UpdatedTable",
+                "RightUpdatedTable",
                 IntegerColumn.Cons("Id"),
                 StringColumn.Cons("QualName"),
                 StringColumn.Cons("Description"),
@@ -49,7 +49,7 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Tab
     protected override (Table originalSource, Table expectedOriginalTarget, Table updatedTarget, Table expectedUpdatedSource) _roundTripWithLeftSideUpdateData 
         => (_right, 
             Table.Cons( // because Alias DataType can't be determined R -> L 
-                "TestTable", 
+                "LeftTestTable", 
                 IntegerColumn.Cons("Id"),
                 StringColumn.Cons("Name"),
                 UnitColumn.Cons("Alias"),
@@ -57,10 +57,10 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<Table, Tab
             ), 
             _updatedLeft, 
             _right);
-
     protected override ISymmetricLens<Table, Table> _lens 
-        => IdentityLens.Cons(
-                "TestTable",
+        => RenameLens.Cons(
+                "LeftTestTable",
+                "RightTestTable",
                 Columns.IdentityLens.Cons("Id"),
                 Columns.RenameLens.Cons("Name", "QualName"),
                 Columns.DeleteLens.Cons("Alias"),

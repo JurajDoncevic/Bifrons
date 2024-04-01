@@ -9,6 +9,8 @@ public class IdentityLens : SymmetricTableLens
 
     public override string MatchesTableNameLeft => _tableName;
     public override string MatchesTableNameRight => _tableName;
+    public override bool MatchesLeft => true;
+    public override bool MatchesRight => true;
 
     public IReadOnlyList<SymmetricColumnLens> ColumnLenses => _columnLenses;
 
@@ -19,7 +21,7 @@ public class IdentityLens : SymmetricTableLens
     }
 
     public override Func<Table, Option<Table>, Result<Table>> PutLeft =>
-        (updatedSource, originalTarget) => 
+        (updatedSource, originalTarget) =>
         {
             if (!originalTarget)
             {
@@ -38,7 +40,8 @@ public class IdentityLens : SymmetricTableLens
                     results = lens.PutLeft(updatedSource[lens.MatchesColumnNameRight].Value, originalTarget.Value[lens.MatchesColumnNameLeft]).Match(
                         col => results.Append(Result.Success(col)),
                         msg => results.Append(Result.Failure<Column>($"Error while putting left column '{lens.MatchesColumnNameRight}'.")));
-                } else
+                }
+                else
                 {
                     results = lens.PutLeft(UnitColumn.Cons(), originalTarget.Value[lens.MatchesColumnNameLeft]).Match(
                         col => results.Append(Result.Success(col)),
@@ -69,7 +72,8 @@ public class IdentityLens : SymmetricTableLens
                         col => results.Append(Result.Success(col)),
                         msg => results.Append(Result.Failure<Column>($"Error while putting right column '{lens.MatchesColumnNameLeft}'."))
                     );
-                } else
+                }
+                else
                 {
                     results = lens.PutRight(UnitColumn.Cons(), originalTarget.Value[lens.MatchesColumnNameRight]).Match(
                         col => results = results.Append(Result.Success(col)),
@@ -82,7 +86,7 @@ public class IdentityLens : SymmetricTableLens
 
 
     public override Func<Table, Result<Table>> CreateRight =>
-        source => 
+        source =>
         {
             var results = Enumerable.Empty<Result<Column>>();
             foreach (var lens in _columnLenses)
@@ -98,7 +102,8 @@ public class IdentityLens : SymmetricTableLens
                         col => results.Append(Result.Success(col)),
                         msg => results.Append(Result.Failure<Column>($"Error while creating right column '{lens.MatchesColumnNameLeft}'."))
                     );
-                } else
+                }
+                else
                 {
                     results = lens.CreateRight(UnitColumn.Cons()).Match(
                         col => results.Append(Result.Success(col)),
@@ -110,7 +115,7 @@ public class IdentityLens : SymmetricTableLens
         };
 
     public override Func<Table, Result<Table>> CreateLeft =>
-        source => 
+        source =>
         {
             var results = Enumerable.Empty<Result<Column>>();
             foreach (var lens in _columnLenses)
@@ -126,7 +131,8 @@ public class IdentityLens : SymmetricTableLens
                         col => results.Append(Result.Success(col)),
                         msg => results.Append(Result.Failure<Column>($"Error while creating left column '{lens.MatchesColumnNameRight}'."))
                     );
-                } else
+                }
+                else
                 {
                     results = lens.CreateLeft(UnitColumn.Cons()).Match(
                         col => results.Append(Result.Success(col)),
