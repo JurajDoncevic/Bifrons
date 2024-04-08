@@ -11,7 +11,7 @@ public interface IDataColumn
 
     public static IDataColumn Cons<TColumn, TData>(TColumn column, IEnumerable<TData> data)
         where TColumn : Column, IColumn<TData>
-    {;
+    {
         return column.DataType switch 
         {
             DataTypes.INTEGER => IntegerDataColumn.Cons((column as IntegerColumn)!, data as IEnumerable<int>),
@@ -141,6 +141,9 @@ public class UnitDataColumn : DataColumn<Unit, UnitColumn>
     {
     }
 
+    public static UnitDataColumn Cons()
+        => new(UnitColumn.Cons(), []);
+        
     public static UnitDataColumn Cons(UnitColumn column, IEnumerable<Unit>? data = null)
         => new(column, data ?? []);
 

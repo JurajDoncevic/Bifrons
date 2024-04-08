@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Booleans;
 
-public sealed class AndLens : SymmetricBoolLens
+public sealed class AndLens : SymmetricBooleanLens
 {
     private readonly bool _defaultOriginalSource;
     private AndLens(bool defaultOriginalSource)

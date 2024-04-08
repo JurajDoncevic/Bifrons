@@ -2,7 +2,7 @@
 
 namespace Bifrons.Lenses.Booleans;
 
-public abstract class SymmetricBoolLens : ISymmetricLens<bool, bool>
+public abstract class SymmetricBooleanLens : ISymmetricLens<bool, bool>
 {
     public abstract Func<bool, Option<bool>, Result<bool>> PutLeft { get; }
 

@@ -59,7 +59,7 @@ public abstract class IdentityLens<TDataColumn, TData, TColumn>
 }
 
 
-public class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int, IntegerColumn>
+public sealed class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int, IntegerColumn>
 {
     public IntegerIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<int, int> dataLens) 
         : base(columnLens, dataLens)
@@ -70,7 +70,7 @@ public class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int, IntegerC
         => new(columnLens, dataLens);
 }
 
-public class StringIdentityLens : IdentityLens<StringDataColumn, string, StringColumn>
+public sealed class StringIdentityLens : IdentityLens<StringDataColumn, string, StringColumn>
 {
     public StringIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<string, string> dataLens) 
         : base(columnLens, dataLens)
@@ -78,5 +78,38 @@ public class StringIdentityLens : IdentityLens<StringDataColumn, string, StringC
     }
 
     public static StringIdentityLens Cons(SymmetricColumnLens columnLens, SymmetricStringLens dataLens)
+        => new(columnLens, dataLens);
+}
+
+public sealed class DateTimeIdentityLens : IdentityLens<DateTimeDataColumn, DateTime, DateTimeColumn>
+{
+    public DateTimeIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens) 
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static DateTimeIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+        => new(columnLens, dataLens);
+}
+
+public sealed class BooleanIdentityLens : IdentityLens<BooleanDataColumn, bool, BooleanColumn>
+{
+    public BooleanIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens) 
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static BooleanIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens)
+        => new(columnLens, dataLens);
+}
+
+public sealed class DecimalIdentityLens : IdentityLens<DecimalDataColumn, double, DecimalColumn>
+{
+    public DecimalIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens) 
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static DecimalIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens)
         => new(columnLens, dataLens);
 }

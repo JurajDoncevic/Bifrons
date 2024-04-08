@@ -1,7 +1,7 @@
 ﻿
 namespace Bifrons.Lenses.Booleans;
 
-public sealed class NotLens : SymmetricBoolLens
+public sealed class NotLens : SymmetricBooleanLens
 {
     private NotLens()
     {

@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Booleans;
 
-public sealed class OrLens : SymmetricBoolLens
+public sealed class OrLens : SymmetricBooleanLens
 {
     private readonly bool _defaultOriginalSource;
     private OrLens(bool defaultOriginalSource)

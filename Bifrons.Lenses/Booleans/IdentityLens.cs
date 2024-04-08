@@ -1,6 +1,6 @@
 ﻿namespace Bifrons.Lenses.Booleans;
 
-public sealed class IdentityLens : SymmetricBoolLens
+public sealed class IdentityLens : SymmetricBooleanLens
 {
     private IdentityLens()
     {
