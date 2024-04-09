@@ -7,7 +7,7 @@ namespace Bifrons.Lenses.RelationalData.Columns;
 
 public abstract class IdentityLens<TDataColumn, TData, TColumn>
     : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : DataColumn<TData, TColumn>
+    where TDataColumn : DataColumn<TData, TColumn>, IDataColumn
     where TColumn : Column, IColumn<TData>
 {
     public IdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<TData, TData> dataLens) 
@@ -61,6 +61,8 @@ public abstract class IdentityLens<TDataColumn, TData, TColumn>
 
 public sealed class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int, IntegerColumn>
 {
+    public override DataTypes ForDataType => DataTypes.INTEGER;
+
     public IntegerIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<int, int> dataLens) 
         : base(columnLens, dataLens)
     {
@@ -72,6 +74,8 @@ public sealed class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int, I
 
 public sealed class StringIdentityLens : IdentityLens<StringDataColumn, string, StringColumn>
 {
+    public override DataTypes ForDataType => DataTypes.STRING;
+
     public StringIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<string, string> dataLens) 
         : base(columnLens, dataLens)
     {
@@ -83,6 +87,8 @@ public sealed class StringIdentityLens : IdentityLens<StringDataColumn, string, 
 
 public sealed class DateTimeIdentityLens : IdentityLens<DateTimeDataColumn, DateTime, DateTimeColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DATETIME;
+
     public DateTimeIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens) 
         : base(columnLens, dataLens)
     {
@@ -94,6 +100,8 @@ public sealed class DateTimeIdentityLens : IdentityLens<DateTimeDataColumn, Date
 
 public sealed class BooleanIdentityLens : IdentityLens<BooleanDataColumn, bool, BooleanColumn>
 {
+    public override DataTypes ForDataType => DataTypes.BOOLEAN;
+
     public BooleanIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens) 
         : base(columnLens, dataLens)
     {
@@ -105,6 +113,8 @@ public sealed class BooleanIdentityLens : IdentityLens<BooleanDataColumn, bool, 
 
 public sealed class DecimalIdentityLens : IdentityLens<DecimalDataColumn, double, DecimalColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DECIMAL;
+    
     public DecimalIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens) 
         : base(columnLens, dataLens)
     {

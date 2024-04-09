@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.RelationalData.Columns;
 
 public abstract class DeleteLens<TDataColumn, TData, TColumn>
     : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : DataColumn<TData, TColumn>
+    where TDataColumn : DataColumn<TData, TColumn>, IDataColumn
     where TColumn : Column, IColumn<TData>
 {
     protected DeleteLens(DeleteLens columnLens, ISymmetricLens<TData, TData> dataLens) : base(columnLens, dataLens)
@@ -56,6 +56,7 @@ public abstract class DeleteLens<TDataColumn, TData, TColumn>
 
 public sealed class IntegerDeleteLens : DeleteLens<IntegerDataColumn, int, IntegerColumn>
 {
+    public override DataTypes ForDataType => DataTypes.INTEGER;
     private IntegerDeleteLens(DeleteLens columnLens, Integers.DeleteLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -66,6 +67,7 @@ public sealed class IntegerDeleteLens : DeleteLens<IntegerDataColumn, int, Integ
 
 public sealed class StringDeleteLens : DeleteLens<StringDataColumn, string, StringColumn>
 {
+    public override DataTypes ForDataType => DataTypes.STRING;
     private StringDeleteLens(DeleteLens columnLens, Strings.DeleteLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -76,6 +78,7 @@ public sealed class StringDeleteLens : DeleteLens<StringDataColumn, string, Stri
 
 public sealed class DateTimeDeleteLens : DeleteLens<DateTimeDataColumn, DateTime, DateTimeColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DATETIME;
     private DateTimeDeleteLens(DeleteLens columnLens, DateTimes.DeleteLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -86,6 +89,7 @@ public sealed class DateTimeDeleteLens : DeleteLens<DateTimeDataColumn, DateTime
 
 public sealed class DecimalDeleteLens : DeleteLens<DecimalDataColumn, double, DecimalColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DECIMAL;
     private DecimalDeleteLens(DeleteLens columnLens, Decimals.DeleteLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -96,6 +100,8 @@ public sealed class DecimalDeleteLens : DeleteLens<DecimalDataColumn, double, De
 
 public sealed class BooleanDeleteLens : DeleteLens<BooleanDataColumn, bool, BooleanColumn>
 {
+    public override DataTypes ForDataType => DataTypes.BOOLEAN;
+
     private BooleanDeleteLens(DeleteLens columnLens, Booleans.DeleteLens dataLens) : base(columnLens, dataLens)
     {
     }

@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.RelationalData.Columns;
 
 public abstract class InsertLens<TDataColumn, TData, TColumn>
     : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : DataColumn<TData, TColumn>
+    where TDataColumn : DataColumn<TData, TColumn>, IDataColumn
     where TColumn : Column, IColumn<TData>
 {
     protected InsertLens(InsertLens columnLens, ISymmetricLens<TData, TData> dataLens) : base(columnLens, dataLens)
@@ -56,6 +56,8 @@ public abstract class InsertLens<TDataColumn, TData, TColumn>
 
 public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int, IntegerColumn>
 {
+    public override DataTypes ForDataType => DataTypes.INTEGER;
+
     private IntegerInsertLens(InsertLens columnLens, Integers.InsertLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -66,6 +68,8 @@ public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int, Integ
 
 public sealed class StringInsertLens : InsertLens<StringDataColumn, string, StringColumn>
 {
+    public override DataTypes ForDataType => DataTypes.STRING;
+
     private StringInsertLens(InsertLens columnLens, Strings.InsertLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -76,6 +80,8 @@ public sealed class StringInsertLens : InsertLens<StringDataColumn, string, Stri
 
 public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime, DateTimeColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DATETIME;
+
     private DateTimeInsertLens(InsertLens columnLens, DateTimes.InsertLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -86,6 +92,8 @@ public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime
 
 public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, BooleanColumn>
 {
+    public override DataTypes ForDataType => DataTypes.BOOLEAN;
+
     private BooleanInsertLens(InsertLens columnLens, Booleans.InsertLens dataLens) : base(columnLens, dataLens)
     {
     }
@@ -96,6 +104,8 @@ public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, Bool
 
 public sealed class DecimalInsertLens : InsertLens<DecimalDataColumn, double, DecimalColumn>
 {
+    public override DataTypes ForDataType => DataTypes.DECIMAL;
+
     private DecimalInsertLens(InsertLens columnLens, Decimals.InsertLens dataLens) : base(columnLens, dataLens)
     {
     }

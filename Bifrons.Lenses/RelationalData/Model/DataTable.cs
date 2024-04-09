@@ -10,6 +10,8 @@ public sealed class DataTable
     public string Name => _name;
     public IReadOnlyList<IDataColumn> Columns => _columns;
 
+    public IDataColumn? this[string columnName] => _columns.FirstOrDefault(column => column.Name == columnName);
+
     public Table Table => Table.Cons(_name, _columns.Map(dataColumn => Column.Cons(dataColumn.Name, dataColumn.DataType)));
 
     private DataTable(string tableName, IEnumerable<IDataColumn> columns)
