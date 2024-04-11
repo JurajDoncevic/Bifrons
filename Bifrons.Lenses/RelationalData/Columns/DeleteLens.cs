@@ -6,26 +6,26 @@ namespace Bifrons.Lenses.RelationalData.Columns;
 
 public abstract class DeleteLens<TDataColumn, TData, TColumn>
     : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : DataColumn<TData, TColumn>, IDataColumn
+    where TDataColumn : IDataColumn<TData, TColumn>, DataColumn
     where TColumn : Column, IColumn<TData>
 {
     protected DeleteLens(DeleteLens columnLens, ISymmetricLens<TData, TData> dataLens) : base(columnLens, dataLens)
     {
     }
 
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutLeft => 
-        (updatedSource, originalTarget) 
+    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutLeft =>
+        (updatedSource, originalTarget)
             => originalTarget.Match(
                 target => _columnLens.PutLeft(updatedSource.Column, target.Column)
                             .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l, r))
                                 .Unfold()
-                                .Map(data => IDataColumn.Cons((column as TColumn)!, data) as TDataColumn)
+                                .Map(data => DataColumn.Cons((column as TColumn)!, data) as TDataColumn)
                                 )!,
                 () => CreateLeft(updatedSource)
                 )!;
 
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutRight => 
-        (updatedSource, originalTarget) 
+    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutRight =>
+        (updatedSource, originalTarget)
             => originalTarget.Match(
                 target => _columnLens.PutRight(updatedSource.Column, target.Column)
                             .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutRight(l, r))
@@ -43,7 +43,7 @@ public abstract class DeleteLens<TDataColumn, TData, TColumn>
             ).Unfold()
             .Map(data => UnitDataColumn.Cons() as TDataColumn))!;
 
-    public override Func<TDataColumn, Result<TDataColumn>> CreateLeft => 
+    public override Func<TDataColumn, Result<TDataColumn>> CreateLeft =>
         source => _columnLens.CreateLeft(source.Column)
             .Bind(column => source.Data.Fold(
                 Enumerable.Empty<Result<TData>>(),

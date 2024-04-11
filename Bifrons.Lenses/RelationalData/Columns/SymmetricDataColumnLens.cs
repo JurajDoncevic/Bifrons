@@ -4,7 +4,7 @@ using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Lenses.RelationalData.Columns;
 
-public interface ISymmetricDataColumnLens 
+public interface ISymmetricDataColumnLens
 {
     string MatchesColumnNameLeft { get; }
     string MatchesColumnNameRight { get; }
@@ -15,8 +15,8 @@ public interface ISymmetricDataColumnLens
 
 public abstract class SymmetricDataColumnLens<TLeftDataColumn, TLeftData, TLeftColumn, TRightDataColumn, TRightData, TRightColumn>
     : ISymmetricLens<TLeftDataColumn, TRightDataColumn>, ISymmetricDataColumnLens
-    where TLeftDataColumn : DataColumn<TLeftData, TLeftColumn>, IDataColumn
-    where TRightDataColumn : DataColumn<TRightData, TRightColumn>, IDataColumn
+    where TLeftDataColumn : IDataColumn<TLeftData, TLeftColumn>, DataColumn
+    where TRightDataColumn : IDataColumn<TRightData, TRightColumn>, DataColumn
     where TLeftColumn : Column, IColumn<TLeftData>
     where TRightColumn : Column, IColumn<TRightData>
 {

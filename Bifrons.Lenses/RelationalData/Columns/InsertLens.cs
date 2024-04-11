@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.RelationalData.Columns;
 
 public abstract class InsertLens<TDataColumn, TData, TColumn>
     : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : DataColumn<TData, TColumn>, IDataColumn
+    where TDataColumn : IDataColumn<TData, TColumn>, DataColumn
     where TColumn : Column, IColumn<TData>
 {
     protected InsertLens(InsertLens columnLens, ISymmetricLens<TData, TData> dataLens) : base(columnLens, dataLens)
@@ -19,7 +19,7 @@ public abstract class InsertLens<TDataColumn, TData, TColumn>
                 target => _columnLens.PutLeft(updatedSource.Column, target.Column)
                             .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l, r))
                                 .Unfold()
-                                
+
                                 .Map(data => UnitDataColumn.Cons() as TDataColumn)
                                 )!,
                 () => CreateLeft(updatedSource)
@@ -31,7 +31,7 @@ public abstract class InsertLens<TDataColumn, TData, TColumn>
                 target => _columnLens.PutRight(updatedSource.Column, target.Column)
                             .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutRight(l, r))
                                 .Unfold()
-                                .Map(data => IDataColumn.Cons((column as TColumn)!, data) as TDataColumn)
+                                .Map(data => DataColumn.Cons((column as TColumn)!, data) as TDataColumn)
                                 )!,
                 () => CreateRight(updatedSource)
                 )!;
@@ -63,7 +63,7 @@ public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int, Integ
     }
 
     public static IntegerInsertLens Cons(InsertLens columnLens, Integers.InsertLens dataLens)
-        => new (columnLens, dataLens);
+        => new(columnLens, dataLens);
 }
 
 public sealed class StringInsertLens : InsertLens<StringDataColumn, string, StringColumn>
@@ -75,7 +75,7 @@ public sealed class StringInsertLens : InsertLens<StringDataColumn, string, Stri
     }
 
     public static StringInsertLens Cons(InsertLens columnLens, Strings.InsertLens dataLens)
-        => new (columnLens, dataLens);
+        => new(columnLens, dataLens);
 }
 
 public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime, DateTimeColumn>
@@ -87,7 +87,7 @@ public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime
     }
 
     public static DateTimeInsertLens Cons(InsertLens columnLens, DateTimes.InsertLens dataLens)
-        => new (columnLens, dataLens);
+        => new(columnLens, dataLens);
 }
 
 public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, BooleanColumn>
@@ -99,7 +99,7 @@ public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, Bool
     }
 
     public static BooleanInsertLens Cons(InsertLens columnLens, Booleans.InsertLens dataLens)
-        => new (columnLens, dataLens);
+        => new(columnLens, dataLens);
 }
 
 public sealed class DecimalInsertLens : InsertLens<DecimalDataColumn, double, DecimalColumn>
@@ -111,5 +111,5 @@ public sealed class DecimalInsertLens : InsertLens<DecimalDataColumn, double, De
     }
 
     public static DecimalInsertLens Cons(InsertLens columnLens, Decimals.InsertLens dataLens)
-        => new (columnLens, dataLens);
+        => new(columnLens, dataLens);
 }

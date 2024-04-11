@@ -13,57 +13,60 @@ public sealed class IdentityLens : SymmetricDataTableLens
         _dataColumnLenses = dataColumnLenses.ToList();
     }
 
-    public override Func<DataTable, Option<DataTable>, Result<DataTable>> PutLeft => 
+    public override Func<DataTable, Option<DataTable>, Result<DataTable>> PutLeft =>
         (updatedSource, originalTarget) => originalTarget.Match(
             target => _dataColumnLenses
                 .Map(lens => (dataColumn: updatedSource[lens.MatchesColumnNameLeft], lens: lens))
                 .Where(t => t.dataColumn is not null)
-                .Map(t => t.lens.ForDataType switch {
-                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<DataColumn<int, IntegerColumn>, int, IntegerColumn, DataColumn<int, IntegerColumn>, int, IntegerColumn>)!.PutLeft(t.dataColumn as DataColumn<int, IntegerColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<int, IntegerColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.STRING => (t.lens as SymmetricDataColumnLens<DataColumn<string, StringColumn>, string, StringColumn, DataColumn<string, StringColumn>, string, StringColumn>)!.PutLeft(t.dataColumn as DataColumn<string, StringColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<string, StringColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<DataColumn<double, DecimalColumn>, double, DecimalColumn, DataColumn<double, DecimalColumn>, double, DecimalColumn>)!.PutLeft(t.dataColumn as DataColumn<double, DecimalColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<double, DecimalColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<DataColumn<bool, BooleanColumn>, bool, BooleanColumn, DataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.PutLeft(t.dataColumn as DataColumn<bool, BooleanColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<bool, BooleanColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.PutLeft(t.dataColumn as DataColumn<DateTime, DateTimeColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<DateTime, DateTimeColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<DataColumn<Unit, UnitColumn>, Unit, UnitColumn, DataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.PutLeft(t.dataColumn as DataColumn<Unit, UnitColumn>, target[t.lens.MatchesColumnNameRight] as DataColumn<Unit, UnitColumn>).Map(_ => _ as IDataColumn),
-                    _ => Result.Failure<IDataColumn>($"Unsupported data type {t.lens.ForDataType}")
+                .Map(t => t.lens.ForDataType switch
+                {
+                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<IDataColumn<int, IntegerColumn>, int, IntegerColumn, I IDataColumn<int, IntegerColumn>, int, IntegerColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<int, IntegerColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<int, IntegerColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.STRING => (t.lens as SymmetricDataColumnLens<IDataColumn<string, StringColumn>, string, StringColumn, I IDataColumn<string, StringColumn>, string, StringColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<string, StringColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<string, StringColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<IDataColumn<double, DecimalColumn>, double, DecimalColumn, I IDataColumn<double, DecimalColumn>, double, DecimalColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<double, DecimalColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<double, DecimalColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<IDataColumn<bool, BooleanColumn>, bool, BooleanColumn, I IDataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<bool, BooleanColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<bool, BooleanColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, I IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<DateTime, DateTimeColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<DateTime, DateTimeColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<IDataColumn<Unit, UnitColumn>, Unit, UnitColumn, I IDataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<Unit, UnitColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<Unit, UnitColumn>).Map(_ => _ as DataColumn),
+                    _ => Result.Failure<DataColumn>($"Unsupported data type {t.lens.ForDataType}")
                 })
                 .Unfold()
                 .Map(dataColumns => DataTable.Cons(updatedSource.Name, dataColumns)),
             () => CreateLeft(updatedSource)
             );
 
-    public override Func<DataTable, Option<DataTable>, Result<DataTable>> PutRight => 
+    public override Func<DataTable, Option<DataTable>, Result<DataTable>> PutRight =>
         (updatedSource, originalTarget) => originalTarget.Match(
             target => _dataColumnLenses
                 .Map(lens => (dataColumn: updatedSource[lens.MatchesColumnNameRight], lens: lens))
                 .Where(t => t.dataColumn is not null)
-                .Map(t => t.lens.ForDataType switch {
-                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<DataColumn<int, IntegerColumn>, int, IntegerColumn, DataColumn<int, IntegerColumn>, int, IntegerColumn>)!.PutRight(t.dataColumn as DataColumn<int, IntegerColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<int, IntegerColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.STRING => (t.lens as SymmetricDataColumnLens<DataColumn<string, StringColumn>, string, StringColumn, DataColumn<string, StringColumn>, string, StringColumn>)!.PutRight(t.dataColumn as DataColumn<string, StringColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<string, StringColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<DataColumn<double, DecimalColumn>, double, DecimalColumn, DataColumn<double, DecimalColumn>, double, DecimalColumn>)!.PutRight(t.dataColumn as DataColumn<double, DecimalColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<double, DecimalColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<DataColumn<bool, BooleanColumn>, bool, BooleanColumn, DataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.PutRight(t.dataColumn as DataColumn<bool, BooleanColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<bool, BooleanColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.PutRight(t.dataColumn as DataColumn<DateTime, DateTimeColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<DateTime, DateTimeColumn>).Map(_ => _ as IDataColumn),
-                    DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<DataColumn<Unit, UnitColumn>, Unit, UnitColumn, DataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.PutRight(t.dataColumn as DataColumn<Unit, UnitColumn>, target[t.lens.MatchesColumnNameLeft] as DataColumn<Unit, UnitColumn>).Map(_ => _ as IDataColumn),
-                    _ => Result.Failure<IDataColumn>($"Unsupported data type {t.lens.ForDataType}")
+                .Map(t => t.lens.ForDataType switch
+                {
+                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<IDataColumn<int, IntegerColumn>, int, IntegerColumn, I IDataColumn<int, IntegerColumn>, int, IntegerColumn>)!.PutRight(t.dataColumn aIs IDataColumn<int, IntegerColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<int, IntegerColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.STRING => (t.lens as SymmetricDataColumnLens<IDataColumn<string, StringColumn>, string, StringColumn, I IDataColumn<string, StringColumn>, string, StringColumn>)!.PutRight(t.dataColumn aIs IDataColumn<string, StringColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<string, StringColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<IDataColumn<double, DecimalColumn>, double, DecimalColumn, I IDataColumn<double, DecimalColumn>, double, DecimalColumn>)!.PutRight(t.dataColumn aIs IDataColumn<double, DecimalColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<double, DecimalColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<IDataColumn<bool, BooleanColumn>, bool, BooleanColumn, I IDataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.PutRight(t.dataColumn aIs IDataColumn<bool, BooleanColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<bool, BooleanColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, I IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.PutRight(t.dataColumn aIs IDataColumn<DateTime, DateTimeColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<DateTime, DateTimeColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<IDataColumn<Unit, UnitColumn>, Unit, UnitColumn, I IDataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.PutRight(t.dataColumn aIs IDataColumn<Unit, UnitColumn>, target[t.lens.MatchesColumnNameLeft] Ias IDataColumn<Unit, UnitColumn>).Map(_ => _ as DataColumn),
+                    _ => Result.Failure<DataColumn>($"Unsupported data type {t.lens.ForDataType}")
                 })
                 .Unfold()
                 .Map(dataColumns => DataTable.Cons(updatedSource.Name, dataColumns)),
             () => CreateRight(updatedSource)
             );
 
-    public override Func<DataTable, Result<DataTable>> CreateRight => 
+    public override Func<DataTable, Result<DataTable>> CreateRight =>
         source => _dataColumnLenses
             .Where(lens => lens.MatchesLeft)
             .Map(lens => (dataColumn: source[lens.MatchesColumnNameLeft], lens: lens))
             .Where(t => t.dataColumn is not null)
-            .Map(t => t.lens.ForDataType switch {
-                DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<DataColumn<int, IntegerColumn>, int, IntegerColumn, DataColumn<int, IntegerColumn>, int, IntegerColumn>)!.CreateRight(t.dataColumn as DataColumn<int, IntegerColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.STRING => (t.lens as SymmetricDataColumnLens<DataColumn<string, StringColumn>, string, StringColumn, DataColumn<string, StringColumn>, string, StringColumn>)!.CreateRight(t.dataColumn as DataColumn<string, StringColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<DataColumn<double, DecimalColumn>, double, DecimalColumn, DataColumn<double, DecimalColumn>, double, DecimalColumn>)!.CreateRight(t.dataColumn as DataColumn<double, DecimalColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<DataColumn<bool, BooleanColumn>, bool, BooleanColumn, DataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.CreateRight(t.dataColumn as DataColumn<bool, BooleanColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.CreateRight(t.dataColumn as DataColumn<DateTime, DateTimeColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<DataColumn<Unit, UnitColumn>, Unit, UnitColumn, DataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.CreateRight(t.dataColumn as DataColumn<Unit, UnitColumn>).Map(_ => _ as IDataColumn),
-                _ => Result.Failure<IDataColumn>($"Unsupported data type {t.lens.ForDataType}")
+            .Map(t => t.lens.ForDataType switch
+            {
+                DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<IDataColumn<int, IntegerColumn>, int, IntegerColumn, I IDataColumn<int, IntegerColumn>, int, IntegerColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<int, IntegerColumn>).Map(_ => _ as DataColumn),
+                DataTypes.STRING => (t.lens as SymmetricDataColumnLens<IDataColumn<string, StringColumn>, string, StringColumn, I IDataColumn<string, StringColumn>, string, StringColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<string, StringColumn>).Map(_ => _ as DataColumn),
+                DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<IDataColumn<double, DecimalColumn>, double, DecimalColumn, I IDataColumn<double, DecimalColumn>, double, DecimalColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<double, DecimalColumn>).Map(_ => _ as DataColumn),
+                DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<IDataColumn<bool, BooleanColumn>, bool, BooleanColumn, I IDataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<bool, BooleanColumn>).Map(_ => _ as DataColumn),
+                DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, I IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<DateTime, DateTimeColumn>).Map(_ => _ as DataColumn),
+                DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<IDataColumn<Unit, UnitColumn>, Unit, UnitColumn, I IDataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.CreateRight(t.dataColumn aIs IDataColumn<Unit, UnitColumn>).Map(_ => _ as DataColumn),
+                _ => Result.Failure<DataColumn>($"Unsupported data type {t.lens.ForDataType}")
             })
             .Unfold()
             .Map(dataColumns => DataTable.Cons(source.Name, dataColumns));
@@ -73,14 +76,15 @@ public sealed class IdentityLens : SymmetricDataTableLens
             .Where(lens => lens.MatchesRight)
             .Map(lens => (dataColumn: source[lens.MatchesColumnNameRight], lens: lens))
             .Where(t => t.dataColumn is not null)
-            .Map(t => t.lens.ForDataType switch {
-                DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<DataColumn<int, IntegerColumn>, int, IntegerColumn, DataColumn<int, IntegerColumn>, int, IntegerColumn>)!.CreateLeft(t.dataColumn as DataColumn<int, IntegerColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.STRING => (t.lens as SymmetricDataColumnLens<DataColumn<string, StringColumn>, string, StringColumn, DataColumn<string, StringColumn>, string, StringColumn>)!.CreateLeft(t.dataColumn as DataColumn<string, StringColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<DataColumn<double, DecimalColumn>, double, DecimalColumn, DataColumn<double, DecimalColumn>, double, DecimalColumn>)!.CreateLeft(t.dataColumn as DataColumn<double, DecimalColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<DataColumn<bool, BooleanColumn>, bool, BooleanColumn, DataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.CreateLeft(t.dataColumn as DataColumn<bool, BooleanColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, DataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.CreateLeft(t.dataColumn as DataColumn<DateTime, DateTimeColumn>).Map(_ => _ as IDataColumn),
-                DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<DataColumn<Unit, UnitColumn>, Unit, UnitColumn, DataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.CreateLeft(t.dataColumn as DataColumn<Unit, UnitColumn>).Map(_ => _ as IDataColumn),
-                _ => Result.Failure<IDataColumn>($"Unsupported data type {t.lens.ForDataType}")
+            .Map(t => t.lens.ForDataType switch
+            {
+                DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<IDataColumn<int, IntegerColumn>, int, IntegerColumn, I IDataColumn<int, IntegerColumn>, int, IntegerColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<int, IntegerColumn>).Map(_ => _ as DataColumn),
+                DataTypes.STRING => (t.lens as SymmetricDataColumnLens<IDataColumn<string, StringColumn>, string, StringColumn, I IDataColumn<string, StringColumn>, string, StringColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<string, StringColumn>).Map(_ => _ as DataColumn),
+                DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<IDataColumn<double, DecimalColumn>, double, DecimalColumn, I IDataColumn<double, DecimalColumn>, double, DecimalColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<double, DecimalColumn>).Map(_ => _ as DataColumn),
+                DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<IDataColumn<bool, BooleanColumn>, bool, BooleanColumn, I IDataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<bool, BooleanColumn>).Map(_ => _ as DataColumn),
+                DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, I IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<DateTime, DateTimeColumn>).Map(_ => _ as DataColumn),
+                DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<IDataColumn<Unit, UnitColumn>, Unit, UnitColumn, I IDataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.CreateLeft(t.dataColumn aIs IDataColumn<Unit, UnitColumn>).Map(_ => _ as DataColumn),
+                _ => Result.Failure<DataColumn>($"Unsupported data type {t.lens.ForDataType}")
             })
             .Unfold()
             .Map(dataColumns => DataTable.Cons(source.Name, dataColumns));

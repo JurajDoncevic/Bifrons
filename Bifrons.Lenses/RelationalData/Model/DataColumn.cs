@@ -2,153 +2,115 @@
 
 namespace Bifrons.Lenses.RelationalData.Model;
 
-public interface IDataColumn 
+public interface IDataColumn<TData>
 {
-    string Name { get; }
-    DataTypes DataType { get; }
-    Type Type { get; }
-    IReadOnlyList<object?> BoxedData { get; }
+    IReadOnlyList<TData> Data { get; }
+}
 
-    public static IDataColumn Cons<TColumn, TData>(TColumn column, IEnumerable<TData> data)
-        where TColumn : Column, IColumn<TData>
-    {
-        return column.DataType switch 
-        {
-            DataTypes.INTEGER => IntegerDataColumn.Cons((column as IntegerColumn)!, data as IEnumerable<int>),
-            DataTypes.STRING => StringDataColumn.Cons((column as StringColumn)!, data as IEnumerable<string>),
-            DataTypes.BOOLEAN => BooleanDataColumn.Cons((column as BooleanColumn)!, data as IEnumerable<bool>),
-            DataTypes.DECIMAL => DecimalDataColumn.Cons((column as DecimalColumn)!, data as IEnumerable<double>),
-            DataTypes.DATETIME => DateTimeDataColumn.Cons((column as DateTimeColumn)!, data as IEnumerable<DateTime>),
-            DataTypes.UNIT => UnitDataColumn.Cons((column as UnitColumn)!, data as IEnumerable<Unit>),
-            _ => throw new ArgumentException($"Unsupported column data type: {column.DataType}")
-        };
-    }
- }
-
-public abstract class DataColumn<TData, TColumn> : IDataColumn
-    where TColumn : Column, IColumn<TData>
+public abstract class DataColumn
 {
-    private readonly List<TData> _data;
-    private readonly TColumn _column;
+    private Column _column;
+    private List<object?> _boxedData;
 
-    public IReadOnlyList<TData> Data => _data;
-    public TColumn Column => _column;
-
+    public Column Column => _column;
+    public IReadOnlyList<object?> BoxedData => _boxedData;
+    public DataTypes DataType => _column.DataType;
     public string Name => _column.Name;
-    public DataTypes DataType => typeof(TData).ToDataType();
-    public Type Type => typeof(TData);
-    public IReadOnlyList<object?> BoxedData => _data.Map(data => (object?)data).ToList();
+    public bool IsUnit => _column.DataType == DataTypes.UNIT;
 
-    protected DataColumn(TColumn column, IEnumerable<TData> data)
+    protected DataColumn(Column column, IEnumerable<object?> boxedData)
     {
-        _data = data.ToList();
         _column = column;
+        _boxedData = boxedData.ToList();
     }
 
-    public bool Equals(IDataColumn? other)
-    {
-        if (other is null)
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return Name == other.Name && DataType == other.DataType && Type == other.Type && BoxedData.SequenceEqual(other.BoxedData);
-    }
-
-    public override bool Equals(object? obj)
-        => obj is IDataColumn other && Equals(other);
-
-    public override int GetHashCode()
-    {
-        var hash = new HashCode();
-        hash.Add(Name);
-        hash.Add(DataType);
-        hash.Add(Type);
-        hash.Add(BoxedData);
-        return hash.ToHashCode();
-    }
+    public static Result<DataColumn> Cons(Column column, IEnumerable<object?>? boxedData = null)
+        => Result.AsResult(
+            () => column.DataType switch
+            {
+                DataTypes.STRING => StringDataColumn.Cons((column as StringColumn)!, boxedData?.Cast<string?>()),
+                DataTypes.INTEGER => IntegerDataColumn.Cons((column as IntegerColumn)!, boxedData?.Cast<int?>()),
+                DataTypes.DECIMAL => DecimalDataColumn.Cons((column as DecimalColumn)!, boxedData?.Cast<double?>()),
+                DataTypes.BOOLEAN => BooleanDataColumn.Cons((column as BooleanColumn)!, boxedData?.Cast<bool?>()),
+                DataTypes.DATETIME => DateTimeDataColumn.Cons((column as DateTimeColumn)!, boxedData?.Cast<DateTime?>()),
+                _ => Result.Failure<DataColumn>($"Unsupported data type: {column.DataType}")
+            });
 }
 
-public class IntegerDataColumn : DataColumn<int, IntegerColumn>
+public class StringDataColumn : DataColumn, IDataColumn<string>
 {
-    private IntegerDataColumn(IntegerColumn column, IEnumerable<int> data) : base(column, data)
+    public IReadOnlyList<string> Data => BoxedData.Cast<string>().ToList();
+
+    private StringDataColumn(StringColumn column, IEnumerable<string?> data)
+        : base(column, data.Cast<object?>())
     {
     }
 
-    public static IntegerDataColumn Cons(IntegerColumn column, IEnumerable<int>? data = null)
-        => new(column, data ?? []);
-
-    public static IntegerDataColumn Cons(IntegerColumn column, params int[] data)
-        => new(column, data ?? []);
+    public static StringDataColumn Cons(StringColumn column, IEnumerable<string?>? data = null)
+        => new StringDataColumn(column, data ?? []);
 }
 
-public class StringDataColumn : DataColumn<string, StringColumn>
+public class IntegerDataColumn : DataColumn, IDataColumn<int>
 {
-    private StringDataColumn(StringColumn column, IEnumerable<string> data) : base(column, data)
+    public IReadOnlyList<int> Data => BoxedData.Cast<int>().ToList();
+
+    private IntegerDataColumn(IntegerColumn column, IEnumerable<int?> data)
+        : base(column, data.Cast<object?>())
     {
     }
 
-    public static StringDataColumn Cons(StringColumn column, IEnumerable<string>? data = null)
-        => new(column, data ?? []);
-
-    public static StringDataColumn Cons(StringColumn column, params string[] data)
-        => new(column, data ?? []);
+    public static IntegerDataColumn Cons(IntegerColumn column, IEnumerable<int?>? data = null)
+        => new IntegerDataColumn(column, data ?? []);
 }
 
-public class BooleanDataColumn : DataColumn<bool, BooleanColumn>
+public class DecimalDataColumn : DataColumn, IDataColumn<double>
 {
-    private BooleanDataColumn(BooleanColumn column, IEnumerable<bool> data) : base(column, data)
+    public IReadOnlyList<double> Data => BoxedData.Cast<double>().ToList();
+
+    private DecimalDataColumn(DecimalColumn column, IEnumerable<double?> data)
+        : base(column, data.Cast<object?>())
     {
     }
 
-    public static BooleanDataColumn Cons(BooleanColumn column, IEnumerable<bool>? data = null)
-        => new(column, data ?? []);
-
-    public static BooleanDataColumn Cons(BooleanColumn column, params bool[] data)
-        => new(column, data ?? []);
+    public static DecimalDataColumn Cons(DecimalColumn column, IEnumerable<double?>? data = null)
+        => new DecimalDataColumn(column, data ?? []);
 }
 
-public class DecimalDataColumn : DataColumn<double, DecimalColumn>
+public class BooleanDataColumn : DataColumn, IDataColumn<bool>
 {
-    private DecimalDataColumn(DecimalColumn column, IEnumerable<double> data) : base(column, data)
+    public IReadOnlyList<bool> Data => BoxedData.Cast<bool>().ToList();
+
+    private BooleanDataColumn(BooleanColumn column, IEnumerable<bool?> data)
+        : base(column, data.Cast<object?>())
     {
     }
 
-    public static DecimalDataColumn Cons(DecimalColumn column, IEnumerable<double>? data = null)
-        => new(column, data ?? []);
-
-    public static DecimalDataColumn Cons(DecimalColumn column, params double[] data)
-        => new(column, data ?? []);
+    public static BooleanDataColumn Cons(BooleanColumn column, IEnumerable<bool?>? data = null)
+        => new BooleanDataColumn(column, data ?? []);
 }
 
-public class DateTimeDataColumn : DataColumn<DateTime, DateTimeColumn>
+public class DateTimeDataColumn : DataColumn, IDataColumn<DateTime>
 {
-    private DateTimeDataColumn(DateTimeColumn column, IEnumerable<DateTime> data) : base(column, data)
+    public IReadOnlyList<DateTime> Data => BoxedData.Cast<DateTime>().ToList();
+
+    private DateTimeDataColumn(DateTimeColumn column, IEnumerable<DateTime?> data)
+        : base(column, data.Cast<object?>())
     {
     }
 
-    public static DateTimeDataColumn Cons(DateTimeColumn column, IEnumerable<DateTime>? data = null)
-        => new(column, data ?? []);
-
-    public static DateTimeDataColumn Cons(DateTimeColumn column, params DateTime[] data)
-        => new(column, data ?? []);
+    public static DateTimeDataColumn Cons(DateTimeColumn column, IEnumerable<DateTime?>? data = null)
+        => new DateTimeDataColumn(column, data ?? []);
 }
 
-public class UnitDataColumn : DataColumn<Unit, UnitColumn>
+public class UnitDataColumn : DataColumn, IDataColumn<Unit>
 {
-    private UnitDataColumn(UnitColumn column, IEnumerable<Unit> data) : base(column, data)
+    public IReadOnlyList<Unit> Data => BoxedData.Cast<Unit>().ToList();
+
+    private UnitDataColumn(UnitColumn column)
+        : base(column, [])
     {
     }
 
-    public static UnitDataColumn Cons()
-        => new(UnitColumn.Cons(), []);
-        
-    public static UnitDataColumn Cons(UnitColumn column, IEnumerable<Unit>? data = null)
-        => new(column, data ?? []);
-
-    public static UnitDataColumn Cons(UnitColumn column, params Unit[] data)
-        => new(column, data ?? []);
+    public static UnitDataColumn Cons(UnitColumn column)
+        => new UnitDataColumn(column);
 }
-
-
