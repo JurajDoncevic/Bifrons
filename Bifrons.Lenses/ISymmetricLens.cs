@@ -16,11 +16,11 @@ public interface ISymmetricLens<TLeft, TRight>
     /// </summary>
     public abstract Func<TLeft, Option<TRight>, Result<TRight>> PutRight { get; }
     /// <summary>
-    /// <c>createR : Option X -> Result Y</c>
+    /// <c>createR : X -> Result Y</c>
     /// </summary>
     public abstract Func<TLeft, Result<TRight>> CreateRight { get; }
     /// <summary>
-    /// <c>createL : Option Y -> Result X</c>
+    /// <c>createL : Y -> Result X</c>
     /// </summary>
     public abstract Func<TRight, Result<TLeft>> CreateLeft { get; }
 
