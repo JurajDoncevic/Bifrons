@@ -16,7 +16,7 @@ public abstract class DeleteLens<TDataColumn, TData>
         (updatedSource, originalTarget)
             => originalTarget.Match(
                 target => _columnLens.PutLeft(updatedSource.Column, target.Column)
-                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l.Covalesce<TData>(), r))
+                            .Bind(column => target.Data.Map(data => _dataLens.PutLeft(Unit().Covalesce<TData>(), data))
                                 .Unfold()
                                 .Bind(data => DataColumn.Cons(column, data.Cast<object?>()).Map(_ => _ as TDataColumn))
                                 )!,
@@ -49,7 +49,7 @@ public abstract class DeleteLens<TDataColumn, TData>
                 Enumerable.Empty<Result<TData>>(),
                 (data, res) => res.Append(_dataLens.CreateLeft(data.Covalesce<TData>()))
             ).Unfold()
-            .Map(data => UnitDataColumn.Cons() as TDataColumn))!;
+            .Bind(data => DataColumn.Cons(column, data.Cast<object?>()).Map(_ => _ as TDataColumn)))!;
 
 }
 
@@ -68,11 +68,11 @@ public sealed class IntegerDeleteLens : DeleteLens<IntegerDataColumn, int>
 public sealed class StringDeleteLens : DeleteLens<StringDataColumn, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
-    private StringDeleteLens(DeleteLens columnLens, Strings.DeleteLens dataLens) : base(columnLens, dataLens)
+    private StringDeleteLens(DeleteLens columnLens, Strings.VarDeleteLens dataLens) : base(columnLens, dataLens)
     {
     }
 
-    public static StringDeleteLens Cons(DeleteLens columnLens, Strings.DeleteLens dataLens)
+    public static StringDeleteLens Cons(DeleteLens columnLens, Strings.VarDeleteLens dataLens)
         => new(columnLens, dataLens);
 }
 

@@ -24,6 +24,17 @@ public abstract class DataColumn
         _boxedData = boxedData.ToList();
     }
 
+    public override bool Equals(object? obj)
+        => obj is not null 
+            && obj is DataColumn 
+            && Equals((obj as DataColumn)!);
+
+    private bool Equals(DataColumn other)
+        => _column.Equals(other._column) && _boxedData.SequenceEqual(other._boxedData);
+
+    public override int GetHashCode()
+        => HashCode.Combine(_column, _boxedData);
+
     public static Result<DataColumn> Cons(Column column, IEnumerable<object?>? boxedData = null)
         => Result.AsResult(
             () => column.DataType switch

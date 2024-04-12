@@ -32,6 +32,7 @@ public static class UnitExt
         var type when type == typeof(double) => (TData)(object)0.0,
         var type when type == typeof(bool) => (TData)(object)false,
         var type when type == typeof(DateTime) => (TData)(object)DateTime.MinValue,
+        var type when type == typeof(Unit) => (TData)(object)Unit(),
         _ => throw new NotSupportedException($"Unsupported type: {typeof(TData)}")
     };
 }

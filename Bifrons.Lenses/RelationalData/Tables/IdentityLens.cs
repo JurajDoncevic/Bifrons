@@ -3,7 +3,7 @@ using Bifrons.Lenses.RelationalData.Columns;
 using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Lenses.RelationalData.Tables;
-
+/*
 public sealed class IdentityLens : SymmetricDataTableLens
 {
     private readonly List<ISymmetricDataColumnLens> _dataColumnLenses;
@@ -20,12 +20,12 @@ public sealed class IdentityLens : SymmetricDataTableLens
                 .Where(t => t.dataColumn is not null)
                 .Map(t => t.lens.ForDataType switch
                 {
-                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<IDataColumn<int, IntegerColumn>, int, IntegerColumn, I IDataColumn<int, IntegerColumn>, int, IntegerColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<int, IntegerColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<int, IntegerColumn>).Map(_ => _ as DataColumn),
-                    DataTypes.STRING => (t.lens as SymmetricDataColumnLens<IDataColumn<string, StringColumn>, string, StringColumn, I IDataColumn<string, StringColumn>, string, StringColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<string, StringColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<string, StringColumn>).Map(_ => _ as DataColumn),
-                    DataTypes.DECIMAL => (t.lens as SymmetricDataColumnLens<IDataColumn<double, DecimalColumn>, double, DecimalColumn, I IDataColumn<double, DecimalColumn>, double, DecimalColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<double, DecimalColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<double, DecimalColumn>).Map(_ => _ as DataColumn),
-                    DataTypes.BOOLEAN => (t.lens as SymmetricDataColumnLens<IDataColumn<bool, BooleanColumn>, bool, BooleanColumn, I IDataColumn<bool, BooleanColumn>, bool, BooleanColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<bool, BooleanColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<bool, BooleanColumn>).Map(_ => _ as DataColumn),
-                    DataTypes.DATETIME => (t.lens as SymmetricDataColumnLens<IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn, I IDataColumn<DateTime, DateTimeColumn>, DateTime, DateTimeColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<DateTime, DateTimeColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<DateTime, DateTimeColumn>).Map(_ => _ as DataColumn),
-                    DataTypes.UNIT => (t.lens as SymmetricDataColumnLens<IDataColumn<Unit, UnitColumn>, Unit, UnitColumn, I IDataColumn<Unit, UnitColumn>, Unit, UnitColumn>)!.PutLeft(t.dataColumn aIs IDataColumn<Unit, UnitColumn>, target[t.lens.MatchesColumnNameRight] Ias IDataColumn<Unit, UnitColumn>).Map(_ => _ as DataColumn),
+                    DataTypes.INTEGER => (t.lens as SymmetricDataColumnLens<Inte>).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
+                    DataTypes.STRING =>  (t.lens as StringDataColumnLens).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
+                    DataTypes.DECIMAL => (t.lens as DecimalDataColumnLens).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
+                    DataTypes.BOOLEAN => (t.lens as BooleanDataColumnLens).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
+                    DataTypes.DATETIME => (t.lens as DateTimeDataColumnLens).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
+                    DataTypes.UNIT => (t.lens as UnitDataColumnLens).PutLeft(t.dataColumn, target[t.lens.MatchesColumnNameRight]).Map(_ => _ as DataColumn),
                     _ => Result.Failure<DataColumn>($"Unsupported data type {t.lens.ForDataType}")
                 })
                 .Unfold()
@@ -89,3 +89,4 @@ public sealed class IdentityLens : SymmetricDataTableLens
             .Unfold()
             .Map(dataColumns => DataTable.Cons(source.Name, dataColumns));
 }
+*/

@@ -29,8 +29,6 @@
   <ItemGroup>
     <Folder Include="Booleans\" />
     <Folder Include="DateTimes\" />
-    <Folder Include="RelationalData\Columns\Delete\" />
-    <Folder Include="RelationalData\Columns\Insert\" />
     <Folder Include="RelationalData\IdentityLens\" />
     <Folder Include="Symmetric\CrossType\" />
     <Folder Include="Symmetric\Relational\Columns\" />
