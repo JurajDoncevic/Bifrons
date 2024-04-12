@@ -113,4 +113,10 @@ public class UnitDataColumn : DataColumn, IDataColumn<Unit>
 
     public static UnitDataColumn Cons(UnitColumn column)
         => new UnitDataColumn(column);
+
+    public static UnitDataColumn Cons(string name = UnitColumn.UNIT_NAME)
+        => new UnitDataColumn(UnitColumn.Cons(name));
+
+    public static UnitDataColumn Cons()
+        => new UnitDataColumn(UnitColumn.Cons());
 }

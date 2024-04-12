@@ -4,57 +4,56 @@ using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Lenses.RelationalData.Columns;
 
-public abstract class InsertLens<TDataColumn, TData, TColumn>
-    : SymmetricDataColumnLens<TDataColumn, TData, TColumn, TDataColumn, TData, TColumn>
-    where TDataColumn : IDataColumn<TData, TColumn>, DataColumn
-    where TColumn : Column, IColumn<TData>
+public abstract class InsertLens<TDataColumn, TData>
+    : SymmetricDataColumnLens<UnitDataColumn, TDataColumn, TData>
+    where TDataColumn : DataColumn, IDataColumn<TData>
 {
     protected InsertLens(InsertLens columnLens, ISymmetricLens<TData, TData> dataLens) : base(columnLens, dataLens)
     {
     }
 
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutLeft =>
+    public override Func<TDataColumn, Option<UnitDataColumn>, Result<UnitDataColumn>> PutLeft =>
         (updatedSource, originalTarget)
             => originalTarget.Match(
                 target => _columnLens.PutLeft(updatedSource.Column, target.Column)
-                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l, r))
+                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l, r.Covalesce<TData>()))
                                 .Unfold()
 
-                                .Map(data => UnitDataColumn.Cons() as TDataColumn)
+                                .Map(data => UnitDataColumn.Cons())
                                 )!,
                 () => CreateLeft(updatedSource)
                 )!;
 
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutRight =>
+    public override Func<UnitDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutRight =>
         (updatedSource, originalTarget)
             => originalTarget.Match(
                 target => _columnLens.PutRight(updatedSource.Column, target.Column)
-                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutRight(l, r))
+                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutRight(l.Covalesce<TData>(), r))
                                 .Unfold()
-                                .Map(data => DataColumn.Cons((column as TColumn)!, data) as TDataColumn)
+                                .Map(data => DataColumn.Cons(column, data.Cast<object>()) as TDataColumn)
                                 )!,
                 () => CreateRight(updatedSource)
                 )!;
 
-    public override Func<TDataColumn, Result<TDataColumn>> CreateRight =>
+    public override Func<UnitDataColumn, Result<TDataColumn>> CreateRight =>
         source => _columnLens.CreateRight(source.Column)
             .Bind(column => source.Data.Fold(
                 Enumerable.Empty<Result<TData>>(),
-                (data, res) => res.Append(_dataLens.CreateRight(data))
+                (data, res) => res.Append(_dataLens.CreateRight(data.Covalesce<TData>()))
             ).Unfold()
-            .Map(data => UnitDataColumn.Cons() as TDataColumn))!;
+            .Map(data => DataColumn.Cons(column, data.Cast<object>()) as TDataColumn))!;
 
-    public override Func<TDataColumn, Result<TDataColumn>> CreateLeft =>
+    public override Func<TDataColumn, Result<UnitDataColumn>> CreateLeft =>
         source => _columnLens.CreateLeft(source.Column)
             .Bind(column => source.Data.Fold(
                 Enumerable.Empty<Result<TData>>(),
                 (data, res) => res.Append(_dataLens.CreateLeft(data))
             ).Unfold()
-            .Map(data => UnitDataColumn.Cons() as TDataColumn))!;
+            .Map(data => UnitDataColumn.Cons()))!;
 }
 
 
-public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int, IntegerColumn>
+public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int>
 {
     public override DataTypes ForDataType => DataTypes.INTEGER;
 
@@ -66,7 +65,7 @@ public sealed class IntegerInsertLens : InsertLens<IntegerDataColumn, int, Integ
         => new(columnLens, dataLens);
 }
 
-public sealed class StringInsertLens : InsertLens<StringDataColumn, string, StringColumn>
+public sealed class StringInsertLens : InsertLens<StringDataColumn, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
@@ -78,7 +77,7 @@ public sealed class StringInsertLens : InsertLens<StringDataColumn, string, Stri
         => new(columnLens, dataLens);
 }
 
-public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime, DateTimeColumn>
+public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime>
 {
     public override DataTypes ForDataType => DataTypes.DATETIME;
 
@@ -90,7 +89,7 @@ public sealed class DateTimeInsertLens : InsertLens<DateTimeDataColumn, DateTime
         => new(columnLens, dataLens);
 }
 
-public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, BooleanColumn>
+public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
@@ -102,7 +101,7 @@ public sealed class BooleanInsertLens : InsertLens<BooleanDataColumn, bool, Bool
         => new(columnLens, dataLens);
 }
 
-public sealed class DecimalInsertLens : InsertLens<DecimalDataColumn, double, DecimalColumn>
+public sealed class DecimalInsertLens : InsertLens<DecimalDataColumn, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
