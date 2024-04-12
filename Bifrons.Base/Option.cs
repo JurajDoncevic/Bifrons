@@ -87,8 +87,6 @@ public static class Option
     /// <param name="onNoneFunc"></param>
     /// <returns></returns>
     public static R Match<T, R>(this Option<T> target, Func<T, R> onSomeFunc, Func<R> onNoneFunc)
-        where T : notnull
-        where R : notnull
         => target.IsSome
             ? onSomeFunc(target.Value)
             : onNoneFunc();

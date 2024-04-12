@@ -14,8 +14,8 @@ public sealed class DeleteLens : DisconnectLens
     /// Constructor
     /// </summary>
     /// <param name="columnName">Target column name</param>
-    private DeleteLens(string columnName)
-        : base(columnName, UnitColumn.UNIT_NAME, DataTypes.UNIT, DataTypes.UNIT)
+    private DeleteLens(string columnName, DataTypes columnDataType = DataTypes.UNIT)
+        : base(columnName, UnitColumn.UNIT_NAME, columnDataType, DataTypes.UNIT)
     {
         _columnName = columnName;
     }
@@ -24,8 +24,8 @@ public sealed class DeleteLens : DisconnectLens
     /// Constructs a new DeleteLens
     /// </summary>
     /// <param name="columnName">Target column name</param>
-    public static DeleteLens Cons(string columnName)
-        => new(columnName);
+    public static DeleteLens Cons(string columnName, DataTypes defaultDataType = DataTypes.UNIT)
+        => new(columnName, defaultDataType);
 
 }
 

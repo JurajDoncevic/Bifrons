@@ -1,138 +1,134 @@
-﻿using Bifrons.Lenses.Relational.Columns;
-using Bifrons.Lenses.Relational.Model;
+﻿using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
 using Bifrons.Lenses.Strings;
 
 namespace Bifrons.Lenses.RelationalData.Columns;
 
-public abstract class IdentityLens<TDataColumn, TData>
-    : SymmetricDataColumnLens<TDataColumn, TDataColumn, TData>
-    where TDataColumn : DataColumn, IDataColumn<TData>
+public abstract class IdentityLens<TColumnData, TData>
+    : SymmetricColumnDataLens<TColumnData, TColumnData, TData>
+    where TColumnData : ColumnData, IColumnData<TData>
 {
-    public IdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<TData, TData> dataLens)
-        : base(columnLens, dataLens)
+    protected new readonly ISymmetricLens<TData, TData> _dataLens;
+
+    protected IdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<TData, TData> dataLens)
+        : base(columnLens, Option.Some(dataLens))
     {
+        _dataLens = dataLens;
     }
 
-
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutLeft =>
-        (updatedSource, originalTarget)
-            => originalTarget.Match(
-                target => _columnLens.PutLeft(updatedSource.Column, target.Column)
-                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutLeft(l, r))
-                                .Unfold()
-                                .Bind(data => DataColumn.Cons(column, data.Cast<object?>()).Map(_ => _ as TDataColumn))
-                                )!,
-                () => CreateLeft(updatedSource)
-                )!;
-
-    public override Func<TDataColumn, Option<TDataColumn>, Result<TDataColumn>> PutRight =>
-        (updatedSource, originalTarget)
-            => originalTarget.Match(
-                target => _columnLens.PutRight(updatedSource.Column, target.Column)
-                            .Bind(column => updatedSource.Data.Zip(target.Data, (l, r) => _dataLens.PutRight(l, r))
-                                .Unfold()
-                                .Bind(data => DataColumn.Cons(column, data.Cast<object?>()).Map(_ => _ as TDataColumn))
-                                )!,
-                () => CreateRight(updatedSource)
-                )!;
-
-    public override Func<TDataColumn, Result<TDataColumn>> CreateRight =>
+    public override Func<TColumnData, Option<TColumnData>, Result<TColumnData>> PutRight => 
+        (updatedSource, originalTarget) => originalTarget.Match(
+            target => _columnLens.PutRight(updatedSource.Column, target.Column)
+                        .Bind(column => updatedSource.Data.Match(
+                            sourceData => _dataLens.PutRight(sourceData, target.Data).Bind(data => ColumnData.Cons<TColumnData>(column, data))!,
+                            () => ColumnData.Cons(column) as TColumnData
+                            )
+                        )!,
+            () => CreateRight(updatedSource)
+            );
+    public override Func<TColumnData, Option<TColumnData>, Result<TColumnData>> PutLeft => 
+        (updatedSource, originalTarget) => originalTarget.Match(
+            target => _columnLens.PutLeft(updatedSource.Column, target.Column)
+                        .Bind(column => updatedSource.Data.Match(
+                            sourceData => _dataLens.PutLeft(sourceData, target.Data).Bind(data => ColumnData.Cons<TColumnData>(column, data))!,
+                            () => ColumnData.Cons<TColumnData>(column)
+                            )
+                        )!,
+            () => CreateLeft(updatedSource)
+            );
+    public override Func<TColumnData, Result<TColumnData>> CreateRight => 
         source => _columnLens.CreateRight(source.Column)
-                    .Bind(column
-                        => source.Data.Fold(
-                                Enumerable.Empty<Result<TData>>(),
-                                (data, res) => res.Append(_dataLens.CreateRight(data))
-                                ).Unfold()
-                                .Bind(data => DataColumn.Cons(column, data.Cast<object?>())
-                                                .Map(_ => _ as TDataColumn))
-                        )!;
-    public override Func<TDataColumn, Result<TDataColumn>> CreateLeft =>
+                    .Bind(column => source.Data.Match(
+                        sourceData => _dataLens.CreateRight(sourceData).Bind(data => ColumnData.Cons<TColumnData>(column, data))!,
+                        () => ColumnData.Cons<TColumnData>(column)
+                        )
+                    )!;
+    public override Func<TColumnData, Result<TColumnData>> CreateLeft => 
         source => _columnLens.CreateLeft(source.Column)
-                    .Bind(column
-                        => source.Data.Fold(
-                                Enumerable.Empty<Result<TData>>(),
-                                (data, res) => res.Append(_dataLens.CreateLeft(data))
-                                ).Unfold()
-                                .Bind(data => DataColumn.Cons(column, data.Cast<object?>())
-                                                .Map(_ => _ as TDataColumn))
-                        )!;
+                    .Bind(column => source.Data.Match(
+                        sourceData => _dataLens.CreateLeft(sourceData).Bind(data => ColumnData.Cons<TColumnData>(column, data))!,
+                        () => ColumnData.Cons<TColumnData>(column)
+                        )
+                    )!;
+
+
+
 }
 
-public sealed class IntegerIdentityLens : IdentityLens<IntegerDataColumn, int>
+public sealed class IntegerIdentityLens : IdentityLens<IntegerColumnData, int>
 {
     public override DataTypes ForDataType => DataTypes.INTEGER;
 
-    public IntegerIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<int, int> dataLens)
+    public IntegerIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<int, int> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static IntegerIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<int, int> dataLens)
+    public static IntegerIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<int, int> dataLens)
         => new(columnLens, dataLens);
 }
 
-public sealed class StringIdentityLens : IdentityLens<StringDataColumn, string>
+public sealed class StringIdentityLens : IdentityLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
-    public StringIdentityLens(SymmetricColumnLens columnLens, SymmetricStringLens dataLens)
+    public StringIdentityLens(Relational.Columns.IdentityLens columnLens, SymmetricStringLens dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static StringIdentityLens Cons(SymmetricColumnLens columnLens, SymmetricStringLens dataLens)
+    public static StringIdentityLens Cons(Relational.Columns.IdentityLens columnLens, SymmetricStringLens dataLens)
         => new(columnLens, dataLens);
 }
 
-public sealed class DateTimeIdentityLens : IdentityLens<DateTimeDataColumn, DateTime>
+public sealed class DateTimeIdentityLens : IdentityLens<DateTimeColumnData, DateTime>
 {
     public override DataTypes ForDataType => DataTypes.DATETIME;
 
-    public DateTimeIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+    public DateTimeIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static DateTimeIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+    public static DateTimeIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
         => new(columnLens, dataLens);
 }
 
-public sealed class BooleanIdentityLens : IdentityLens<BooleanDataColumn, bool>
+public sealed class BooleanIdentityLens : IdentityLens<BooleanColumnData, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
-    public BooleanIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens)
+    public BooleanIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<bool, bool> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static BooleanIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<bool, bool> dataLens)
+    public static BooleanIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<bool, bool> dataLens)
         => new(columnLens, dataLens);
 }
 
-public sealed class DecimalIdentityLens : IdentityLens<DecimalDataColumn, double>
+public sealed class DecimalIdentityLens : IdentityLens<DecimalColumnData, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
-    public DecimalIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens)
+    public DecimalIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<double, double> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static DecimalIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<double, double> dataLens)
+    public static DecimalIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<double, double> dataLens)
         => new(columnLens, dataLens);
 }
 
-public sealed class UnitIdentityLens : IdentityLens<UnitDataColumn, Unit>
+public sealed class UnitIdentityLens : IdentityLens<UnitColumnData, Unit>
 {
     public override DataTypes ForDataType => DataTypes.UNIT;
 
-    public UnitIdentityLens(SymmetricColumnLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
+    public UnitIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static UnitIdentityLens Cons(SymmetricColumnLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
+    public static UnitIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
         => new(columnLens, dataLens);
 }
