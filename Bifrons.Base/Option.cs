@@ -169,4 +169,10 @@ public static class Option
             _ => Option.Some(func(_)),
             () => Option.None<R>()
             );
+
+    public static Option<R> ToOption<R>(this R? target)
+        where R : notnull
+        => target is not null
+            ? Option.Some(target)
+            : Option.None<R>();
 }
