@@ -1,16 +1,15 @@
 ﻿using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
-using Bifrons.Lenses.Strings;
 
 namespace Bifrons.Lenses.RelationalData.Columns;
 
-public abstract class IdentityLens<TColumnData, TData>
+public abstract class RenameLens<TColumnData, TData>
     : SymmetricColumnDataLens<TColumnData, TColumnData, TData>
     where TColumnData : ColumnData, IColumnData<TData>
 {
     protected new readonly ISymmetricLens<TData, TData> _dataLens;
 
-    protected IdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<TData, TData> dataLens)
+    protected RenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<TData, TData> dataLens)
         : base(columnLens, Option.Some(dataLens))
     {
         _dataLens = dataLens;
@@ -52,80 +51,80 @@ public abstract class IdentityLens<TColumnData, TData>
                     )!;
 }
 
-public sealed class IntegerIdentityLens : IdentityLens<IntegerColumnData, int>
-{
-    public override DataTypes ForDataType => DataTypes.INTEGER;
-
-    public IntegerIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<int, int> dataLens)
-        : base(columnLens, dataLens)
-    {
-    }
-
-    public static IntegerIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<int, int> dataLens)
-        => new(columnLens, dataLens);
-}
-
-public sealed class StringIdentityLens : IdentityLens<StringColumnData, string>
+public sealed class StringRenameLens : RenameLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
-    public StringIdentityLens(Relational.Columns.IdentityLens columnLens, SymmetricStringLens dataLens)
+    public StringRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<string, string> dataLens)
         : base(columnLens, dataLens)
-    {
+    {   
     }
 
-    public static StringIdentityLens Cons(Relational.Columns.IdentityLens columnLens, SymmetricStringLens dataLens)
-        => new(columnLens, dataLens);
+    public static StringRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<string, string> dataLens)
+        => new StringRenameLens(columnLens, dataLens);
 }
 
-public sealed class DateTimeIdentityLens : IdentityLens<DateTimeColumnData, DateTime>
+public sealed class IntegerRenameLens : RenameLens<IntegerColumnData, int>
 {
-    public override DataTypes ForDataType => DataTypes.DATETIME;
+    public override DataTypes ForDataType => DataTypes.INTEGER;
 
-    public DateTimeIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+    public IntegerRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<int, int> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static DateTimeIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
-        => new(columnLens, dataLens);
+    public static IntegerRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<int, int> dataLens)
+        => new IntegerRenameLens(columnLens, dataLens);
 }
 
-public sealed class BooleanIdentityLens : IdentityLens<BooleanColumnData, bool>
+public sealed class BooleanRenameLens : RenameLens<BooleanColumnData, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
-    public BooleanIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<bool, bool> dataLens)
+    public BooleanRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<bool, bool> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static BooleanIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<bool, bool> dataLens)
-        => new(columnLens, dataLens);
+    public static BooleanRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<bool, bool> dataLens)
+        => new BooleanRenameLens(columnLens, dataLens);
 }
 
-public sealed class DecimalIdentityLens : IdentityLens<DecimalColumnData, double>
+public sealed class DateTimeRenameLens : RenameLens<DateTimeColumnData, DateTime>
+{
+    public override DataTypes ForDataType => DataTypes.DATETIME;
+
+    public DateTimeRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static DateTimeRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+        => new DateTimeRenameLens(columnLens, dataLens);
+}
+
+public sealed class DecimalRenameLens : RenameLens<DecimalColumnData, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
-    public DecimalIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<double, double> dataLens)
+    public DecimalRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<double, double> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static DecimalIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<double, double> dataLens)
-        => new(columnLens, dataLens);
+    public static DecimalRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<double, double> dataLens)
+        => new DecimalRenameLens(columnLens, dataLens);
 }
 
-public sealed class UnitIdentityLens : IdentityLens<UnitColumnData, Unit>
+public sealed class UnitRenameLens : RenameLens<UnitColumnData, Unit>
 {
     public override DataTypes ForDataType => DataTypes.UNIT;
 
-    public UnitIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
+    public UnitRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
         : base(columnLens, dataLens)
     {
     }
 
-    public static UnitIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
-        => new(columnLens, dataLens);
+    public static UnitRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
+        => new UnitRenameLens(columnLens, dataLens);
 }

@@ -10,6 +10,8 @@ public sealed class RowData
 
     public IReadOnlyList<Column> Columns => _columnData.Map(cd => cd.Column).ToList();
 
+    public Option<ColumnData> this[string name] => _columnData.FirstOrDefault(cd => cd.Name == name) ?? Option.None<ColumnData>();
+
     private RowData(IEnumerable<ColumnData> columnData)
     {
         _columnData = columnData.ToList();
