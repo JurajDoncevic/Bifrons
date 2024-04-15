@@ -17,6 +17,9 @@ public class DisconnectLens : SymmetricTableLens
     public override bool MatchesLeft => !_leftTableDefault.IsUnit;
     public override bool MatchesRight => !_rightTableDefault.IsUnit;
 
+    public Table LeftTableDefault => _leftTableDefault;
+    public Table RightTableDefault => _rightTableDefault;
+
     /// <summary>
     /// Constructor
     /// </summary>

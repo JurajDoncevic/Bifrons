@@ -4,8 +4,24 @@ using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Lenses.RelationalData.Columns;
 
+public interface IInsertLens : ISymmetricColumnDataLens
+{
+    new string MatchesColumnNameLeft { get; }
+    new string MatchesColumnNameRight { get; }
+    new bool MatchesLeft { get; }
+    new bool MatchesRight { get; }
+    new DataTypes ForDataType { get; }
+    new SymmetricColumnLens ColumnLens { get; }
+
+    new Func<ColumnData, Option<ColumnData>, Result<ColumnData>> PutLeft { get; }
+    new Func<UnitColumnData, Option<ColumnData>, Result<ColumnData>> PutRight { get; }
+    new Func<UnitColumnData, Result<ColumnData>> CreateRight { get; }
+    new Func<ColumnData, Result<ColumnData>> CreateLeft { get; }
+}
+
 public abstract class InsertLens<TColumnData, TData>
-    : SymmetricColumnDataLens<UnitColumnData, TColumnData, TData>
+    : SymmetricColumnDataLens<UnitColumnData, TColumnData, TData>,
+      IInsertLens
     where TColumnData : ColumnData
 {
     private readonly TData _defaultData;
@@ -36,6 +52,18 @@ public abstract class InsertLens<TColumnData, TData>
     public override Func<TColumnData, Result<UnitColumnData>> CreateLeft =>
         source => _columnLens.CreateLeft(source.Column)
                     .Bind(column => ColumnData.Cons<UnitColumnData>(column));
+
+    Func<ColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutLeft => 
+        (updatedSource, originalTarget) => PutLeft((TColumnData)updatedSource, originalTarget.Map(_ => (UnitColumnData)_)).Map(_ => (ColumnData)_);
+
+    Func<UnitColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutRight => 
+        (updatedSource, originalTarget) => PutRight((UnitColumnData)updatedSource, originalTarget.Map(_ => (TColumnData)_)).Map(_ => (ColumnData)_);
+
+    Func<UnitColumnData, Result<ColumnData>> IInsertLens.CreateRight => 
+        source => CreateRight((UnitColumnData)source).Map(_ => (ColumnData)_);
+
+    Func<ColumnData, Result<ColumnData>> IInsertLens.CreateLeft => 
+        source => CreateLeft((TColumnData)source).Map(_ => (ColumnData)_);
 }
 
 

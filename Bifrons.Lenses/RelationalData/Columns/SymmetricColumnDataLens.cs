@@ -17,8 +17,6 @@ public interface ISymmetricColumnDataLens
     Func<ColumnData, Option<ColumnData>, Result<ColumnData>> PutRight { get; }
     Func<ColumnData, Result<ColumnData>> CreateRight { get; }
     Func<ColumnData, Result<ColumnData>> CreateLeft { get; }
-
-
 }
 
 public abstract class SymmetricColumnDataLens<TLeftColumnData, TRightColumnData, TData>
