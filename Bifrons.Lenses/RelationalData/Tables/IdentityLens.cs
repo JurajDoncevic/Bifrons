@@ -7,7 +7,7 @@ public sealed class IdentityLens : SymmetricTableDataLens
 {
 
     private  IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses) 
-        : base(tableLens, columnDataLenses)
+        : base(tableLens, Option.Some(columnDataLenses))
     {
     }
 

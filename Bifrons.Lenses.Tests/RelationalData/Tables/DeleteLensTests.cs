@@ -5,9 +5,8 @@ using Bifrons.Lenses.Tests;
 
 namespace Bifrons.Lenses.RelationalData.Tables.Tests;
 
-public sealed class IdentityLensTests : SymmetricLensTestingFramework<TableData, TableData>
+public sealed class DeleteLensTests : SymmetricLensTestingFramework<TableData, TableData>
 {
-
     #region STRUCTURE
     private Column IdCol => IntegerColumn.Cons("Id");
     private Column NameCol => StringColumn.Cons("Name");
@@ -34,10 +33,8 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<TableData,
     private Relational.Columns.IdentityLens dobColLens => Relational.Columns.IdentityLens.Cons("DOB");
     private Relational.Columns.IdentityLens isAdminColLens => Relational.Columns.IdentityLens.Cons("IsAdmin");
     private Relational.Columns.IdentityLens hoursClockedColLens => Relational.Columns.IdentityLens.Cons("HoursClocked");
-    private Relational.Tables.IdentityLens TableLens
-        => Relational.Tables.IdentityLens.Cons(
-            "People",
-            [IdColLens, nameColLens, dobColLens, isAdminColLens, hoursClockedColLens]);
+    private Relational.Tables.DeleteLens TableLens
+        => Relational.Tables.DeleteLens.Cons("People");
 
     #endregion STRUCTURAL LENSES
 
@@ -89,53 +86,6 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<TableData,
             ]
         ).Data ?? throw new Exception("Failed to create left side data.");
 
-    protected override TableData _right =>
-        TableData.Cons(
-            Table.Cons(
-                "People",
-                [
-                    IdCol,
-                    NameCol,
-                    DobCol,
-                    IsAdminCol,
-                    HoursClockedCol
-                ]),
-            [
-            RowData.Cons(
-                [
-                ColumnData.Cons(IdCol, 1).Data,
-                ColumnData.Cons(NameCol, "Alice").Data,
-                ColumnData.Cons(DobCol, new DateTime(1990, 1, 1)).Data,
-                ColumnData.Cons(IsAdminCol, true).Data,
-                ColumnData.Cons(HoursClockedCol, 37.0).Data
-                ]),
-            RowData.Cons(
-                [
-                ColumnData.Cons(IdCol, 2).Data,
-                ColumnData.Cons(NameCol, "Bob").Data,
-                ColumnData.Cons(DobCol, new DateTime(1992, 12, 31)).Data,
-                ColumnData.Cons(IsAdminCol, false).Data,
-                ColumnData.Cons(HoursClockedCol, 42.0).Data
-                ]),
-            RowData.Cons(
-                [
-                ColumnData.Cons(IdCol, 3).Data,
-                ColumnData.Cons(NameCol, "Charlie").Data,
-                ColumnData.Cons(DobCol, new DateTime(1995, 6, 15)).Data,
-                ColumnData.Cons(IsAdminCol, false).Data,
-                ColumnData.Cons(HoursClockedCol, 39.0).Data
-                ]),
-            RowData.Cons(
-                [
-                ColumnData.Cons(IdCol, 4).Data,
-                ColumnData.Cons(NameCol, "David").Data,
-                ColumnData.Cons(DobCol, new DateTime(1998, 3, 22)).Data,
-                ColumnData.Cons(IsAdminCol, true).Data,
-                ColumnData.Cons(HoursClockedCol, 45.0).Data
-                ])
-            ]
-        ).Data ?? throw new Exception("Failed to create right side data.");
-
     private TableData Updated =>
         TableData.Cons(
             Table,
@@ -167,20 +117,20 @@ public sealed class IdentityLensTests : SymmetricLensTestingFramework<TableData,
             ]
         ).Data ?? throw new Exception("Failed to create updated left side data.");
 
+    protected override TableData _right => 
+        TableData.ConsUnit().Data ?? throw new Exception("Failed to create right side data.");
+
     protected override (TableData originalSource, TableData expectedOriginalTarget, TableData updatedTarget, TableData expectedUpdatedSource) _roundTripWithRightSideUpdateData 
-        => (_left, _right, Updated, Updated) ;
+        => (_left, _right, Updated, _left);
 
-    protected override (TableData originalSource, TableData expectedOriginalTarget, TableData updatedTarget, TableData expectedUpdatedSource) _roundTripWithLeftSideUpdateData 
-        => (_right, _left, Updated, Updated);
+    protected override (TableData originalSource, TableData expectedOriginalTarget, TableData updatedTarget, TableData expectedUpdatedSource) _roundTripWithLeftSideUpdateData
+        => (
+            _right, 
+            TableData.ConsUnit("People").Data ?? throw new Exception("Failed to create right side data."),
+            Updated, 
+            _right
+        );
 
-    protected override ISymmetricLens<TableData, TableData> _lens
-        => IdentityLens.Cons(
-            TableLens,
-            [
-                IdLens,
-                NameLens,
-                DobLens,
-                IsAdminLens,
-                HoursClockedLens
-            ]).Data ?? throw new Exception("Failed to create TableData IdentityLens.");
+    protected override ISymmetricLens<TableData, TableData> _lens => 
+        RelationalData.Tables.DeleteLens.Cons(TableLens);
 }

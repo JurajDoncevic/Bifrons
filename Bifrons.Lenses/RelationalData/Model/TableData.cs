@@ -12,6 +12,7 @@ public sealed class TableData
     public IReadOnlyList<RowData> RowData => _rowData;
     public IReadOnlyList<Column> Columns => _table.Columns;
     public Table Table => _table;
+    public bool IsUnit => _table.IsUnit;
 
     private TableData(Table table, IEnumerable<RowData> rowData)
     {
@@ -34,4 +35,7 @@ public sealed class TableData
            && table.Columns.All(c => rowData?.All(rd => rd.Columns.Any(cd => cd.Name == c.Name)) ?? true)
             ? Result.Success(new TableData(table, rowData ?? []))
             : Result.Failure<TableData>("Row data provided is not full-qualifiably type compatible.");
+
+    public static Result<TableData> ConsUnit(string? name = null)
+        => Result.Success(new TableData(Table.ConsUnit(name), []));
 }

@@ -1,6 +1,37 @@
-﻿namespace Bifrons.Lenses.RelationalData.Tables;
+﻿using Bifrons.Lenses.Relational.Tables;
+using Bifrons.Lenses.RelationalData.Columns;
+using Bifrons.Lenses.RelationalData.Model;
 
-public class DeleteLens
+namespace Bifrons.Lenses.RelationalData.Tables;
+
+public sealed class DeleteLens : SymmetricTableDataLens
 {
+    private DeleteLens(Relational.Tables.DeleteLens tableLens) : base(tableLens, Option.None<IEnumerable<ISymmetricColumnDataLens>>())
+    {
+    }
 
+    public override Func<TableData, Option<TableData>, Result<TableData>> PutLeft => 
+        (updatedSource, originalTarget) => originalTarget.Match(
+            original => _tableLens.PutLeft(updatedSource.Table, original.Table)
+                                  .Bind(table => TableData.Cons(table, original.RowData)),
+            () => CreateLeft(updatedSource)
+            );
+
+    public override Func<TableData, Option<TableData>, Result<TableData>> PutRight => 
+        (updatedSource, originalTarget) => originalTarget.Match(
+            original => _tableLens.PutRight(updatedSource.Table, original.Table)
+                                  .Bind(table => TableData.Cons(table, original.RowData)),
+            () => CreateRight(updatedSource)
+            );
+
+    public override Func<TableData, Result<TableData>> CreateRight =>
+        source => _tableLens.CreateRight(source.Table)
+            .Bind(table => TableData.Cons(table, []));
+
+    public override Func<TableData, Result<TableData>> CreateLeft => 
+        source => _tableLens.CreateLeft(source.Table)
+            .Bind(table => TableData.Cons(table, []));
+
+    public static DeleteLens Cons(Relational.Tables.DeleteLens tableLens) 
+        => new(tableLens);
 }

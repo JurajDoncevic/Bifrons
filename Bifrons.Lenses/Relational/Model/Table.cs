@@ -96,7 +96,7 @@ public sealed class Table
     /// Constructs a new unit table
     /// </summary>
     /// <param name="name">Table name</param>
-    public static Table ConsUnit(string name = UNIT_NAME)
-        => new(name, [], true);
+    public static Table ConsUnit(string? name = UNIT_NAME)
+        => new(name ?? UNIT_NAME, [], true);
 
 }

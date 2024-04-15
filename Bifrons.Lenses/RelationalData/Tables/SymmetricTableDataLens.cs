@@ -9,21 +9,21 @@ public abstract class SymmetricTableDataLens
     : ISymmetricLens<TableData, TableData>
 {
     protected readonly SymmetricTableLens _tableLens;
-    protected readonly List<ISymmetricColumnDataLens> _columnDataLenses;
+    protected readonly Option<List<ISymmetricColumnDataLens>> _columnDataLenses;
 
     public SymmetricTableLens TableLens => _tableLens;
-    public IReadOnlyList<ISymmetricColumnDataLens> ColumnDataLenses => _columnDataLenses;
+    public IReadOnlyList<ISymmetricColumnDataLens> ColumnDataLenses => _columnDataLenses.Match(some => some, () => []);
     public string MatchesColumnNameLeft => _tableLens.MatchesTableNameLeft;
     public string MatchesColumnNameRight => _tableLens.MatchesTableNameRight;
     public bool MatchesLeft => _tableLens.MatchesLeft;
     public bool MatchesRight => _tableLens.MatchesRight;
 
-    public Option<ISymmetricColumnDataLens> this[string name] => _columnDataLenses.FirstOrDefault(cdl => cdl.MatchesColumnNameLeft == name).ToOption();
+    public Option<ISymmetricColumnDataLens> this[string name] => _columnDataLenses.Value.FirstOrDefault(cdl => cdl.MatchesColumnNameLeft == name).ToOption();
 
-    protected SymmetricTableDataLens(SymmetricTableLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses)
+    protected SymmetricTableDataLens(SymmetricTableLens tableLens, Option<IEnumerable<ISymmetricColumnDataLens>> columnDataLenses)
     {
         _tableLens = tableLens;
-        _columnDataLenses = columnDataLenses.ToList();
+        _columnDataLenses = columnDataLenses.Map(cdls => cdls.ToList());
     }
 
     public abstract Func<TableData, Option<TableData>, Result<TableData>> PutLeft { get; }
