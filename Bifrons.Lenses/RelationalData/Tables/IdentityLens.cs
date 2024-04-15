@@ -6,7 +6,7 @@ namespace Bifrons.Lenses.RelationalData.Tables;
 public sealed class IdentityLens : SymmetricTableDataLens
 {
 
-    private  IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses) 
+    private IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses) 
         : base(tableLens, Option.Some(columnDataLenses))
     {
     }
