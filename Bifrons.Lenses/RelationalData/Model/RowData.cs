@@ -52,3 +52,9 @@ public sealed class RowData
     public static RowData Cons(IEnumerable<ColumnData> columnData)
         => new(columnData);
 }
+
+public static class RowDataExtensions
+{
+    public static RowData Concat(this RowData left, RowData right)
+        => RowData.Cons(left.ColumnData.Concat(right.ColumnData));
+}
