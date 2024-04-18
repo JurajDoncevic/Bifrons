@@ -44,8 +44,14 @@ public sealed class InnerJoinLens : ISymmetricLens<(TableData, TableData), Table
             ? _tableLens.CreateRight((source.Item1.Table, source.Item2.Table))
               .Bind(joinedTable =>
                 TableData.Cons(
-                joinedTable, 
-                source.Item1.RowData.Zip(source.Item2.RowData, (left, right) => left.Concat(right)))
+                    joinedTable, 
+                    source.Item1.RowData.Join(
+                        source.Item2.RowData, 
+                        rd1 => rd1[_tableLens.LeftKey.Name].Value.BoxedData, 
+                        rd2 => rd2[_tableLens.RightKey.Name].Value.BoxedData, 
+                        (rd1, rd2) => rd1.Concat(rd2)
+                        )
+                )
               )
             : Result.Failure<TableData>($"Tables {source.Item1.Name} and {source.Item2.Name} do not contain the specified keys: {_tableLens.LeftKey} and {_tableLens.RightKey}.");
 
