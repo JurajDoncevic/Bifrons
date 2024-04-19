@@ -5,6 +5,7 @@ namespace Bifrons.Cannonizers.Relational;
 
 public interface IMetadataManager
 {
+    Result<bool> TableExists(string tableName);
     Result<Table> GetTable(string tableName);
     Result<IEnumerable<Table>> GetAllTables();
     Result<Unit> CreateTable(Table table);
