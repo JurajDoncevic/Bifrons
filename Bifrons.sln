@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Tests", "Bifrons.Cannonizers.Relational.Tests\Bifrons.Cannonizers.Relational.Tests.csproj", "{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Sqlite", "Bifrons.Cannonizers.Relational.Sqlite\Bifrons.Cannonizers.Relational.Sqlite.csproj", "{BEDA332B-02C0-431A-9150-607F70C0A443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Sqlite.Tests", "Bifrons.Cannonizers.Relational.Sqlite.Tests\Bifrons.Cannonizers.Relational.Sqlite.Tests.csproj", "{4804ECCF-08D7-4B1B-973B-1083A97EA521}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEDA332B-02C0-431A-9150-607F70C0A443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEDA332B-02C0-431A-9150-607F70C0A443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEDA332B-02C0-431A-9150-607F70C0A443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEDA332B-02C0-431A-9150-607F70C0A443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4804ECCF-08D7-4B1B-973B-1083A97EA521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4804ECCF-08D7-4B1B-973B-1083A97EA521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4804ECCF-08D7-4B1B-973B-1083A97EA521}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4804ECCF-08D7-4B1B-973B-1083A97EA521}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
