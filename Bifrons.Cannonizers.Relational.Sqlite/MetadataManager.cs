@@ -24,9 +24,8 @@ public sealed class MetadataManager : IMetadataManager
             command.CommandText = $"CREATE TABLE {table.Name} ({string.Join(", ", table.Columns.Select(c => $"{c.Name} {c.DataType.ToSqliteType()}"))})";
             try
             {
-                return command.ExecuteNonQuery() > 0
-                    ? Result.Success(Unit())
-                    : Result.Failure<Unit>("Failed to create table");
+                command.ExecuteNonQuery();
+                return Result.Success(Unit());
             }
             catch (SqliteException e)
             {
@@ -42,9 +41,8 @@ public sealed class MetadataManager : IMetadataManager
             command.CommandText = $"DROP TABLE {tableName}";
             try
             {
-                return command.ExecuteNonQuery() > 0
-                    ? Result.Success(Unit())
-                    : Result.Failure<Unit>("Failed to drop table");
+                command.ExecuteNonQuery();
+                return Result.Success(Unit());
             }
             catch (SqliteException e)
             {

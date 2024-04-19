@@ -11,6 +11,7 @@ public static class Utils
         TEXT,
         REAL,
         DATE,
+        DATETIME,
         NULL
     }
 
@@ -21,6 +22,7 @@ public static class Utils
             "TEXT" => SqliteDataTypes.TEXT,
             "REAL" => SqliteDataTypes.REAL,
             "DATE" => SqliteDataTypes.DATE,
+            "DATETIME" => SqliteDataTypes.DATETIME,
             "NULL" => SqliteDataTypes.NULL,
             _ => throw new NotImplementedException($"Unknown data type {dbTypeName}")
         };
@@ -33,7 +35,7 @@ public static class Utils
             DataTypes.STRING => SqliteDataTypes.TEXT,
             DataTypes.DECIMAL => SqliteDataTypes.REAL,
             DataTypes.BOOLEAN => SqliteDataTypes.INTEGER,
-            DataTypes.DATETIME => SqliteDataTypes.DATE,
+            DataTypes.DATETIME => SqliteDataTypes.DATETIME,
             DataTypes.UNIT => SqliteDataTypes.NULL,
             _ => throw new NotImplementedException("Unknown data type")
         };
@@ -47,6 +49,7 @@ public static class Utils
             SqliteDataTypes.TEXT => DataTypes.STRING,
             SqliteDataTypes.REAL => DataTypes.DECIMAL,
             SqliteDataTypes.DATE => DataTypes.DATETIME,
+            SqliteDataTypes.DATETIME => DataTypes.DATETIME,
             SqliteDataTypes.NULL => DataTypes.UNIT,
             _ => throw new NotImplementedException("Unknown SQLite data type")
         };
