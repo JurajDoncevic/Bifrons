@@ -58,7 +58,7 @@ public sealed class MetadataManager : IMetadataManager
             var tablesAndColumns = new Dictionary<string, List<(string name, DataTypes dataType)>>();
 
             using var command = connection.CreateCommand();
-            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table'";
+            command.CommandText = "SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite%'";
             try
             {
                 using var reader = command.ExecuteReader();
@@ -92,10 +92,12 @@ public sealed class MetadataManager : IMetadataManager
     public Result<Table> GetTable(string tableName)
         => _connection.WithConnection(_useAtomicConnection, connection =>
         {
-            if(TableExists(tableName).Data == false)
+            var tableExists = TableExists(tableName);
+            if (!tableExists)
             {
-                return Result.Failure<Table>($"Table {tableName} does not exist");
+                return tableExists.Map(_ => (Table)null!);
             }
+
             using var command = connection.CreateCommand();
             command.CommandText = $"PRAGMA table_info({tableName})";
             try
@@ -121,15 +123,28 @@ public sealed class MetadataManager : IMetadataManager
         => _connection.WithConnection(_useAtomicConnection, connection =>
         {
             using var command = connection.CreateCommand();
-            command.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}'";
+            command.CommandText =
+                "SELECT EXISTS(" +
+                "SELECT 1 " +
+                "FROM sqlite_schema " +
+                "WHERE type = 'table' AND name NOT LIKE 'sqlite%' AND name = $table_name)";
+
+            command.Parameters.AddWithValue("$table_name", tableName);
+
             try
             {
                 using var reader = command.ExecuteReader();
-                return Result.Success(Unit());
+
+                return reader.Read()
+                    ? reader.GetBoolean(0)
+                        ? Result.Success(Unit(), $"Table {tableName} exists")
+                        : Result.Failure<Unit>($"Table {tableName} doesn't exist")
+                    : Result.Failure<Unit>("Failed to get result");
+
             }
             catch (SqliteException e)
             {
-                return Result.Exception<bool>(e);
+                return Result.Exception<Unit>(e);
             }
         });
 }

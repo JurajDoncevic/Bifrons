@@ -25,4 +25,10 @@
     <ProjectReference Include="..\Bifrons.Cannonizers.Relational.Sqlite\Bifrons.Cannonizers.Relational.Sqlite.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="PeopleAndRoles.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+  </ItemGroup>
+
 </Project>

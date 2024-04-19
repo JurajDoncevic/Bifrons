@@ -10,6 +10,7 @@ public static class Utils
         INTEGER,
         TEXT,
         REAL,
+        DATE,
         NULL
     }
 
@@ -19,8 +20,9 @@ public static class Utils
             "INTEGER" => SqliteDataTypes.INTEGER,
             "TEXT" => SqliteDataTypes.TEXT,
             "REAL" => SqliteDataTypes.REAL,
+            "DATE" => SqliteDataTypes.DATE,
             "NULL" => SqliteDataTypes.NULL,
-            _ => throw new NotImplementedException()
+            _ => throw new NotImplementedException($"Unknown data type {dbTypeName}")
         };
 
     public static SqliteDataTypes ToSqliteType(this DataTypes dataType)
@@ -31,9 +33,9 @@ public static class Utils
             DataTypes.STRING => SqliteDataTypes.TEXT,
             DataTypes.DECIMAL => SqliteDataTypes.REAL,
             DataTypes.BOOLEAN => SqliteDataTypes.INTEGER,
-            DataTypes.DATETIME => SqliteDataTypes.TEXT,
+            DataTypes.DATETIME => SqliteDataTypes.DATE,
             DataTypes.UNIT => SqliteDataTypes.NULL,
-            _ => throw new NotImplementedException()
+            _ => throw new NotImplementedException("Unknown data type")
         };
     }
 
@@ -44,20 +46,23 @@ public static class Utils
             SqliteDataTypes.INTEGER => DataTypes.INTEGER,
             SqliteDataTypes.TEXT => DataTypes.STRING,
             SqliteDataTypes.REAL => DataTypes.DECIMAL,
+            SqliteDataTypes.DATE => DataTypes.DATETIME,
             SqliteDataTypes.NULL => DataTypes.UNIT,
-            _ => throw new NotImplementedException()
+            _ => throw new NotImplementedException("Unknown SQLite data type")
         };
     }
 
     public static Result<TData> WithConnection<TData>(this SqliteConnection connection, bool isAtomic, Func<SqliteConnection, Result<TData>> action)
         => Result.AsResult(() =>
         {
+            bool isOpenedByThis = false;
             if (connection.State != System.Data.ConnectionState.Open)
             {
                 connection.Open();
+                isOpenedByThis = true;
             }
             var result = action(connection);
-            if (isAtomic)
+            if (isAtomic && isOpenedByThis)
             {
                 connection.Close();
             }

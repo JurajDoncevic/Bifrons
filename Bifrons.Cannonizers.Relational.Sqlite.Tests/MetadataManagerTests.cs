@@ -8,7 +8,7 @@ public class MetadataManagerTests
 
     public MetadataManagerTests()
     {
-        _metadataManager = new MetadataManager("Data Source = ./PeopleAndRoles.db");
+        _metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
     }
 
     [Fact(DisplayName = "Get metadata for a table")]
