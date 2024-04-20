@@ -56,7 +56,7 @@ internal static class Utils
         };
     }
 
-    internal static object? AdaptSqliteValue(this object? value, DataTypes dataType)
+    internal static object? AdaptFromSqliteValue(this object? value, DataTypes dataType)
     {
         return dataType switch
         {
@@ -66,6 +66,21 @@ internal static class Utils
             DataTypes.DECIMAL => value as double?,
             DataTypes.BOOLEAN => value as bool?,
             DataTypes.DATETIME => value is string str ? DateTime.Parse(str) : value as DateTime?,
+            DataTypes.UNIT => null,
+            _ => throw new NotImplementedException("Unknown data type")
+        };
+    }
+
+    internal static object? AdaptToSqliteValue(this object? value, DataTypes dataType)
+    {
+        return dataType switch
+        {
+            DataTypes.INTEGER => value as int?,
+            DataTypes.LONG => value as long?,
+            DataTypes.STRING => value as string,
+            DataTypes.DECIMAL => value as double?,
+            DataTypes.BOOLEAN => value as bool?,
+            DataTypes.DATETIME => value is DateTime dt ? dt.ToString("yyyy-MM-dd HH:mm:ss.fff") : null,
             DataTypes.UNIT => null,
             _ => throw new NotImplementedException("Unknown data type")
         };

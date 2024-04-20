@@ -12,7 +12,7 @@ public class MetadataManagerTests
     }
 
     [Fact(DisplayName = "Get metadata for a table")]
-    public void GetTableMetadata()
+    public void GetTableMetadata_WhenTableExists_ReturnsTable()
     {
         var tableResult = _metadataManager.GetTable("Person");
         var table = tableResult.Data;
@@ -20,7 +20,7 @@ public class MetadataManagerTests
         Assert.Equal("Person", table.Name);
         Assert.Equal(4, table.Columns.Count);
         Assert.Equal("Id", table.Columns[0].Name);
-        Assert.Equal(DataTypes.INTEGER, table.Columns[0].DataType);
+        Assert.Equal(DataTypes.LONG, table.Columns[0].DataType);
         Assert.Equal("FirstName", table.Columns[1].Name);
         Assert.Equal(DataTypes.STRING, table.Columns[1].DataType);
         Assert.Equal("LastName", table.Columns[2].Name);
@@ -30,7 +30,7 @@ public class MetadataManagerTests
     }
 
     [Fact(DisplayName = "Get metadata for all tables")]
-    public void GetAllTableMetadata()
+    public void GetAllTableMetadata_WhenTablesExist_ReturnsTables()
     {
         var tablesResult = _metadataManager.GetAllTables();
         var tables = tablesResult.Data.ToList();
@@ -46,7 +46,7 @@ public class MetadataManagerTests
     }
 
     [Fact(DisplayName = "Create a table and drop it")]
-    public void CreateAndDropTable()
+    public void CreateAndDropTable_WhenTableNotExists()
     {
         var table = Table.Cons(
             "TestTable",
