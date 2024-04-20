@@ -17,16 +17,16 @@ public sealed class QueryManager : IQueryManager
         _connection = new SqliteConnection(_connectionString);
     }
 
-    public Result<RowData> GetFrom(Table table, ColumnData key)
+    public Result<TableData> GetFrom(Table table, ColumnData key)
         => Result.AsResult(() =>
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM {table.Name} WHERE {key.Name} = $value";
                 command.Parameters.AddWithValue("$value", key.BoxedData);
-
+                var rowData = new List<RowData>();
                 var reader = command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
                     var rowColumnData = new List<ColumnData>();
                     for (var i = 0; i < reader.FieldCount; i++)
@@ -37,14 +37,13 @@ public sealed class QueryManager : IQueryManager
                         var columnDataResult = ColumnData.Cons(column, value);
                         if (columnDataResult.IsFailure)
                         {
-                            return Result.Failure<RowData>(columnDataResult.Message);
+                            return Result.Failure<TableData>(columnDataResult.Message);
                         }
                         rowColumnData.Add(columnDataResult.Data);
                     }
-                    return RowData.Cons(rowColumnData);
-                } else {
-                    return Result.Failure<RowData>($"No row found in table {table.Name} with key {key}");
+                    rowData.Add(RowData.Cons(rowColumnData));
                 }
+                return TableData.Cons(table, rowData);
             }));
 
     public Result<TableData> GetAllFrom(Table table)
@@ -71,6 +70,38 @@ public sealed class QueryManager : IQueryManager
                         rowColumnData.Add(columnDataResult.Data);
                     }
                     rowData.Add(RowData.Cons(rowColumnData));
+                }
+                return TableData.Cons(table, rowData);
+            }));
+
+    public Result<TableData> GetFrom(Table table, Func<RowData, bool> predicate)
+        => Result.AsResult(() =>
+            _connection.WithConnection(_useAtomicConnection, connection =>
+            {
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM {table.Name}";
+                var reader = command.ExecuteReader();
+                var rowData = new List<RowData>();
+                while (reader.Read())
+                {
+                    var rowColumnData = new List<ColumnData>();
+                    for (var i = 0; i < reader.FieldCount; i++)
+                    {
+                        var column = table.Columns[i];
+                        var value = reader.GetValue(i).AdaptFromSqliteValue(column.DataType);
+
+                        var columnDataResult = ColumnData.Cons(column, value);
+                        if (columnDataResult.IsFailure)
+                        {
+                            return Result.Failure<TableData>(columnDataResult.Message);
+                        }
+                        rowColumnData.Add(columnDataResult.Data);
+                    }
+                    var row = RowData.Cons(rowColumnData);
+                    if (predicate(row))
+                    {
+                        rowData.Add(row);
+                    }
                 }
                 return TableData.Cons(table, rowData);
             }));

@@ -20,11 +20,11 @@ public sealed class QueryManagerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.Equal(key.BoxedData, result.Data!["Id"].Value.BoxedData);
+        Assert.Equal(key.BoxedData, result.Data.RowData.FirstOrDefault()?["Id"].Value.BoxedData);
     }
 
     [Fact]
-    public void GetFrom_WhenRowDoesNotExist_ReturnsFailure()
+    public void GetFrom_WhenRowDoesNotExist_ReturnsEmpty()
     {
         // Arrange
         var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
@@ -36,7 +36,9 @@ public sealed class QueryManagerTests
         var result = queryManager.GetFrom(table, key);
 
         // Assert
-        Assert.True(result.IsFailure);
+        Assert.True(result);
+        Assert.NotNull(result.Data);
+        Assert.Empty(result.Data!.RowData);
     }
 
     [Fact]
@@ -46,6 +48,24 @@ public sealed class QueryManagerTests
         var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
         var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+
+        // Act
+        var result = queryManager.GetAllFrom(table);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+        Assert.NotEmpty(result.Data!.RowData);
+    }
+
+    [Fact]
+    public void GetFrom_WithPredicate_WhenTableHasData_TableData()
+    {
+        // Arrange
+        var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
+        var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
+        var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+        var predicate = new Func<RowData, bool>(row => row["FirstName"].Value.BoxedData as string == "John" && row["LastName"].Value.BoxedData as string == "Smith");
 
         // Act
         var result = queryManager.GetAllFrom(table);

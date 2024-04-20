@@ -77,10 +77,10 @@ internal static class Utils
         {
             DataTypes.INTEGER => value as int?,
             DataTypes.LONG => value as long?,
-            DataTypes.STRING => value as string,
+            DataTypes.STRING => value is not null ? $"\"{value}\"" : value as string,
             DataTypes.DECIMAL => value as double?,
-            DataTypes.BOOLEAN => value as bool?,
-            DataTypes.DATETIME => value is DateTime dt ? dt.ToString("yyyy-MM-dd HH:mm:ss.fff") : null,
+            DataTypes.BOOLEAN => value is not null ? ((bool) value ? 1 : 0) : value as int?,
+            DataTypes.DATETIME => value is DateTime dt ? $"\"{dt.ToString("yyyy-MM-dd HH:mm:ss.fff")}\"" : "NULL",
             DataTypes.UNIT => null,
             _ => throw new NotImplementedException("Unknown data type")
         };

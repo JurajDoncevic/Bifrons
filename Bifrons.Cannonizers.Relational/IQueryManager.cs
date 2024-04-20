@@ -7,5 +7,6 @@ namespace Bifrons.Cannonizers.Relational;
 public interface IQueryManager
 {
     Result<TableData> GetAllFrom(Table table);
-    Result<RowData> GetFrom(Table table, ColumnData key);
+    Result<TableData> GetFrom(Table table, ColumnData key);
+    Result<TableData> GetFrom(Table table, Func<RowData, bool> predicate);
 }
