@@ -55,7 +55,7 @@ public sealed class StringRenameLens : RenameLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
-    public StringRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<string, string> dataLens)
+    private StringRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<string, string> dataLens)
         : base(columnLens, dataLens)
     {   
     }
@@ -68,7 +68,7 @@ public sealed class IntegerRenameLens : RenameLens<IntegerColumnData, int>
 {
     public override DataTypes ForDataType => DataTypes.INTEGER;
 
-    public IntegerRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<int, int> dataLens)
+    private IntegerRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<int, int> dataLens)
         : base(columnLens, dataLens)
     {
     }
@@ -77,11 +77,24 @@ public sealed class IntegerRenameLens : RenameLens<IntegerColumnData, int>
         => new IntegerRenameLens(columnLens, dataLens);
 }
 
+public sealed class LongRenameLens : RenameLens<LongColumnData, long>
+{
+    public override DataTypes ForDataType => DataTypes.LONG;
+
+    private LongRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<long, long> dataLens)
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static LongRenameLens Cons(Relational.Columns.RenameLens columnLens, ISymmetricLens<long, long> dataLens)
+        => new LongRenameLens(columnLens, dataLens);
+}
+
 public sealed class BooleanRenameLens : RenameLens<BooleanColumnData, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
-    public BooleanRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<bool, bool> dataLens)
+    private BooleanRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<bool, bool> dataLens)
         : base(columnLens, dataLens)
     {
     }
@@ -94,7 +107,7 @@ public sealed class DateTimeRenameLens : RenameLens<DateTimeColumnData, DateTime
 {
     public override DataTypes ForDataType => DataTypes.DATETIME;
 
-    public DateTimeRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
+    private DateTimeRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<DateTime, DateTime> dataLens)
         : base(columnLens, dataLens)
     {
     }
@@ -107,7 +120,7 @@ public sealed class DecimalRenameLens : RenameLens<DecimalColumnData, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
-    public DecimalRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<double, double> dataLens)
+    private DecimalRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<double, double> dataLens)
         : base(columnLens, dataLens)
     {
     }
@@ -120,7 +133,7 @@ public sealed class UnitRenameLens : RenameLens<UnitColumnData, Unit>
 {
     public override DataTypes ForDataType => DataTypes.UNIT;
 
-    public UnitRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
+    private UnitRenameLens(Relational.Columns.RenameLens columnLens, ISymmetricLens<Unit, Unit> dataLens)
         : base(columnLens, dataLens)
     {
     }

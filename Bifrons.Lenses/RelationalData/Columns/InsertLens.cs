@@ -71,7 +71,7 @@ public sealed class StringInsertLens : InsertLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
-    public StringInsertLens(Relational.Columns.InsertLens columnLens, string defaultData) : base(columnLens, defaultData)
+    private StringInsertLens(Relational.Columns.InsertLens columnLens, string defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -83,7 +83,7 @@ public sealed class IntegerInsertLens : InsertLens<IntegerColumnData, int>
 {
     public override DataTypes ForDataType => DataTypes.INTEGER;
 
-    public IntegerInsertLens(Relational.Columns.InsertLens columnLens, int defaultData) : base(columnLens, defaultData)
+    private IntegerInsertLens(Relational.Columns.InsertLens columnLens, int defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -91,11 +91,23 @@ public sealed class IntegerInsertLens : InsertLens<IntegerColumnData, int>
         => new(columnLens, defaultData);
 }
 
+public sealed class LongInsertLens : InsertLens<LongColumnData, long>
+{
+    public override DataTypes ForDataType => DataTypes.LONG;
+
+    private LongInsertLens(Relational.Columns.InsertLens columnLens, long defaultData) : base(columnLens, defaultData)
+    {
+    }
+
+    public static LongInsertLens Cons(Relational.Columns.InsertLens columnLens, long defaultData)
+        => new(columnLens, defaultData);
+}
+
 public sealed class DecimalInsertLens : InsertLens<DecimalColumnData, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
-    public DecimalInsertLens(Relational.Columns.InsertLens columnLens, double defaultData) : base(columnLens, defaultData)
+    private DecimalInsertLens(Relational.Columns.InsertLens columnLens, double defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -107,7 +119,7 @@ public sealed class BooleanInsertLens : InsertLens<BooleanColumnData, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
-    public BooleanInsertLens(Relational.Columns.InsertLens columnLens, bool defaultData) : base(columnLens, defaultData)
+    private BooleanInsertLens(Relational.Columns.InsertLens columnLens, bool defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -119,7 +131,7 @@ public sealed class DateTimeInsertLens : InsertLens<DateTimeColumnData, DateTime
 {
     public override DataTypes ForDataType => DataTypes.DATETIME;
 
-    public DateTimeInsertLens(Relational.Columns.InsertLens columnLens, DateTime defaultData) : base(columnLens, defaultData)
+    private DateTimeInsertLens(Relational.Columns.InsertLens columnLens, DateTime defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -131,7 +143,7 @@ public sealed class UnitInsertLens : InsertLens<UnitColumnData, Unit>
 {
     public override DataTypes ForDataType => DataTypes.UNIT;
 
-    public UnitInsertLens(Relational.Columns.InsertLens columnLens) : base(columnLens, Unit())
+    private UnitInsertLens(Relational.Columns.InsertLens columnLens) : base(columnLens, Unit())
     {
     }
 

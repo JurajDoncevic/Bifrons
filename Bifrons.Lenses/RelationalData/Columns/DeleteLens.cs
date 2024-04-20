@@ -42,7 +42,7 @@ public sealed class StringDeleteLens : DeleteLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;
 
-    public StringDeleteLens(Relational.Columns.DeleteLens columnLens, string defaultData) : base(columnLens, defaultData)
+    private StringDeleteLens(Relational.Columns.DeleteLens columnLens, string defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -54,7 +54,7 @@ public sealed class IntegerDeleteLens : DeleteLens<IntegerColumnData, int>
 {
     public override DataTypes ForDataType => DataTypes.INTEGER;
 
-    public IntegerDeleteLens(Relational.Columns.DeleteLens columnLens, int defaultData) : base(columnLens, defaultData)
+    private IntegerDeleteLens(Relational.Columns.DeleteLens columnLens, int defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -62,11 +62,23 @@ public sealed class IntegerDeleteLens : DeleteLens<IntegerColumnData, int>
         => new(columnLens, defaultData);
 }
 
+public sealed class LongDeleteLens : DeleteLens<LongColumnData, long>
+{
+    public override DataTypes ForDataType => DataTypes.LONG;
+
+    private LongDeleteLens(Relational.Columns.DeleteLens columnLens, long defaultData) : base(columnLens, defaultData)
+    {
+    }
+
+    public static LongDeleteLens Cons(Relational.Columns.DeleteLens columnLens, long defaultData)
+        => new(columnLens, defaultData);
+}
+
 public sealed class DecimalDeleteLens : DeleteLens<DecimalColumnData, double>
 {
     public override DataTypes ForDataType => DataTypes.DECIMAL;
 
-    public DecimalDeleteLens(Relational.Columns.DeleteLens columnLens, double defaultData) : base(columnLens, defaultData)
+    private DecimalDeleteLens(Relational.Columns.DeleteLens columnLens, double defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -78,7 +90,7 @@ public sealed class BooleanDeleteLens : DeleteLens<BooleanColumnData, bool>
 {
     public override DataTypes ForDataType => DataTypes.BOOLEAN;
 
-    public BooleanDeleteLens(Relational.Columns.DeleteLens columnLens, bool defaultData) : base(columnLens, defaultData)
+    private BooleanDeleteLens(Relational.Columns.DeleteLens columnLens, bool defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -90,7 +102,7 @@ public sealed class DateTimeDeleteLens : DeleteLens<DateTimeColumnData, DateTime
 {
     public override DataTypes ForDataType => DataTypes.DATETIME;
 
-    public DateTimeDeleteLens(Relational.Columns.DeleteLens columnLens, DateTime defaultData) : base(columnLens, defaultData)
+    private DateTimeDeleteLens(Relational.Columns.DeleteLens columnLens, DateTime defaultData) : base(columnLens, defaultData)
     {
     }
 
@@ -102,7 +114,7 @@ public sealed class UnitDeleteLens : DeleteLens<UnitColumnData, Unit>
 {
     public override DataTypes ForDataType => DataTypes.UNIT;
 
-    public UnitDeleteLens(Relational.Columns.DeleteLens columnLens) : base(columnLens, Unit())
+    private UnitDeleteLens(Relational.Columns.DeleteLens columnLens) : base(columnLens, Unit())
     {
     }
 

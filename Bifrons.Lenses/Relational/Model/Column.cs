@@ -30,6 +30,7 @@ public abstract class Column
     {
         DataTypes.STRING => StringColumn.Cons(name),
         DataTypes.INTEGER => IntegerColumn.Cons(name),
+        DataTypes.LONG => LongColumn.Cons(name),
         DataTypes.DECIMAL => DecimalColumn.Cons(name),
         DataTypes.BOOLEAN => BooleanColumn.Cons(name),
         DataTypes.DATETIME => DateTimeColumn.Cons(name),

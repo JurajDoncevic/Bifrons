@@ -25,6 +25,23 @@ public sealed class IntegerColumn : Column, IColumn<int>
     public static IntegerColumn Cons(string name) => new(name);
 }
 
+public sealed class LongColumn : Column, IColumn<long>
+{
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="name">Column name</param>
+    private LongColumn(string name) : base(name, DataTypes.LONG)
+    {
+    }
+
+    /// <summary>
+    /// Constructs a new long column.
+    /// </summary>
+    /// <param name="name">Column name</param>
+    public static LongColumn Cons(string name) => new(name);
+}
+
 /// <summary>
 /// Represents a decimal column in a table.
 /// </summary>

@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Bifrons.Base\Bifrons.Base.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Longs\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

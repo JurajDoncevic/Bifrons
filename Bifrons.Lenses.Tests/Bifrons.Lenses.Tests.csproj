@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Booleans\" />
     <Folder Include="DateTimes\" />
+    <Folder Include="Longs\" />
     <Folder Include="Symmetric\CrossType\" />
     <Folder Include="Symmetric\Relational\Columns\" />
   </ItemGroup>

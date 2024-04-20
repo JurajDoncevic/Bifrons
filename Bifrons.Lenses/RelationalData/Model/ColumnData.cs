@@ -27,8 +27,8 @@ public abstract class ColumnData
 
     public T GetData<T>() => (T)_boxedData!;
     public override bool Equals(object? obj)
-        => obj is not null 
-            && obj is ColumnData 
+        => obj is not null
+            && obj is ColumnData
             && Equals((obj as ColumnData)!);
 
     private bool Equals(ColumnData other)
@@ -43,6 +43,7 @@ public abstract class ColumnData
          {
              DataTypes.STRING => StringColumnData.Cons((column as StringColumn)!, boxedData as string),
              DataTypes.INTEGER => IntegerColumnData.Cons((column as IntegerColumn)!, boxedData as int?),
+             DataTypes.LONG => LongColumnData.Cons((column as LongColumn)!, boxedData as long?),
              DataTypes.DECIMAL => DecimalColumnData.Cons((column as DecimalColumn)!, boxedData as double?),
              DataTypes.BOOLEAN => BooleanColumnData.Cons((column as BooleanColumn)!, boxedData as bool?),
              DataTypes.DATETIME => DateTimeColumnData.Cons((column as DateTimeColumn)!, boxedData as DateTime?),
@@ -57,6 +58,7 @@ public abstract class ColumnData
          {
              DataTypes.STRING => (StringColumnData.Cons((column as StringColumn)!, boxedData as string) as TColumnData)!,
              DataTypes.INTEGER => (IntegerColumnData.Cons((column as IntegerColumn)!, boxedData as int?) as TColumnData)!,
+             DataTypes.LONG => (LongColumnData.Cons((column as LongColumn)!, boxedData as long?) as TColumnData)!,
              DataTypes.DECIMAL => (DecimalColumnData.Cons((column as DecimalColumn)!, boxedData as double?) as TColumnData)!,
              DataTypes.BOOLEAN => (BooleanColumnData.Cons((column as BooleanColumn)!, boxedData as bool?) as TColumnData)!,
              DataTypes.DATETIME => (DateTimeColumnData.Cons((column as DateTimeColumn)!, boxedData as DateTime?) as TColumnData)!,
@@ -89,6 +91,19 @@ public sealed class IntegerColumnData : ColumnData, IColumnData<int>
     }
 
     public static IntegerColumnData Cons(IntegerColumn column, int? data = null)
+        => new(column, data);
+}
+
+public sealed class LongColumnData : ColumnData, IColumnData<long>
+{
+    public Option<long> Data => BoxedData as long? ?? Option.None<long>();
+
+    private LongColumnData(LongColumn column, long? data)
+        : base(column, data)
+    {
+    }
+
+    public static LongColumnData Cons(LongColumn column, long? data = null)
         => new(column, data);
 }
 
@@ -134,7 +149,7 @@ public sealed class DateTimeColumnData : ColumnData, IColumnData<DateTime>
 public sealed class UnitColumnData : ColumnData, IColumnData<Unit>
 {
     public Option<Unit> Data => Unit();
-    
+
     private UnitColumnData(UnitColumn column)
         : base(column, null)
     {

@@ -65,6 +65,19 @@ public sealed class IntegerIdentityLens : IdentityLens<IntegerColumnData, int>
         => new(columnLens, dataLens);
 }
 
+public sealed class LongIdentityLens : IdentityLens<LongColumnData, long>
+{
+    public override DataTypes ForDataType => DataTypes.LONG;
+
+    private LongIdentityLens(Relational.Columns.IdentityLens columnLens, ISymmetricLens<long, long> dataLens)
+        : base(columnLens, dataLens)
+    {
+    }
+
+    public static LongIdentityLens Cons(Relational.Columns.IdentityLens columnLens, ISymmetricLens<long, long> dataLens)
+        => new(columnLens, dataLens);
+}
+
 public sealed class StringIdentityLens : IdentityLens<StringColumnData, string>
 {
     public override DataTypes ForDataType => DataTypes.STRING;

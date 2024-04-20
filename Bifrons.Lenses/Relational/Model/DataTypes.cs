@@ -6,6 +6,7 @@
 public enum DataTypes
 {
     INTEGER,
+    LONG,
     DECIMAL,
     STRING,
     BOOLEAN,
@@ -30,6 +31,7 @@ public static class DataTypesExtensions
         {
             DataTypes.STRING => typeof(string),
             DataTypes.INTEGER => typeof(int),
+            DataTypes.LONG => typeof(long),
             DataTypes.DECIMAL => typeof(double),
             DataTypes.BOOLEAN => typeof(bool),
             DataTypes.DATETIME => typeof(DateTime),
@@ -50,6 +52,7 @@ public static class DataTypesExtensions
         {
             Type t when t == typeof(string) => DataTypes.STRING,
             Type t when t == typeof(int) => DataTypes.INTEGER,
+            Type t when t == typeof(long) => DataTypes.LONG,
             Type t when t == typeof(double) => DataTypes.DECIMAL,
             Type t when t == typeof(bool) => DataTypes.BOOLEAN,
             Type t when t == typeof(DateTime) => DataTypes.DATETIME,
