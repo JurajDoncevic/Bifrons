@@ -32,7 +32,7 @@ public sealed class QueryManager : IQueryManager
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
                         var column = table.Columns[i];
-                        var value = reader.GetValue(i);
+                        var value = reader.GetValue(i).AdaptSqliteValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
                         if (columnDataResult.IsFailure)
@@ -61,7 +61,7 @@ public sealed class QueryManager : IQueryManager
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
                         var column = table.Columns[i];
-                        var value = reader.GetValue(i);
+                        var value = reader.GetValue(i).AdaptSqliteValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
                         if (columnDataResult.IsFailure)

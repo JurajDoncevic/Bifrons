@@ -12,7 +12,7 @@ public sealed class QueryManagerTests
         var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
         var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
-        var key = ColumnData.Cons(table["Id"].Value, 1).Data;
+        var key = ColumnData.Cons(table["Id"].Value, 1L).Data;
 
         // Act
         var result = queryManager.GetFrom(table, key);
@@ -20,6 +20,6 @@ public sealed class QueryManagerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.Equal(1, result.Data!["Id"].Value.BoxedData as int?);
+        Assert.Equal(key.BoxedData, result.Data!["Id"].Value.BoxedData);
     }
 }

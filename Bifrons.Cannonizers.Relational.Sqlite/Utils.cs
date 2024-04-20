@@ -3,9 +3,9 @@ using Microsoft.Data.Sqlite;
 
 namespace Bifrons.Cannonizers.Relational.Sqlite;
 
-public static class Utils
+internal static class Utils
 {
-    public enum SqliteDataTypes
+    internal enum SqliteDataTypes
     {
         INTEGER,
         TEXT,
@@ -15,7 +15,7 @@ public static class Utils
         NULL
     }
 
-    public static SqliteDataTypes FromDbString(string dbTypeName)
+    internal static SqliteDataTypes FromDbString(string dbTypeName)
         => dbTypeName switch
         {
             "INTEGER" => SqliteDataTypes.INTEGER,
@@ -27,11 +27,12 @@ public static class Utils
             _ => throw new NotImplementedException($"Unknown data type {dbTypeName}")
         };
 
-    public static SqliteDataTypes ToSqliteType(this DataTypes dataType)
+    internal static SqliteDataTypes ToSqliteType(this DataTypes dataType)
     {
         return dataType switch
         {
             DataTypes.INTEGER => SqliteDataTypes.INTEGER,
+            DataTypes.LONG => SqliteDataTypes.INTEGER,
             DataTypes.STRING => SqliteDataTypes.TEXT,
             DataTypes.DECIMAL => SqliteDataTypes.REAL,
             DataTypes.BOOLEAN => SqliteDataTypes.INTEGER,
@@ -41,11 +42,11 @@ public static class Utils
         };
     }
 
-    public static DataTypes ToDataType(this SqliteDataTypes sqliteType)
+    internal static DataTypes ToDataType(this SqliteDataTypes sqliteType)
     {
         return sqliteType switch
         {
-            SqliteDataTypes.INTEGER => DataTypes.INTEGER,
+            SqliteDataTypes.INTEGER => DataTypes.LONG,
             SqliteDataTypes.TEXT => DataTypes.STRING,
             SqliteDataTypes.REAL => DataTypes.DECIMAL,
             SqliteDataTypes.DATE => DataTypes.DATETIME,
@@ -55,7 +56,22 @@ public static class Utils
         };
     }
 
-    public static Result<TData> WithConnection<TData>(this SqliteConnection connection, bool isAtomic, Func<SqliteConnection, Result<TData>> action)
+    internal static object? AdaptSqliteValue(this object? value, DataTypes dataType)
+    {
+        return dataType switch
+        {
+            DataTypes.INTEGER => value as int?,
+            DataTypes.LONG => value as long?,
+            DataTypes.STRING => value as string,
+            DataTypes.DECIMAL => value as double?,
+            DataTypes.BOOLEAN => value as bool?,
+            DataTypes.DATETIME => value is string str ? DateTime.Parse(str) : value as DateTime?,
+            DataTypes.UNIT => null,
+            _ => throw new NotImplementedException("Unknown data type")
+        };
+    }
+
+    internal static Result<TData> WithConnection<TData>(this SqliteConnection connection, bool isAtomic, Func<SqliteConnection, Result<TData>> action)
         => Result.AsResult(() =>
         {
             bool isOpenedByThis = false;
