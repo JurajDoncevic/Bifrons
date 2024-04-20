@@ -34,7 +34,7 @@ public sealed class CommandManager : ICommandManager
 
                     for (var i = 1; i < reader.FieldCount; i++)
                     {
-                        var column = table.Columns[i-1];
+                        var column = table.Columns[i - 1];
                         var value = reader.GetValue(i).AdaptFromSqliteValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
@@ -89,10 +89,11 @@ public sealed class CommandManager : ICommandManager
                         var rowsToUpdate = new List<long>();
                         while (reader.Read())
                         {
+                            var rowid = reader.GetInt64(0); // rowid is at column 0
                             var rowColumnData = new List<ColumnData>();
-                            for (var i = 0; i < reader.FieldCount; i++)
+                            for (var i = 1; i < reader.FieldCount; i++)
                             {
-                                var column = table.Columns[i];
+                                var column = table.Columns[i - 1];
                                 var value = reader.GetValue(i).AdaptFromSqliteValue(column.DataType);
 
                                 var columnDataResult = ColumnData.Cons(column, value);
@@ -105,7 +106,7 @@ public sealed class CommandManager : ICommandManager
                             var rowData = RowData.Cons(rowColumnData);
                             if (predicate(rowData))
                             {
-                                rowsToUpdate.Add(reader.GetInt64(0)); // rowid is at column 0
+                                rowsToUpdate.Add(rowid);
                             }
                         }
 
@@ -117,7 +118,7 @@ public sealed class CommandManager : ICommandManager
                                 for (var i = 0; i < table.Columns.Count; i++)
                                 {
                                     var column = table.Columns[i];
-                                    var value = row[row[column.Name].Value.Name].Value;
+                                    var value = row[row[column.Name].Value.Name].Value.BoxedData;
                                     var adaptedValue = value.AdaptToSqliteValue(column.DataType);
                                     setValues.Add($"{column.Name} = {adaptedValue}");
                                 }
