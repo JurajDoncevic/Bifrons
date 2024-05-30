@@ -31,6 +31,8 @@ public sealed class CannonizerFixture : IDisposable
 
         // Build the image from the Dockerfile
         new ImageFromDockerfileBuilder()
+            .WithDeleteIfExists(true)
+            .WithCleanUp(true)
             .WithDockerfileDirectory(CommonDirectoryPath.GetProjectDirectory(), string.Empty)
             .WithDockerfile("Dockerfile")
             .WithName(imageName)
