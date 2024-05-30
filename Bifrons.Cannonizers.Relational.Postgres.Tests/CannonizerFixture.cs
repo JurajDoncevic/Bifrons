@@ -21,6 +21,7 @@ public sealed class CannonizerFixture : IDisposable
             .AddJsonFile("appsettings.Local.json", optional: true)
             .Build();
 
+        var buildImage = _configuration.GetValue<bool>("DatabaseContainer:BuildImage");
         var hostPort = _configuration.GetValue<int>("DatabaseContainer:HostPort");
         var containerPort = _configuration.GetValue<int>("DatabaseContainer:ContainerPort");
         var imageName = _configuration.GetValue<string>("DatabaseContainer:ImageName");
@@ -29,14 +30,17 @@ public sealed class CannonizerFixture : IDisposable
         var env_postgresPassword = _configuration.GetValue<string>("DatabaseContainer:Env:POSTGRES_PASSWORD");
         var env_postgresDatabase = _configuration.GetValue<string>("DatabaseContainer:Env:POSTGRES_DB");
 
-        // Build the image from the Dockerfile
-        new ImageFromDockerfileBuilder()
-            .WithDeleteIfExists(true)
-            .WithCleanUp(true)
-            .WithDockerfileDirectory(CommonDirectoryPath.GetProjectDirectory(), string.Empty)
-            .WithDockerfile("Dockerfile")
-            .WithName(imageName)
-            .Build().CreateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        // Optionally build the image from the Dockerfile
+        if (buildImage)
+        {
+            new ImageFromDockerfileBuilder()
+                .WithDeleteIfExists(true)
+                .WithCleanUp(true)
+                .WithDockerfileDirectory(CommonDirectoryPath.GetProjectDirectory(), string.Empty)
+                .WithDockerfile("Dockerfile")
+                .WithName(imageName)
+                .Build().CreateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        }
 
         // Create the container
         _databaseContainer = new ContainerBuilder()
