@@ -22,18 +22,18 @@ public abstract class DeleteLens<TColumnData, TData>
             () => CreateLeft(updatedSource)
             );
 
-    public override Func<TColumnData, Option<UnitColumnData>, Result<UnitColumnData>> PutRight => 
+    public override Func<TColumnData, Option<UnitColumnData>, Result<UnitColumnData>> PutRight =>
         (updatedSource, originalTarget) => originalTarget.Match(
             target => _columnLens.PutRight(updatedSource.Column, target.Column)
                         .Map(column => UnitColumnData.Cons((column as UnitColumn)!)),
             () => CreateRight(updatedSource)
             );
 
-    public override Func<TColumnData, Result<UnitColumnData>> CreateRight => 
+    public override Func<TColumnData, Result<UnitColumnData>> CreateRight =>
         source => _columnLens.CreateRight(source.Column)
                     .Map(column => UnitColumnData.Cons((column as UnitColumn)!));
 
-    public override Func<UnitColumnData, Result<TColumnData>> CreateLeft => 
+    public override Func<UnitColumnData, Result<TColumnData>> CreateLeft =>
         source => _columnLens.CreateLeft(source.Column)
                     .Bind(column => ColumnData.Cons<TColumnData>(column, _defaultData))!;
 }

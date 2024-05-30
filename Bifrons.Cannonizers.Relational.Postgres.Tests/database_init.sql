@@ -13,7 +13,7 @@ CREATE TABLE public."Person" (
 CREATE TABLE public."Role" (
     "Id" SERIAL PRIMARY KEY,
     "Name" TEXT NOT NULL,
-    CONSTRAINT UniqueRoleName UNIQUE (Name)
+    CONSTRAINT UniqueRoleName UNIQUE ("Name")
 );
 
 
@@ -25,8 +25,8 @@ CREATE TABLE public."PersonRole" (
     "GivenOn" TIMESTAMP NOT NULL,
     "ExpiresOn" TIMESTAMP,
     PRIMARY KEY ("PersonId","RoleId"),
-    FOREIGN KEY ("PersonId") REFERENCES Person(Id),
-    FOREIGN KEY ("RoleId") REFERENCES Role(Id)
+    FOREIGN KEY ("PersonId") REFERENCES "Person"("Id"),
+    FOREIGN KEY ("RoleId") REFERENCES "Role"("Id")
 );
 
 INSERT INTO public."Person" ("FirstName","LastName","DateOfBirth") VALUES
@@ -57,6 +57,6 @@ INSERT INTO public."PersonRole" ("PersonId","RoleId","GivenOn","ExpiresOn") VALU
      (7,3,'2023-04-01 00:00:00',NULL),
      (8,4,'2023-05-01 00:00:00','2024-05-01 00:00:00'),
      (9,1,'2023-06-01 00:00:00',NULL),
-     (10,2,'2023-07-01 00:00:00','2024-07-01 00:00:00'),
+     (3,2,'2023-07-01 00:00:00','2024-07-01 00:00:00'),
      (1,4,'2024-03-10 17:55:32.3943333','2024-03-10 16:55:19.375'),
      (1,2,'2024-03-10 17:58:23.1694698',NULL);
