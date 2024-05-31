@@ -34,7 +34,13 @@ public sealed class CommandManager : ICommandManager
 
                     for (var i = 1; i < reader.FieldCount; i++)
                     {
-                        var column = table.Columns[i - 1];
+                        var fieldName = reader.GetName(i);
+                        var columnOpt = table[fieldName];
+                        if (!columnOpt)
+                        {
+                            return Result.Failure<Unit>($"Column {fieldName} not found in table {table.Name}");
+                        }
+                        var column = columnOpt.Value;
                         var value = reader.GetValue(i).AdaptFromSqliteValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
@@ -93,7 +99,13 @@ public sealed class CommandManager : ICommandManager
                             var rowColumnData = new List<ColumnData>();
                             for (var i = 1; i < reader.FieldCount; i++)
                             {
-                                var column = table.Columns[i - 1];
+                                var fieldName = reader.GetName(i);
+                                var columnOpt = table[fieldName];
+                                if (!columnOpt)
+                                {
+                                    return Result.Failure<Unit>($"Column {fieldName} not found in table {table.Name}");
+                                }
+                                var column = columnOpt.Value;
                                 var value = reader.GetValue(i).AdaptFromSqliteValue(column.DataType);
 
                                 var columnDataResult = ColumnData.Cons(column, value);
@@ -117,7 +129,13 @@ public sealed class CommandManager : ICommandManager
                                 var setValues = new List<string>();
                                 for (var i = 0; i < table.Columns.Count; i++)
                                 {
-                                    var column = table.Columns[i];
+                                    var fieldName = reader.GetName(i);
+                                    var columnOpt = table[fieldName];
+                                    if (!columnOpt)
+                                    {
+                                        return Result.Failure<Unit>($"Column {fieldName} not found in table {table.Name}");
+                                    }
+                                    var column = columnOpt.Value;
                                     var value = row[row[column.Name].Value.Name].Value.BoxedData;
                                     var adaptedValue = value.AdaptToSqliteValue(column.DataType);
                                     setValues.Add($"{column.Name} = {adaptedValue}");

@@ -9,7 +9,7 @@ public sealed class Table
     /// Default name for the unit table
     /// </summary>
     public const string UNIT_NAME = "";
-    
+
     private readonly string _name;
     private readonly List<Column> _columns;
     private readonly bool _isUnit;

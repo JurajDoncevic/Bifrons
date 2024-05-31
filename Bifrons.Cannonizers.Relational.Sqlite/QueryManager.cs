@@ -22,7 +22,7 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name} WHERE {key.Name} = $value";
+                command.CommandText = $"SELECT * FROM \"{table.Name}\" WHERE \"{key.Name}\" = $value";
                 command.Parameters.AddWithValue("$value", key.BoxedData);
                 var rowData = new List<RowData>();
                 var reader = command.ExecuteReader();
@@ -51,7 +51,7 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name}";
+                command.CommandText = $"SELECT * FROM \"{table.Name}\"";
                 var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())
@@ -79,7 +79,7 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name}";
+                command.CommandText = $"SELECT * FROM \"{table.Name}\"";
                 var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())

@@ -23,6 +23,23 @@ internal static class Utils
             return result;
         });
 
+    internal static async Task<Result<TData>> WithConnection<TData>(this NpgsqlConnection connection, bool isAtomic, Func<NpgsqlConnection, Task<Result<TData>>> action)
+        => await Result.AsResult(async () =>
+        {
+            bool isOpenedByThis = false;
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+                isOpenedByThis = true;
+            }
+            var result = await action(connection);
+            if (isAtomic && isOpenedByThis)
+            {
+                connection.Close();
+            }
+            return result;
+        });
+
     internal static object? AdaptFromPostgresValue(this object? value, DataTypes dataType)
         => dataType switch
         {
@@ -33,6 +50,32 @@ internal static class Utils
             DataTypes.BOOLEAN => value as bool?,
             DataTypes.DATETIME => value is string str ? DateTime.Parse(str) : value as DateTime?,
             DataTypes.UNIT => null,
+            _ => throw new NotImplementedException("Unknown data type")
+        };
+
+    internal static string ToPostgresTypeName(this DataTypes dataType)
+        => dataType switch
+        {
+            DataTypes.INTEGER => "integer",
+            DataTypes.LONG => "bigint",
+            DataTypes.STRING => "text",
+            DataTypes.DECIMAL => "double precision",
+            DataTypes.BOOLEAN => "boolean",
+            DataTypes.DATETIME => "timestamp",
+            DataTypes.UNIT => "void",
+            _ => throw new NotImplementedException("Unknown data type")
+        };
+
+    internal static DataTypes FromPostgresTypeName(this string typeName)
+        => typeName switch
+        {
+            "integer" => DataTypes.INTEGER,
+            "bigint" => DataTypes.LONG,
+            "text" => DataTypes.STRING,
+            "double precision" => DataTypes.DECIMAL,
+            "boolean" => DataTypes.BOOLEAN,
+            var type when type.StartsWith("time") || type.StartsWith("date") => DataTypes.DATETIME,
+            "void" => DataTypes.UNIT,
             _ => throw new NotImplementedException("Unknown data type")
         };
 }

@@ -57,7 +57,7 @@ public abstract class ColumnData
          () => column.DataType switch
          {
              DataTypes.STRING => (StringColumnData.Cons((column as StringColumn)!, boxedData as string) as TColumnData)!,
-             DataTypes.INTEGER => (IntegerColumnData.Cons((column as IntegerColumn)!, boxedData as int?) as TColumnData)!,
+             DataTypes.INTEGER => (IntegerColumnData.Cons((column as IntegerColumn)!, (int?)boxedData) as TColumnData)!,
              DataTypes.LONG => (LongColumnData.Cons((column as LongColumn)!, boxedData as long?) as TColumnData)!,
              DataTypes.DECIMAL => (DecimalColumnData.Cons((column as DecimalColumn)!, boxedData as double?) as TColumnData)!,
              DataTypes.BOOLEAN => (BooleanColumnData.Cons((column as BooleanColumn)!, boxedData as bool?) as TColumnData)!,

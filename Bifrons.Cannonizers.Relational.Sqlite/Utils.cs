@@ -78,7 +78,7 @@ internal static class Utils
             DataTypes.INTEGER => value as int?,
             DataTypes.LONG => value as long?,
             DataTypes.STRING => value is not null ? $"\"{value}\"" : value as string,
-            DataTypes.DECIMAL => value as double?,
+            DataTypes.DECIMAL => (value as double?)?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "NULL",
             DataTypes.BOOLEAN => value is not null ? ((bool)value ? 1 : 0) : value as int?,
             DataTypes.DATETIME => value is DateTime dt ? $"\"{dt.ToString("yyyy-MM-dd HH:mm:ss.fff")}\"" : "NULL",
             DataTypes.UNIT => null,

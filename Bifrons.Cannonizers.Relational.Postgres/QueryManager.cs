@@ -23,8 +23,8 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name} WHERE {key.Name} = $value";
-                command.Parameters.AddWithValue("$value", key.BoxedData ?? DBNull.Value);
+                command.CommandText = $"SELECT * FROM \"{table.Name}\" WHERE \"{key.Name}\" = @keyValue";
+                command.Parameters.AddWithValue("keyValue", key.BoxedData ?? DBNull.Value);
                 var rowData = new List<RowData>();
                 var reader = command.ExecuteReader();
                 while (reader.Read())
@@ -32,7 +32,13 @@ public sealed class QueryManager : IQueryManager
                     var rowColumnData = new List<ColumnData>();
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
-                        var column = table.Columns[i];
+                        var fieldName = reader.GetName(i);
+                        var columnOpt = table[fieldName];
+                        if (!columnOpt)
+                        {
+                            return Result.Failure<TableData>($"Column {fieldName} not found in table {table.Name}");
+                        }
+                        var column = columnOpt.Value;
                         var value = reader.GetValue(i).AdaptFromPostgresValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
@@ -52,7 +58,7 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name}";
+                command.CommandText = $"SELECT * FROM \"{table.Name}\"";
                 var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())
@@ -60,7 +66,13 @@ public sealed class QueryManager : IQueryManager
                     var rowColumnData = new List<ColumnData>();
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
-                        var column = table.Columns[i];
+                        var fieldName = reader.GetName(i);
+                        var columnOpt = table[fieldName];
+                        if (!columnOpt)
+                        {
+                            return Result.Failure<TableData>($"Column {fieldName} not found in table {table.Name}");
+                        }
+                        var column = columnOpt.Value;
                         var value = reader.GetValue(i).AdaptFromPostgresValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);
@@ -80,7 +92,7 @@ public sealed class QueryManager : IQueryManager
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {table.Name}";
+                command.CommandText = $"SELECT * FROM \"{table.Name}\"";
                 var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())
@@ -88,7 +100,13 @@ public sealed class QueryManager : IQueryManager
                     var rowColumnData = new List<ColumnData>();
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
-                        var column = table.Columns[i];
+                        var fieldName = reader.GetName(i);
+                        var columnOpt = table[fieldName];
+                        if (!columnOpt)
+                        {
+                            return Result.Failure<TableData>($"Column {fieldName} not found in table {table.Name}");
+                        }
+                        var column = columnOpt.Value;
                         var value = reader.GetValue(i).AdaptFromPostgresValue(column.DataType);
 
                         var columnDataResult = ColumnData.Cons(column, value);

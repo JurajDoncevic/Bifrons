@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bifrons.Cannonizers.Relational.Postgres.Tests;
 
-public sealed class CannonizerFixture : IDisposable
+public sealed class DatabaseFixture : IDisposable
 {
     private readonly IContainer? _databaseContainer;
 
@@ -14,7 +14,7 @@ public sealed class CannonizerFixture : IDisposable
     private readonly IServiceCollection _services;
     private readonly IServiceScope _scope;
 
-    public CannonizerFixture()
+    public DatabaseFixture()
     {
         _configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")

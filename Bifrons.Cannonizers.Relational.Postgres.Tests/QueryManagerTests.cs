@@ -2,11 +2,12 @@
 
 namespace Bifrons.Cannonizers.Relational.Postgres.Tests;
 
-public sealed class QueryManagerTests : IClassFixture<CannonizerFixture>
+[Collection("Database collection")]
+public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
 {
-    private readonly CannonizerFixture _fixture;
+    private readonly DatabaseFixture _fixture;
 
-    public QueryManagerTests(CannonizerFixture fixture)
+    public QueryManagerTests(DatabaseFixture fixture)
     {
         _fixture = fixture;
     }
@@ -18,7 +19,7 @@ public sealed class QueryManagerTests : IClassFixture<CannonizerFixture>
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
-        var key = ColumnData.Cons(table["Id"].Value, 1L).Data;
+        var key = ColumnData.Cons(table["Id"].Value, 1).Data;
 
         // Act
         var result = queryManager.GetFrom(table, key);
@@ -36,7 +37,7 @@ public sealed class QueryManagerTests : IClassFixture<CannonizerFixture>
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
-        var key = ColumnData.Cons(table["Id"].Value, 100L).Data;
+        var key = ColumnData.Cons(table["Id"].Value, 100).Data;
 
         // Act
         var result = queryManager.GetFrom(table, key);

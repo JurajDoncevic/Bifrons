@@ -2,11 +2,12 @@
 
 namespace Bifrons.Cannonizers.Relational.Postgres.Tests;
 
-public class MetadataManagerTests : IClassFixture<CannonizerFixture>
+[Collection("Database collection")]
+public class MetadataManagerTests// : IClassFixture<CannonizerFixture>
 {
-    private readonly CannonizerFixture _fixture;
+    private readonly DatabaseFixture _fixture;
 
-    public MetadataManagerTests(CannonizerFixture fixture)
+    public MetadataManagerTests(DatabaseFixture fixture)
     {
         _fixture = fixture;
     }
@@ -21,14 +22,14 @@ public class MetadataManagerTests : IClassFixture<CannonizerFixture>
         Assert.True(tableResult);
         Assert.Equal("Person", table.Name);
         Assert.Equal(4, table.Columns.Count);
-        Assert.Equal("Id", table.Columns[0].Name);
-        Assert.Equal(DataTypes.LONG, table.Columns[0].DataType);
-        Assert.Equal("FirstName", table.Columns[1].Name);
-        Assert.Equal(DataTypes.STRING, table.Columns[1].DataType);
-        Assert.Equal("LastName", table.Columns[2].Name);
-        Assert.Equal(DataTypes.STRING, table.Columns[2].DataType);
-        Assert.Equal("DateOfBirth", table.Columns[3].Name);
-        Assert.Equal(DataTypes.DATETIME, table.Columns[3].DataType);
+        Assert.Contains(table.Columns, c => c.Name == "Id");
+        Assert.Contains(table.Columns, c => c.Name == "FirstName");
+        Assert.Contains(table.Columns, c => c.Name == "LastName");
+        Assert.Contains(table.Columns, c => c.Name == "DateOfBirth");
+        Assert.Equal(DataTypes.INTEGER, table["Id"].Value.DataType);
+        Assert.Equal(DataTypes.STRING, table["FirstName"].Value.DataType);
+        Assert.Equal(DataTypes.STRING, table["LastName"].Value.DataType);
+        Assert.Equal(DataTypes.DATETIME, table["DateOfBirth"].Value.DataType);
     }
 
     [Fact(DisplayName = "Get metadata for all tables")]
@@ -37,16 +38,16 @@ public class MetadataManagerTests : IClassFixture<CannonizerFixture>
         var metadataManager = _fixture.GetService<MetadataManager>();
 
         var tablesResult = metadataManager.GetAllTables();
-        var tables = tablesResult.Data.ToList();
+        var tables = tablesResult.Data?.ToList() ?? throw new Exception($"Failed to get tables: {tablesResult.Message}");
 
         Assert.True(tablesResult);
         Assert.Equal(3, tables.Count());
-        Assert.Equal("Person", tables[0].Name);
-        Assert.Equal(4, tables[0].Columns.Count);
-        Assert.Equal("Role", tables[1].Name);
-        Assert.Equal(2, tables[1].Columns.Count);
-        Assert.Equal("PersonRole", tables[2].Name);
-        Assert.Equal(4, tables[2].Columns.Count);
+        Assert.Contains(tables, t => t.Name == "Person");
+        Assert.Contains(tables, t => t.Name == "Role");
+        Assert.Contains(tables, t => t.Name == "PersonRole");
+        Assert.Equal(4, tables.Single(t => t.Name == "Person").Columns.Count);
+        Assert.Equal(2, tables.Single(t => t.Name == "Role").Columns.Count);
+        Assert.Equal(4, tables.Single(t => t.Name == "PersonRole").Columns.Count);
     }
 
     [Fact(DisplayName = "Create a table and drop it")]
@@ -62,10 +63,17 @@ public class MetadataManagerTests : IClassFixture<CannonizerFixture>
             Column.Cons("DecimalATTR", DataTypes.DECIMAL)
         );
         var metadataManager = _fixture.GetService<MetadataManager>();
-        var createResult = metadataManager.CreateTable(table);
-        var dropResult = metadataManager.DropTable(table.Name);
 
+        var tableExistsPre = metadataManager.TableExists(table.Name);
+        var createResult = metadataManager.CreateTable(table);
+        var tableExistsPost = metadataManager.TableExists(table.Name);
+        var dropResult = metadataManager.DropTable(table.Name);
+        var tableExistsResult = metadataManager.TableExists(table.Name);
+
+        Assert.False(tableExistsPre);
         Assert.True(createResult);
+        Assert.True(tableExistsPost);
         Assert.True(dropResult);
+        Assert.False(tableExistsResult);
     }
 }
