@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <None Update="PeopleAndRoles.db">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
   </ItemGroup>
 
