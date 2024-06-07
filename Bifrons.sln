@@ -25,9 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Experiments", "Bifrons.Experiments\Bifrons.Experiments.csproj", "{2C187574-D2FB-4A6C-BC97-1C3EDB8974CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mssql", "Bifrons.Cannonizers.Relational.Mssql\Bifrons.Cannonizers.Relational.Mssql.csproj", "{89E92451-3B44-4AC9-B74F-6B7B511833C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mysql", "Bifrons.Cannonizers.Relational.Mysql\Bifrons.Cannonizers.Relational.Mysql.csproj", "{387CD199-DE1A-479E-AA33-D57440558D34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mssql.Tests", "Bifrons.Cannonizers.Relational.Mssql.Tests\Bifrons.Cannonizers.Relational.Mssql.Tests.csproj", "{98BCD828-70CC-418D-9575-8A4912EEF89F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mysql.Tests", "Bifrons.Cannonizers.Relational.Mysql.Tests\Bifrons.Cannonizers.Relational.Mysql.Tests.csproj", "{09ECD0E3-DF08-4376-95E5-DD547AEE242D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,14 +79,14 @@ Global
 		{2C187574-D2FB-4A6C-BC97-1C3EDB8974CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C187574-D2FB-4A6C-BC97-1C3EDB8974CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C187574-D2FB-4A6C-BC97-1C3EDB8974CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89E92451-3B44-4AC9-B74F-6B7B511833C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89E92451-3B44-4AC9-B74F-6B7B511833C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89E92451-3B44-4AC9-B74F-6B7B511833C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89E92451-3B44-4AC9-B74F-6B7B511833C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98BCD828-70CC-418D-9575-8A4912EEF89F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98BCD828-70CC-418D-9575-8A4912EEF89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98BCD828-70CC-418D-9575-8A4912EEF89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98BCD828-70CC-418D-9575-8A4912EEF89F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{387CD199-DE1A-479E-AA33-D57440558D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{387CD199-DE1A-479E-AA33-D57440558D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{387CD199-DE1A-479E-AA33-D57440558D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{387CD199-DE1A-479E-AA33-D57440558D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09ECD0E3-DF08-4376-95E5-DD547AEE242D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09ECD0E3-DF08-4376-95E5-DD547AEE242D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09ECD0E3-DF08-4376-95E5-DD547AEE242D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09ECD0E3-DF08-4376-95E5-DD547AEE242D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
