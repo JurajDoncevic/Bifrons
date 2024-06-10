@@ -91,4 +91,85 @@ public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
 
         Assert.True(metadataManager.DropTable(table.Name));
     }
+
+    [Fact]
+    public void UpdateRows_WhenRowsExist_ReturnsSuccess() 
+    {
+                // Arrange
+        var longCol = Column.Cons("LongCOL", DataTypes.LONG);
+        var stringCol = Column.Cons("StringCOL", DataTypes.STRING);
+        var boolCol = Column.Cons("BoolCOL", DataTypes.BOOLEAN);
+        var dateTimeCol = Column.Cons("DateTimeCOL", DataTypes.DATETIME);
+        var decimalCol = Column.Cons("DecimalCOL", DataTypes.DECIMAL);
+        var table = Table.Cons("TestTable", longCol, stringCol, boolCol, dateTimeCol, decimalCol);
+
+        IEnumerable<RowData> rowData = [
+            RowData.Cons([
+                ColumnData.Cons(longCol, 1L).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(dateTimeCol, DateTime.Parse("1-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(decimalCol, 1.1).Data ?? throw new Exception("Failed to create column"),
+            ]),
+            RowData.Cons([
+                ColumnData.Cons(longCol, 2L).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(dateTimeCol, DateTime.Parse("2-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(decimalCol, 1.2).Data ?? throw new Exception("Failed to create column"),
+            ]),
+            RowData.Cons([
+                ColumnData.Cons(longCol, 3L).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(dateTimeCol, DateTime.Parse("3-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(decimalCol, 1.3).Data ?? throw new Exception("Failed to create column"),
+            ]),
+            RowData.Cons([
+                ColumnData.Cons(longCol, 4L).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(dateTimeCol, DateTime.Parse("4-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(decimalCol, 1.4).Data ?? throw new Exception("Failed to create column"),
+            ]),
+            RowData.Cons([
+                ColumnData.Cons(longCol, 5L).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(dateTimeCol, DateTime.Parse("5-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                ColumnData.Cons(decimalCol, 1.5).Data ?? throw new Exception("Failed to create column"),
+            ]),
+        ];
+
+
+        var metadataManager = _fixture.GetService<MetadataManager>();
+        var commandManager = _fixture.GetService<CommandManager>();
+        var queryManager = _fixture.GetService<QueryManager>();
+
+        if (metadataManager.TableExists(table.Name))
+        {
+            Assert.True(metadataManager.DropTable(table.Name));
+        }
+        Assert.True(metadataManager.CreateTable(table));
+
+        var insertResult = rowData.Map(rd => commandManager.Insert(table, rd)).Unfold();
+
+        // Act
+        var updateResult = commandManager.Update(
+                table, 
+                row => row["LongCOL"].Value.BoxedData as long? > 3L, 
+                RowData.Cons([
+                    ColumnData.Cons(longCol, 3L).Data ?? throw new Exception("Failed to create column"),
+                    ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
+                    ColumnData.Cons(boolCol, true).Data ?? throw new Exception("Failed to create column"),
+                    ColumnData.Cons(dateTimeCol, DateTime.Parse("3-1-2024")).Data ?? throw new Exception("Failed to create column"),
+                    ColumnData.Cons(decimalCol, 1.3).Data ?? throw new Exception("Failed to create column"),
+                ]));
+
+        // Assert
+        Assert.True(insertResult);
+        Assert.True(updateResult);
+
+        Assert.True(metadataManager.DropTable(table.Name));
+    } 
 }
