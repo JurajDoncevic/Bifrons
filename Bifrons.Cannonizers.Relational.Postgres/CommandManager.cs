@@ -58,15 +58,20 @@ public sealed class CommandManager : ICommandManager
                         }
                     }
                 }
-
+                var rowsDeleted = 0;
                 foreach (var rowid in rowsToDelete)
                 {
                     using var deleteCommand = connection.CreateCommand();
                     deleteCommand.CommandText = $"DELETE FROM \"{table.Name}\" WHERE ctid = @rowId";
                     deleteCommand.Parameters.AddWithValue("rowId", NpgsqlTypes.NpgsqlDbType.Tid, rowid);
-                    deleteCommand.ExecuteNonQuery();
+                    rowsDeleted += deleteCommand.ExecuteNonQuery();
                 }
-                return Unit();
+
+                if (rowsDeleted != rowsToDelete.Count)
+                {
+                    return Result.Failure<Unit>($"Failed to delete {rowsToDelete.Count - rowsDeleted} rows");
+                }
+                return Result.Success(Unit());
             }));
 
     public Result<Unit> Insert(Table table, RowData row)
