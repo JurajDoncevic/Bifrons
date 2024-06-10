@@ -7,16 +7,19 @@ namespace Bifrons.Cannonizers.Relational.Mysql;
 public sealed class MetadataManager : IMetadataManager
 {
     private readonly string _connectionString;
+    private readonly bool _useAtomicConnection;
     private readonly MySqlConnection _connection;
-    public MetadataManager(string connectionString)
+    
+    public MetadataManager(string connectionString, bool useAtomicConnection = true)
     {
         _connectionString = connectionString;
         _connection = new MySqlConnection(_connectionString);
+        _useAtomicConnection = useAtomicConnection;
     }
 
     public Result<Unit> CreateTable(Table table)
         => Result.AsResult(() =>
-            _connection.WithConnection(true, conn =>
+            _connection.WithConnection(_useAtomicConnection, conn =>
             {
                 var columns = table.Columns.Select(c => $"{c.Name} {c.DataType.ToMysqlTypeName()}").ToArray();
                 var query = $"CREATE TABLE {table.Name} ({string.Join(", ", columns)})";
@@ -27,7 +30,7 @@ public sealed class MetadataManager : IMetadataManager
 
     public Result<Unit> DropTable(string tableName)
         => Result.AsResult(() =>
-            _connection.WithConnection(true, conn =>
+            _connection.WithConnection(_useAtomicConnection, conn =>
             {
                 var query = $"DROP TABLE {tableName}";
                 using var command = new MySqlCommand(query, conn);
@@ -37,7 +40,7 @@ public sealed class MetadataManager : IMetadataManager
 
     public Result<IEnumerable<Table>> GetAllTables()
         => Result.AsResult(() =>
-            _connection.WithConnection(true, conn =>
+            _connection.WithConnection(_useAtomicConnection, conn =>
             {
                 var tableNames = new List<string>();
                 var tablesQuery = "SHOW TABLES";
@@ -75,7 +78,7 @@ public sealed class MetadataManager : IMetadataManager
 
     public Result<Table> GetTable(string tableName)
         => Result.AsResult(() =>
-            _connection.WithConnection(true, conn =>
+            _connection.WithConnection(_useAtomicConnection, conn =>
             {
                 var tableQuery = $"SHOW TABLES LIKE '{tableName}'";
                 using (var tableCommand = new MySqlCommand(tableQuery, conn))
@@ -103,7 +106,7 @@ public sealed class MetadataManager : IMetadataManager
 
     public Result<Unit> TableExists(string tableName)
         => Result.AsResult(() =>
-            _connection.WithConnection(true, conn =>
+            _connection.WithConnection(_useAtomicConnection, conn =>
             {
                 var query = $"SHOW TABLES LIKE '{tableName}'";
                 using var command = new MySqlCommand(query, conn);
