@@ -150,8 +150,8 @@ public sealed class CommandManager : ICommandManager
                 using var updateCommand = connection.CreateCommand();
                 updateCommand.CommandText = $@"
                     UPDATE `{table.Name}` 
-                    SET {string.Join(", ", table.Columns.Select(c => $"{c.Name} = @{c.Name}"))}
-                    WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToUpdate)})";
+                    SET {string.Join(", ", table.Columns.Select(c => $"`{c.Name}` = @{c.Name}"))}
+                    WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToUpdate.Select(r => $"'{r}'"))})";
                 
                 foreach (var column in table.Columns)
                 {
