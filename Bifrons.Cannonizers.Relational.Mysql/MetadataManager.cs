@@ -1,29 +1,117 @@
 ﻿using Bifrons.Base;
 using Bifrons.Lenses.Relational.Model;
+using MySql.Data.MySqlClient;
 
 namespace Bifrons.Cannonizers.Relational.Mysql;
 
 public sealed class MetadataManager : IMetadataManager
 {
     private readonly string _connectionString;
-
+    private readonly MySqlConnection _connection;
     public MetadataManager(string connectionString)
     {
         _connectionString = connectionString;
+        _connection = new MySqlConnection(_connectionString);
     }
 
     public Result<Unit> CreateTable(Table table)
-        => Result.Failure<Unit>("Not implemented");
+        => Result.AsResult(() =>
+            _connection.WithConnection(true, conn =>
+            {
+                var columns = table.Columns.Select(c => $"{c.Name} {c.DataType.ToMysqlTypeName()}").ToArray();
+                var query = $"CREATE TABLE {table.Name} ({string.Join(", ", columns)})";
+                using var command = new MySqlCommand(query, conn);
+                command.ExecuteNonQuery();
+                return Result.Success(Unit());
+            }));
 
     public Result<Unit> DropTable(string tableName)
-        => Result.Failure<Unit>("Not implemented");
+        => Result.AsResult(() =>
+            _connection.WithConnection(true, conn =>
+            {
+                var query = $"DROP TABLE {tableName}";
+                using var command = new MySqlCommand(query, conn);
+                command.ExecuteNonQuery();
+                return Result.Success(Unit());
+            }));
 
     public Result<IEnumerable<Table>> GetAllTables()
-        => Result.Failure<IEnumerable<Table>>("Not implemented");
+        => Result.AsResult(() =>
+            _connection.WithConnection(true, conn =>
+            {
+                var tableNames = new List<string>();
+                var tablesQuery = "SHOW TABLES";
+                using (var tablesCommand = new MySqlCommand(tablesQuery, conn))
+                {
+                    using var reader = tablesCommand.ExecuteReader();
+                    
+                    while (reader.Read())
+                    {
+                        var tableName = reader.GetString(0);
+                        tableNames.Add(tableName);
+                    }
+                }
+                var tables = new List<Table>();
+                // get columns for each tableName
+                foreach (var tableName in tableNames)
+                {
+                    var colsQuery = $"SHOW COLUMNS FROM {tableName}";
+                    using var colsCommand = new MySqlCommand(colsQuery, conn);
+                    using var colsReader = colsCommand.ExecuteReader();
+                    var columns = new List<Column>();
+                    while (colsReader.Read())
+                    {
+                        var name = colsReader.GetString(0);
+                        var type = colsReader.GetString(1);
+                        var dataType = type.FromMysqlTypeName();
+                        columns.Add(Column.Cons(name, dataType));
+                    }
+                    tables.Add(Table.Cons(tableName, columns));
+                }
+
+                return Result.Success(tables.AsEnumerable());
+
+            }));
 
     public Result<Table> GetTable(string tableName)
-        => Result.Failure<Table>("Not implemented");
+        => Result.AsResult(() =>
+            _connection.WithConnection(true, conn =>
+            {
+                var tableQuery = $"SHOW TABLES LIKE '{tableName}'";
+                using (var tableCommand = new MySqlCommand(tableQuery, conn))
+                {
+                    using var tableReader = tableCommand.ExecuteReader();
+                    if (!tableReader.HasRows)
+                    {
+                        return Result.Failure<Table>($"Table {tableName} does not exist");
+                    }
+                }
+
+                var colsQuery = $"SHOW COLUMNS FROM {tableName}";
+                using var colsCommand = new MySqlCommand(colsQuery, conn);
+                using var colsReader = colsCommand.ExecuteReader();
+                var columns = new List<Column>();
+                while (colsReader.Read())
+                {
+                    var name = colsReader.GetString(0);
+                    var type = colsReader.GetString(1);
+                    var dataType = type.FromMysqlTypeName();
+                    columns.Add(Column.Cons(name, dataType));
+                }
+                return Result.Success(Table.Cons(tableName, columns));
+            }));
 
     public Result<Unit> TableExists(string tableName)
-        => Result.Failure<Unit>("Not implemented");
+        => Result.AsResult(() =>
+            _connection.WithConnection(true, conn =>
+            {
+                var query = $"SHOW TABLES LIKE '{tableName}'";
+                using var command = new MySqlCommand(query, conn);
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    return Result.Success(Unit());
+                }
+                return Result.Failure<Unit>($"Table named {tableName} does not exist");
+            }));
 }

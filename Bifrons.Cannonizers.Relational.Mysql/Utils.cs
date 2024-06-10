@@ -56,25 +56,25 @@ internal static class Utils
     internal static string ToMysqlTypeName(this DataTypes dataType)
         => dataType switch
         {
-            DataTypes.INTEGER => "integer",
+            DataTypes.INTEGER => "int",
             DataTypes.LONG => "bigint",
             DataTypes.STRING => "text",
-            DataTypes.DECIMAL => "double precision",
-            DataTypes.BOOLEAN => "boolean",
-            DataTypes.DATETIME => "timestamp",
+            DataTypes.DECIMAL => "double",
+            DataTypes.BOOLEAN => "tinyint(1)",
+            DataTypes.DATETIME => "datetime",
             DataTypes.UNIT => "void",
             _ => throw new NotImplementedException("Unknown data type")
         };
 
     internal static DataTypes FromMysqlTypeName(this string typeName)
-        => typeName switch
+        => typeName.ToLower() switch
         {
-            "integer" => DataTypes.INTEGER,
+            "int" => DataTypes.INTEGER,
             "bigint" => DataTypes.LONG,
-            "text" => DataTypes.STRING,
-            "double precision" => DataTypes.DECIMAL,
-            "boolean" => DataTypes.BOOLEAN,
-            var type when type.StartsWith("time") || type.StartsWith("date") => DataTypes.DATETIME,
+            var type when type.Equals("text") || type.StartsWith("varchar") || type.StartsWith("char")  => DataTypes.STRING,
+            "double" => DataTypes.DECIMAL,
+            "tinyint(1)" => DataTypes.BOOLEAN,
+            var type when type.StartsWith("datetime") || type.StartsWith("date") || type.StartsWith("timestamp") => DataTypes.DATETIME,
             "void" => DataTypes.UNIT,
             _ => throw new NotImplementedException("Unknown data type")
         };
