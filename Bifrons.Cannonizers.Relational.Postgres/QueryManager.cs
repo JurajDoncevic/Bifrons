@@ -22,11 +22,11 @@ public sealed class QueryManager : IQueryManager
         => Result.AsResult(() =>
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
-                var command = connection.CreateCommand();
+                using var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM \"{table.Name}\" WHERE \"{key.Name}\" = @keyValue";
                 command.Parameters.AddWithValue("keyValue", key.BoxedData ?? DBNull.Value);
                 var rowData = new List<RowData>();
-                var reader = command.ExecuteReader();
+                using var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     var rowColumnData = new List<ColumnData>();
@@ -57,9 +57,9 @@ public sealed class QueryManager : IQueryManager
         => Result.AsResult(() =>
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
-                var command = connection.CreateCommand();
+                using var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM \"{table.Name}\"";
-                var reader = command.ExecuteReader();
+                using var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())
                 {
@@ -91,9 +91,9 @@ public sealed class QueryManager : IQueryManager
         => Result.AsResult(() =>
             _connection.WithConnection(_useAtomicConnection, connection =>
             {
-                var command = connection.CreateCommand();
+                using var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM \"{table.Name}\"";
-                var reader = command.ExecuteReader();
+                using var reader = command.ExecuteReader();
                 var rowData = new List<RowData>();
                 while (reader.Read())
                 {
