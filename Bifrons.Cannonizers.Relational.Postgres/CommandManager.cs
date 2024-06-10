@@ -106,7 +106,7 @@ public sealed class CommandManager : ICommandManager
                 var rowsToUpdate = new List<NpgsqlTypes.NpgsqlTid>();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = $"SELECT ctid, * FROM {table.Name}";
+                    command.CommandText = $"SELECT ctid, * FROM \"{table.Name}\"";
 
                     using var reader = command.ExecuteReader();
 
@@ -142,10 +142,11 @@ public sealed class CommandManager : ICommandManager
                 }
 
                 var results = new List<Result<Unit>>();
+                var updatedRows = 0;
                 foreach (var rowid in rowsToUpdate)
                 {
                     using var updateCommand = connection.CreateCommand();
-                    updateCommand.CommandText = $"UPDATE \"{table.Name}\" SET {string.Join(", ", table.Columns.Select(c => $"{c.Name} = @{c.Name}"))} WHERE ctid = @rowId";
+                    updateCommand.CommandText = $"UPDATE \"{table.Name}\" SET {string.Join(", ", table.Columns.Select(c => $"\"{c.Name}\" = @{c.Name}"))} WHERE ctid = @rowId";
 
                     foreach (var column in table.Columns)
                     {
@@ -158,7 +159,7 @@ public sealed class CommandManager : ICommandManager
                         updateCommand.Parameters.AddWithValue(column.Name, value);
                     }
                     updateCommand.Parameters.AddWithValue("rowId", NpgsqlTypes.NpgsqlDbType.Tid, rowid);
-
+                    
                     var result = updateCommand.ExecuteNonQuery() > 0 ? Result.Success(Unit()) : Result.Failure<Unit>("Failed to update row");
                     results.Add(result);
                 }
