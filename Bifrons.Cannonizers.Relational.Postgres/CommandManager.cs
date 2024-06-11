@@ -142,7 +142,6 @@ public sealed class CommandManager : ICommandManager
                 }
 
                 var results = new List<Result<Unit>>();
-                var updatedRows = 0;
                 foreach (var rowid in rowsToUpdate)
                 {
                     using var updateCommand = connection.CreateCommand();
