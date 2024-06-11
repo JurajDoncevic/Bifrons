@@ -94,17 +94,19 @@ public sealed class DatabaseFixture : IDisposable
             .Build();
 
         _services = new ServiceCollection();
-        var academicConnectionString = ContainerBuilderExtensions.PrepareConnectionString(academic_hostPort, academic_env_User, academic_env_Password, academic_env_Database, academic_databaseType);
-        var financialConnectionString = ContainerBuilderExtensions.PrepareConnectionString(financial_hostPort, financial_env_User, financial_env_Password, financial_env_Database, financial_databaseType);
+        var academicConnectionString = DatabaseFixtureExtensions.PrepareConnectionString(academic_hostPort, academic_env_User, academic_env_Password, academic_env_Database, academic_databaseType);
+        var financialConnectionString = DatabaseFixtureExtensions.PrepareConnectionString(financial_hostPort, financial_env_User, financial_env_Password, financial_env_Database, financial_databaseType);
 
 
         // create keyed services accorind to the database type
         // TODO: Add the services to the service collection
-        
+        _services.AddAcademicCannonizer(academic_databaseType, academicConnectionString);
+        _services.AddFinancialCannonizer(financial_databaseType, financialConnectionString);
+
         _scope = _services.BuildServiceProvider().CreateScope();
 
         Task.WhenAll(
-            _academicDatabaseContainer.StartAsync(), 
+            _academicDatabaseContainer.StartAsync(),
             _financialDatabaseContainer.StartAsync()
         ).ConfigureAwait(false).GetAwaiter().GetResult();
     }
@@ -113,6 +115,12 @@ public sealed class DatabaseFixture : IDisposable
         where T : class
     {
         return _scope.ServiceProvider.GetRequiredService<T>();
+    }
+
+    public T GetService<T>(string key)
+        where T : class
+    {
+        return _scope.ServiceProvider.GetKeyedService<T>(key) ?? throw new InvalidOperationException($"Service with key {key} not found");
     }
 
     public async void Dispose()
@@ -127,8 +135,25 @@ public sealed class DatabaseFixture : IDisposable
     }
 }
 
-internal static class ContainerBuilderExtensions
+internal static class DatabaseFixtureExtensions
 {
+
+    internal static IServiceCollection AddAcademicCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
+        => databaseType switch
+        {
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("AcademicCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Mysql.Cannonizer(connectionString, useAtomicConnection)),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("AcademicCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Postgres.Cannonizer(connectionString, useAtomicConnection)),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
+        };
+
+    internal static IServiceCollection AddFinancialCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
+        => databaseType switch
+        {
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("FinancialCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Mysql.Cannonizer(connectionString, useAtomicConnection)),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("FinancialCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Postgres.Cannonizer(connectionString, useAtomicConnection)),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
+        };
+
     internal static string PrepareConnectionString(int port, string user, string password, string database, DatabaseTypes databaseType)
         => databaseType switch
         {
