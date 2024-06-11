@@ -1,0 +1,28 @@
+# Dockerfile
+FROM postgres:latest AS base
+# Set environment variables
+ENV POSTGRES_PASSWORD=mysecretpassword
+ENV POSTGRES_USER=postgres
+
+
+# Academic management database
+FROM base AS academic_management_db
+# Copy the database initialization script into the docker-entrypoint-initdb.d directory
+COPY ./academic_management_pg.sql /docker-entrypoint-initdb.d/
+# Change the permissions of the database initialization script
+RUN chmod 777 /docker-entrypoint-initdb.d/academic_management_pg.sql
+# Set environment variables
+ENV POSTGRES_DB=AcademicManagement
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+
+FROM base AS financial_management_db
+# Copy the database initialization script into the docker-entrypoint-initdb.d directory
+COPY ./financial_management_pg.sql /docker-entrypoint-initdb.d/
+# Change the permissions of the database initialization script
+RUN chmod 777 /docker-entrypoint-initdb.d/financial_management_pg.sql
+# Set environment variables
+ENV POSTGRES_DB=FinancialManagement
+# Expose the PostgreSQL port
+EXPOSE 5432

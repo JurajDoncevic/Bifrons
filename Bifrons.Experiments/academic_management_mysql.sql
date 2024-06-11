@@ -1,6 +1,6 @@
 -- Students table
 CREATE TABLE Students (
-    StudentID SERIAL PRIMARY KEY,
+    StudentID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(50),
     LastName VARCHAR(50),
     Email VARCHAR(100),
@@ -11,7 +11,7 @@ CREATE TABLE Students (
 
 -- Professors table
 CREATE TABLE Professors (
-    ProfessorID SERIAL PRIMARY KEY,
+    ProfessorID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(50),
     LastName VARCHAR(50),
     Email VARCHAR(100),
@@ -21,29 +21,34 @@ CREATE TABLE Professors (
 
 -- Courses table
 CREATE TABLE Courses (
-    CourseID SERIAL PRIMARY KEY,
+    CourseID INT AUTO_INCREMENT PRIMARY KEY,
     CourseName VARCHAR(100),
     Credits INT,
-    Department VARCHAR(50)
+    Department VARCHAR(50),
+    HeadProfessorID INT,
+    FOREIGN KEY (HeadProfessorID) REFERENCES Professors(ProfessorID)
 );
 
 -- Enrollments table
 CREATE TABLE Enrollments (
-    EnrollmentID SERIAL PRIMARY KEY,
-    StudentID INT REFERENCES Students(StudentID),
-    CourseID INT REFERENCES Courses(CourseID),
+    EnrollmentID INT AUTO_INCREMENT PRIMARY KEY,
+    StudentID INT,
+    CourseID INT,
     EnrollmentDate DATE,
-    Grade CHAR(2)
+    Grade CHAR(2),
+    FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 
 -- Teaching Assistants table
 CREATE TABLE TeachingAssistants (
-    AssistantID SERIAL PRIMARY KEY,
+    AssistantID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(50),
     LastName VARCHAR(50),
     Email VARCHAR(100),
     PhoneNumber VARCHAR(15),
-    ProfessorID INT REFERENCES Professors(ProfessorID)
+    ProfessorID INT,
+    FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID)
 );
 
 ----------- INSERT STATEMENTS -----------
@@ -64,21 +69,25 @@ INSERT INTO Professors (FirstName, LastName, Email, PhoneNumber, Department) VAL
 ('Eve', 'Miller', 'eve.miller@example.com', '555-123-4569', 'Biology');
 
 -- Insert into Courses table
-INSERT INTO Courses (CourseName, Credits, Department) VALUES
-('Introduction to Programming', 3, 'Computer Science'),
-('Calculus I', 4, 'Mathematics'),
-('Physics I', 4, 'Physics'),
-('General Chemistry', 4, 'Chemistry'),
-('Biology 101', 3, 'Biology');
+INSERT INTO Courses (CourseName, Credits, Department, HeadProfessorID) VALUES
+('Introduction to Programming', 3, 'Computer Science', 1),
+('Calculus I', 4, 'Mathematics', 2),
+('Physics I', 4, 'Physics', 3),
+('General Chemistry', 4, 'Chemistry', 4),
+('Biology 101', 3, 'Biology', 5);
 
 -- Insert into Enrollments table
 INSERT INTO Enrollments (StudentID, CourseID, EnrollmentDate, Grade) VALUES
-(1, 1, '2023-02-01', 'A'),
-(2, 2, '2023-02-01', 'B'),
-(3, 3, '2023-02-01', 'A-'),
-(4, 4, '2023-02-01', 'B+'),
-(5, 5, '2023-02-01', 'A');
-
+(1, 2, '2023-02-01', 'B+'),
+(1, 3, '2023-02-01', 'A-'),
+(2, 1, '2023-02-01', 'A'),
+(2, 3, '2023-02-01', 'B'),
+(3, 1, '2023-02-01', 'B+'),
+(3, 2, '2023-02-01', 'A-'),
+(4, 1, '2023-02-01', 'A'),
+(4, 2, '2023-02-01', 'B+'),
+(5, 1, '2023-02-01', 'A-'),
+(5, 2, '2023-02-01', 'A');
 -- Insert into Teaching Assistants table
 INSERT INTO TeachingAssistants (FirstName, LastName, Email, PhoneNumber, ProfessorID) VALUES
 ('Emily', 'Davis', 'emily.davis@example.com', '555-234-5678', 1),

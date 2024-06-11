@@ -1,0 +1,26 @@
+# Dockerfile
+FROM mysql:latest AS base
+ENV MYSQL_USER=admin
+ENV MYSQL_PASSWORD=mysecretpassword
+ENV MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+
+FROM base AS academic_management_db
+# Copy the database initialization script into the docker-entrypoint-initdb.d directory
+COPY ./academic_management_mysql.sql /docker-entrypoint-initdb.d/
+# Change the permissions of the database initialization script
+RUN chmod 777 /docker-entrypoint-initdb.d/academic_management_mysql.sql
+# Set environment variables
+ENV MYSQL_DATABASE=AcademicManagement
+# Expose the MySQL port
+EXPOSE 3306
+
+FROM base AS financial_management_db
+# Copy the database initialization script into the docker-entrypoint-initdb.d directory
+COPY ./financial_management_mysql.sql /docker-entrypoint-initdb.d/
+# Change the permissions of the database initialization script
+RUN chmod 777 /docker-entrypoint-initdb.d/financial_management_mysql.sql
+# Set environment variables
+ENV MYSQL_DATABASE=FinancialManagement
+# Expose the MySQL port
+EXPOSE 3306
