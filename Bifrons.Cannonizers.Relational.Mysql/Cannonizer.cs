@@ -6,13 +6,11 @@ public sealed class Cannonizer : ICannonizer
     private readonly QueryManager _queryManager;
     private readonly CommandManager _commandManager;
 
-    private readonly bool _useAtomicConnection;
+    public ICommandManager CommandManager => _commandManager;
 
-    public ICommandManager CommandManager => throw new NotImplementedException();
+    public IQueryManager QueryManager => _queryManager;
 
-    public IQueryManager QueryManager => throw new NotImplementedException();
-
-    public IMetadataManager MetadataManager => throw new NotImplementedException();
+    public IMetadataManager MetadataManager => _metadataManager;
 
     public Cannonizer(MetadataManager metadataManager, QueryManager queryManager, CommandManager commandManager)
     {
