@@ -33,7 +33,7 @@ CREATE TABLE TeachingAssistants (
     FirstName VARCHAR(50),
     LastName VARCHAR(50),
     Email VARCHAR(100),
-    HomeAddress VARCHAR(255)
+    HomeAddress VARCHAR(255),
     BankAccountNumber VARCHAR(20)
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE TeachingAssistants (
 CREATE TABLE SalaryPayments (
     PaymentID SERIAL PRIMARY KEY,
     Recepient INT,
-    RecepientType VARCHAR(15),
+    RecepientType VARCHAR(20),
     Amount DECIMAL(10, 2),
     PaymentDate DATE,
     CHECK (RecepientType IN ('Professor', 'TeachingAssistant'))

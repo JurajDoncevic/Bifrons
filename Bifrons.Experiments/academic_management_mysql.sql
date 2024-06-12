@@ -51,7 +51,7 @@ CREATE TABLE TeachingAssistants (
     FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID)
 );
 
------------ INSERT STATEMENTS -----------
+/*----------- INSERT STATEMENTS -----------*/
 -- Insert into Students table
 INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Major, EnrollmentDate) VALUES
 ('John', 'Doe', 'john.doe@example.com', '123-456-7890', 'Computer Science', '2022-09-01'),

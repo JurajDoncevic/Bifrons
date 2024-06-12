@@ -15,7 +15,7 @@ public sealed class SynchronizationExperiments : IClassFixture<DatabaseFixture>
     [Fact]
     public void Synchronize()
     {
-        var academicCannonizer = _fixture.GetService<ICannonizer>("Academic");
-        var financialCannonizer = _fixture.GetService<ICannonizer>("Financial");
+        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
     }
 }

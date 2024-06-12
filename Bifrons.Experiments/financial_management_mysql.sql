@@ -42,13 +42,13 @@ CREATE TABLE TeachingAssistants (
 CREATE TABLE SalaryPayments (
     PaymentID INT AUTO_INCREMENT PRIMARY KEY,
     Recepient INT,
-    RecepientType VARCHAR(15),
+    RecepientType VARCHAR(20),
     Amount DECIMAL(10, 2),
     PaymentDate DATE,
     CHECK (RecepientType IN ('Professor', 'TeachingAssistant'))
 );
 
------------ INSERT STATEMENTS -----------
+/*----------- INSERT STATEMENTS -----------*/
 -- Insert into Professors table (redundant)
 INSERT INTO Professors (FirstName, LastName, Email, HomeAddress, BankAccountNumber) VALUES
 ('Alice', 'Johnson', 'alice.johnson@example.com', '123 Main St, City, State, ZIP', '1234567890'),
