@@ -1,20 +1,31 @@
-﻿using Bifrons.Base;
+﻿using System.Text.RegularExpressions;
 using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
 using MySql.Data.MySqlClient;
 
 namespace Bifrons.Cannonizers.Relational.Mysql;
 
+/// <summary>
+/// The command manager for MySQL. The command manager is responsible for executing commands to the data store.
+/// </summary>
 public sealed class CommandManager : ICommandManager
 {
-    private readonly string _connectionString;
     private readonly bool _useAtomicConnection;
     private readonly MySqlConnection _connection;
 
-    public CommandManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use an atomic connection for each operation.</param>
+    private CommandManager(string connectionString, bool useAtomicConnection = true)
     {
-        _connectionString = connectionString;
-        _connection = new MySqlConnection(_connectionString);
+        _connection = new MySqlConnection(connectionString);
         _useAtomicConnection = useAtomicConnection;
     }
 
@@ -67,7 +78,7 @@ public sealed class CommandManager : ICommandManager
             deleteCommand.CommandText = $@"
             DELETE FROM `{table.Name}`
             WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToDelete)})";
-            
+
             var rowsDeleted = deleteCommand.ExecuteNonQuery();
             if (rowsDeleted != rowsToDelete.Count)
             {
@@ -152,7 +163,7 @@ public sealed class CommandManager : ICommandManager
                     UPDATE `{table.Name}` 
                     SET {string.Join(", ", table.Columns.Select(c => $"`{c.Name}` = @{c.Name}"))}
                     WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToUpdate.Select(r => $"'{r}'"))})";
-                
+
                 foreach (var column in table.Columns)
                 {
                     var colDataOpt = row[column.Name];
@@ -171,4 +182,33 @@ public sealed class CommandManager : ICommandManager
                 }
                 return Result.Success(Unit());
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the MySQL command manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<CommandManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return Result.Failure<CommandManager>("Connection string is required.");
+            }
+
+            var serverPattern = @"Server=.*;?";
+            var databasePattern = @"Database=.*;?";
+            var uidPattern = @"Uid=.*;?";
+            var pwdPattern = @"Pwd=.*;?";
+
+            if (!Regex.IsMatch(connectionString, serverPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, uidPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, pwdPattern, RegexOptions.IgnoreCase))
+            {
+                return Result.Failure<CommandManager>("Connection string is invalid.");
+            }
+
+            return Result.Success(new CommandManager(connectionString, useAtomicConnection));
+        });
 }

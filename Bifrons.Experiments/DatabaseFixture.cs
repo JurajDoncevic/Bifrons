@@ -141,16 +141,16 @@ internal static class DatabaseFixtureExtensions
     internal static IServiceCollection AddAcademicCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
         => databaseType switch
         {
-            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("AcademicCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Mysql.Cannonizer(connectionString, useAtomicConnection)),
-            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("AcademicCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Postgres.Cannonizer(connectionString, useAtomicConnection)),
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("AcademicCannonizer", (_, _) => Cannonizers.Relational.Mysql.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("AcademicCannonizer", (_, _) => Cannonizers.Relational.Postgres.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
         };
 
     internal static IServiceCollection AddFinancialCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
         => databaseType switch
         {
-            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("FinancialCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Mysql.Cannonizer(connectionString, useAtomicConnection)),
-            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("FinancialCannonizer", (_, _) => new Bifrons.Cannonizers.Relational.Postgres.Cannonizer(connectionString, useAtomicConnection)),
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("FinancialCannonizer", (_, _) => Cannonizers.Relational.Mysql.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("FinancialCannonizer", (_, _) => Cannonizers.Relational.Postgres.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
         };
 
@@ -166,7 +166,7 @@ internal static class DatabaseFixtureExtensions
         => $"Server=localhost;Port={port};Database={database};Uid={user};Pwd={password};";
 
     internal static string PreparePostgresConnectionString(int port, string user, string password, string database)
-        => $"Server=localhost;Port={port};Database={database};User Id={user};Password={password};";
+        => $"Server=localhost;Port={port};Database={database};Username={user};Password={password};";
 
     internal static ContainerBuilder WithMysqlEnvironment(this ContainerBuilder builder, string user, string password, string database)
         => builder

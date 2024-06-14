@@ -4,18 +4,28 @@ using Microsoft.Data.Sqlite;
 
 namespace Bifrons.Cannonizers.Relational.Sqlite;
 
+/// <summary>
+/// Command manager for SQLite. Command manager is a class that provides a way to interact with the database.
+/// </summary>
 public sealed class CommandManager : ICommandManager
 {
-
-    private readonly string _connectionString;
     private readonly SqliteConnection _connection;
     private readonly bool _useAtomicConnection;
 
-    public CommandManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    private CommandManager(string connectionString, bool useAtomicConnection = true)
     {
         _useAtomicConnection = useAtomicConnection;
-        _connectionString = connectionString;
-        _connection = new SqliteConnection(_connectionString);
+        _connection = new SqliteConnection(connectionString);
     }
 
     public Result<Unit> Delete(Table table, Func<RowData, bool> predicate)
@@ -149,4 +159,16 @@ public sealed class CommandManager : ICommandManager
                 }
                 return Unit();
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the SQLite command manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<CommandManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            var commandManager = new CommandManager(connectionString, useAtomicConnection);
+            return Result.Success(commandManager);
+        });
 }

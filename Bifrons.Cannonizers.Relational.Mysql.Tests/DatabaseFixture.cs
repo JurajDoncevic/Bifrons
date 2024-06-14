@@ -56,9 +56,9 @@ public sealed class DatabaseFixture : IDisposable
         _services = new ServiceCollection();
         var connectionString = $"Server=localhost;Port={hostPort};Database={env_mysqlDatabase};Uid={env_mysqlUser};Pwd={env_mysqlPassword};";
         // add services here
-        _services.AddScoped<QueryManager>(_ => new QueryManager(connectionString));
-        _services.AddScoped<CommandManager>(_ => new CommandManager(connectionString));
-        _services.AddScoped<MetadataManager>(_ => new MetadataManager(connectionString));
+        _services.AddScoped<QueryManager>(_ => QueryManager.Cons(connectionString).Data ?? throw new Exception("QueryManager failed to initialize"));
+        _services.AddScoped<CommandManager>(_ => CommandManager.Cons(connectionString).Data ?? throw new Exception("CommandManager failed to initialize"));
+        _services.AddScoped<MetadataManager>(_ => MetadataManager.Cons(connectionString).Data ?? throw new Exception("MetadataManager failed to initialize"));
 
         _scope = _services.BuildServiceProvider().CreateScope();
 

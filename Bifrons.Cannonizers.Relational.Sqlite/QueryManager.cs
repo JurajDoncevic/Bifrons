@@ -4,17 +4,28 @@ using Microsoft.Data.Sqlite;
 
 namespace Bifrons.Cannonizers.Relational.Sqlite;
 
+/// <summary>
+/// Query manager for SQLite. Query manager is a class that provides a way to interact with the database.
+/// </summary>
 public sealed class QueryManager : IQueryManager
 {
-    private readonly string _connectionString;
     private readonly SqliteConnection _connection;
     private readonly bool _useAtomicConnection;
 
-    public QueryManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    private QueryManager(string connectionString, bool useAtomicConnection = true)
     {
         _useAtomicConnection = useAtomicConnection;
-        _connectionString = connectionString;
-        _connection = new SqliteConnection(_connectionString);
+        _connection = new SqliteConnection(connectionString);
     }
 
     public Result<TableData> GetFrom(Table table, ColumnData key)
@@ -105,4 +116,16 @@ public sealed class QueryManager : IQueryManager
                 }
                 return TableData.Cons(table, rowData);
             }));
+
+    /// <summary>
+    /// Constructs an SQLite query manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<QueryManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            var queryManager = new QueryManager(connectionString, useAtomicConnection);
+            return Result.Success(queryManager);
+        });
 }

@@ -8,7 +8,7 @@ public class MetadataManagerTests
 
     public MetadataManagerTests()
     {
-        _metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
+        _metadataManager = MetadataManager.Cons("Data Source=./PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
     }
 
     [Fact(DisplayName = "Get metadata for a table")]

@@ -9,8 +9,8 @@ public sealed class QueryManagerTests
     public void GetFrom_WhenRowExists_ReturnsRowData()
     {
         // Arrange
-        var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
-        var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
+        var metadataManager = MetadataManager.Cons("Data Source=./PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
+        var queryManager = QueryManager.Cons("Data Source=./PeopleAndRoles.db").Data ?? throw new Exception("Failed to create query manager");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
         var key = ColumnData.Cons(table["Id"].Value, 1L).Data;
 
@@ -27,8 +27,8 @@ public sealed class QueryManagerTests
     public void GetFrom_WhenRowDoesNotExist_ReturnsEmpty()
     {
         // Arrange
-        var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
-        var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
+        var metadataManager = MetadataManager.Cons("Data Source=./PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
+        var queryManager = QueryManager.Cons("Data Source=./PeopleAndRoles.db").Data ?? throw new Exception("Failed to create query manager");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
         var key = ColumnData.Cons(table["Id"].Value, 100L).Data;
 
@@ -45,8 +45,8 @@ public sealed class QueryManagerTests
     public void GetAllFrom_WhenTableHasRows_ReturnsTableData()
     {
         // Arrange
-        var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
-        var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
+        var metadataManager = MetadataManager.Cons("Data Source=./PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
+        var queryManager = QueryManager.Cons("Data Source=./PeopleAndRoles.db").Data ?? throw new Exception("Failed to create query manager");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
 
         // Act
@@ -62,8 +62,8 @@ public sealed class QueryManagerTests
     public void GetFrom_WithPredicate_WhenTableHasData_TableData()
     {
         // Arrange
-        var metadataManager = new MetadataManager("Data Source=./PeopleAndRoles.db;");
-        var queryManager = new QueryManager("Data Source=./PeopleAndRoles.db");
+        var metadataManager = MetadataManager.Cons("Data Source=./PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
+        var queryManager = QueryManager.Cons("Data Source=./PeopleAndRoles.db").Data ?? throw new Exception("Failed to create query manager");
         var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
         var predicate = new Func<RowData, bool>(row => row["FirstName"].Value.BoxedData as string == "John" && row["LastName"].Value.BoxedData as string == "Smith");
 

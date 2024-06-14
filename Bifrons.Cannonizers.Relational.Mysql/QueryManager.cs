@@ -1,20 +1,31 @@
-﻿using Bifrons.Base;
+﻿using System.Text.RegularExpressions;
 using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
 using MySql.Data.MySqlClient;
 
 namespace Bifrons.Cannonizers.Relational.Mysql;
 
+/// <summary>
+/// The query manager for MySQL. The query manager is responsible for executing queries to the data store.
+/// </summary>
 public sealed class QueryManager : IQueryManager
 {
-    private readonly string _connectionString;
     private readonly bool _useAtomicConnection;
     private readonly MySqlConnection _connection;
 
-    public QueryManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use an atomic connection for each operation.</param>
+    private QueryManager(string connectionString, bool useAtomicConnection = true)
     {
-        _connectionString = connectionString;
-        _connection = new MySqlConnection(_connectionString);
+        _connection = new MySqlConnection(connectionString);
         _useAtomicConnection = useAtomicConnection;
     }
 
@@ -124,4 +135,33 @@ public sealed class QueryManager : IQueryManager
                 }
                 return TableData.Cons(table, rowData);
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the MySQL query manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use an atomic connection for each operation.</param>
+    public static Result<QueryManager> Cons(string connectionString, bool useAtomicConnection = true)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return Result.Failure<QueryManager>("Connection string is required.");
+        }
+
+        // Regular expression patterns to check if the connection string contains "Server", "Database", "Uid", and "Pwd"
+        var serverPattern = @"Server=.*;?";
+        var databasePattern = @"Database=.*;?";
+        var uidPattern = @"Uid=.*;?";
+        var pwdPattern = @"Pwd=.*;?";
+
+        if (!Regex.IsMatch(connectionString, serverPattern, RegexOptions.IgnoreCase) ||
+            !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
+            !Regex.IsMatch(connectionString, uidPattern, RegexOptions.IgnoreCase) ||
+            !Regex.IsMatch(connectionString, pwdPattern, RegexOptions.IgnoreCase))
+        {
+            return Result.Failure<QueryManager>("Connection string is invalid.");
+        }
+
+        return Result.Success(new QueryManager(connectionString, useAtomicConnection));
+    }
 }

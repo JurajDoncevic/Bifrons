@@ -1,9 +1,7 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Bifrons.Cannonizers.Relational.Postgres;
+﻿namespace Bifrons.Cannonizers.Relational.Sqlite;
 
 /// <summary>
-/// Cannonizer for PostgreSQL. Cannonizer is a class that provides a way to interact with the database.
+/// Cannonizer for SQLite. Cannonizer is a class that provides a way to interact with the database.
 /// </summary>
 public sealed class Cannonizer : ICannonizer
 {
@@ -23,7 +21,6 @@ public sealed class Cannonizer : ICannonizer
     /// <param name="metadataManager">Metadata manager.</param>
     /// <param name="queryManager">Query manager.</param>
     /// <param name="commandManager">Command manager.</param>
-
     private Cannonizer(MetadataManager metadataManager, QueryManager queryManager, CommandManager commandManager)
     {
         _metadataManager = metadataManager;
@@ -32,7 +29,7 @@ public sealed class Cannonizer : ICannonizer
     }
 
     /// <summary>
-    /// Constructs a new instance of the PostgreSQL cannonizer.
+    /// Constructs a new instance of the SQLite cannonizer.
     /// </summary>
     /// <param name="connectionString">The connection string to the database.</param>
     /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
@@ -43,37 +40,21 @@ public sealed class Cannonizer : ICannonizer
         {
             return Result.Failure<Cannonizer>("Connection string is required.");
         }
-
-        var hostPattern = @"Host=.*;";
-        var portPattern = @"Port=.*;";
-        var databasePattern = @"Database=.*;";
-        var usernamePattern = @"Username=.*;";
-        var passwordPattern = @"Password=.*;";
-
-        if (!Regex.IsMatch(connectionString, hostPattern, RegexOptions.IgnoreCase) ||
-            !Regex.IsMatch(connectionString, portPattern, RegexOptions.IgnoreCase) ||
-            !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
-            !Regex.IsMatch(connectionString, usernamePattern, RegexOptions.IgnoreCase) ||
-            !Regex.IsMatch(connectionString, passwordPattern, RegexOptions.IgnoreCase))
-        {
-            return Result.Failure<Cannonizer>("Connection string is invalid.");
-        }
-
-        var metadataManager = Postgres.MetadataManager.Cons(connectionString, useAtomicConnection);
-        var queryManager = Postgres.QueryManager.Cons(connectionString, useAtomicConnection);
-        var commandManager = Postgres.CommandManager.Cons(connectionString, useAtomicConnection);
+        var metadataManager = Sqlite.MetadataManager.Cons(connectionString, useAtomicConnection);
+        var queryManager = Sqlite.QueryManager.Cons(connectionString, useAtomicConnection);
+        var commandManager = Sqlite.CommandManager.Cons(connectionString, useAtomicConnection);
 
         var cannonizerCreation =
-            Postgres.MetadataManager.Cons(connectionString, useAtomicConnection)
-            .Bind(metadataManager => Postgres.QueryManager.Cons(connectionString, useAtomicConnection).Map(_ => (metadataManager, queryManager: _)))
-            .Bind(managers => Postgres.CommandManager.Cons(connectionString, useAtomicConnection).Map(_ => (managers.metadataManager, managers.queryManager, commandManager: _)))
+            Sqlite.MetadataManager.Cons(connectionString, useAtomicConnection)
+            .Bind(metadataManager => Sqlite.QueryManager.Cons(connectionString, useAtomicConnection).Map(_ => (metadataManager, queryManager: _)))
+            .Bind(managers => Sqlite.CommandManager.Cons(connectionString, useAtomicConnection).Map(_ => (managers.metadataManager, managers.queryManager, commandManager: _)))
             .Bind(managers => Cannonizer.Cons(managers.metadataManager, managers.queryManager, managers.commandManager));
 
         return cannonizerCreation;
     }
 
     /// <summary>
-    /// Constructs a new instance of the PostgreSQL cannonizer.
+    /// Constructs a new instance of the SQLite cannonizer.
     /// </summary>
     /// <param name="metadataManager">The metadata manager.</param>
     /// <param name="queryManager">The query manager.</param>

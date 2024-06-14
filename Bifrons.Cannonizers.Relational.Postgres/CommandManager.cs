@@ -1,20 +1,32 @@
-﻿using Bifrons.Lenses.Relational.Model;
+﻿using System.Text.RegularExpressions;
+using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
 using Npgsql;
 
 namespace Bifrons.Cannonizers.Relational.Postgres;
 
+/// <summary>
+/// The command manager for PostgreSQL. The command manager is responsible for executing commands to the data store.
+/// </summary>
 public sealed class CommandManager : ICommandManager
 {
-    private readonly string _connectionString;
     private readonly NpgsqlConnection _connection;
     private readonly bool _useAtomicConnection;
 
-    public CommandManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    private CommandManager(string connectionString, bool useAtomicConnection = true)
     {
         _useAtomicConnection = useAtomicConnection;
-        _connectionString = connectionString;
-        _connection = new NpgsqlConnection(_connectionString);
+        _connection = new NpgsqlConnection(connectionString);
     }
 
     public Result<Unit> Delete(Table table, Func<RowData, bool> predicate)
@@ -158,11 +170,42 @@ public sealed class CommandManager : ICommandManager
                         updateCommand.Parameters.AddWithValue(column.Name, value);
                     }
                     updateCommand.Parameters.AddWithValue("rowId", NpgsqlTypes.NpgsqlDbType.Tid, rowid);
-                    
+
                     var result = updateCommand.ExecuteNonQuery() > 0 ? Result.Success(Unit()) : Result.Failure<Unit>("Failed to update row");
                     results.Add(result);
                 }
                 return results.Unfold()
                     .Map(_ => Unit());
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the PostgreSQL command manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<CommandManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return Result.Failure<CommandManager>("Connection string is required.");
+            }
+
+            var hostPattern = @"Host=.*;?";
+            var portPattern = @"Port=.*;?";
+            var databasePattern = @"Database=.*;?";
+            var usernamePattern = @"Username=.*;?";
+            var passwordPattern = @"Password=.*;?";
+
+            if (!Regex.IsMatch(connectionString, hostPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, portPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, usernamePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, passwordPattern, RegexOptions.IgnoreCase))
+            {
+                return Result.Failure<CommandManager>("Connection string is invalid.");
+            }
+
+            return Result.Success(new CommandManager(connectionString, useAtomicConnection));
+        });
 }

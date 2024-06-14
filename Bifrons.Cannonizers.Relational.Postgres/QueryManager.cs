@@ -1,21 +1,33 @@
-﻿using Bifrons.Lenses.Relational.Model;
+﻿using System.Text.RegularExpressions;
+using Bifrons.Lenses.Relational.Model;
 using Bifrons.Lenses.RelationalData.Model;
 using Npgsql;
 
 namespace Bifrons.Cannonizers.Relational.Postgres;
 
+/// <summary>
+/// Query manager for PostgreSQL. Query manager is a class that provides a way to interact with the database.
+/// </summary>
 public sealed class QueryManager : IQueryManager
 {
 
-    private readonly string _connectionString;
     private readonly NpgsqlConnection _connection;
     private readonly bool _useAtomicConnection;
 
-    public QueryManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    private QueryManager(string connectionString, bool useAtomicConnection = true)
     {
         _useAtomicConnection = useAtomicConnection;
-        _connectionString = connectionString;
-        _connection = new NpgsqlConnection(_connectionString);
+        _connection = new NpgsqlConnection(connectionString);
     }
 
     public Result<TableData> GetFrom(Table table, ColumnData key)
@@ -124,4 +136,35 @@ public sealed class QueryManager : IQueryManager
                 }
                 return TableData.Cons(table, rowData);
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the PostgreSQL query manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<QueryManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return Result.Failure<QueryManager>("Connection string is required.");
+            }
+
+            var hostPattern = @"Host=.*;?";
+            var portPattern = @"Port=.*;?";
+            var databasePattern = @"Database=.*;?";
+            var usernamePattern = @"Username=.*;?";
+            var passwordPattern = @"Password=.*;?";
+
+            if (!Regex.IsMatch(connectionString, hostPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, portPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, usernamePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, passwordPattern, RegexOptions.IgnoreCase))
+            {
+                return Result.Failure<QueryManager>("Connection string is invalid.");
+            }
+
+            return Result.Success(new QueryManager(connectionString, useAtomicConnection));
+        });
 }

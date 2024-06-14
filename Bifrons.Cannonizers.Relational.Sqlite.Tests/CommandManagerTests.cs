@@ -58,11 +58,11 @@ public sealed class CommandManagerTests
 
 
 
-        var metadataManager = new MetadataManager("Data Source=PeopleAndRoles.db;");
-        var commandManager = new CommandManager("Data Source=PeopleAndRoles.db;");
-        var queryManager = new QueryManager("Data Source=PeopleAndRoles.db;");
+        var metadataManager = MetadataManager.Cons("Data Source=PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create metadata manager");
+        var commandManager = CommandManager.Cons("Data Source=PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create command manager");
+        var queryManager = QueryManager.Cons("Data Source=PeopleAndRoles.db;").Data ?? throw new Exception("Failed to create query manager");
 
-        if(metadataManager.TableExists(table.Name))
+        if (metadataManager.TableExists(table.Name))
         {
             Assert.True(metadataManager.DropTable(table.Name));
         }

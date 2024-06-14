@@ -1,19 +1,30 @@
-﻿using Bifrons.Base;
+﻿using System.Text.RegularExpressions;
 using Bifrons.Lenses.Relational.Model;
 using MySql.Data.MySqlClient;
 
 namespace Bifrons.Cannonizers.Relational.Mysql;
 
+/// <summary>
+/// The metadata manager for MySQL. The metadata manager is responsible for managing the metadata of the data store.
+/// </summary>
 public sealed class MetadataManager : IMetadataManager
 {
-    private readonly string _connectionString;
     private readonly bool _useAtomicConnection;
     private readonly MySqlConnection _connection;
-    
-    public MetadataManager(string connectionString, bool useAtomicConnection = true)
+
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use an atomic connection for each operation.</param>
+    private MetadataManager(string connectionString, bool useAtomicConnection = true)
     {
-        _connectionString = connectionString;
-        _connection = new MySqlConnection(_connectionString);
+        _connection = new MySqlConnection(connectionString);
         _useAtomicConnection = useAtomicConnection;
     }
 
@@ -47,7 +58,7 @@ public sealed class MetadataManager : IMetadataManager
                 using (var tablesCommand = new MySqlCommand(tablesQuery, conn))
                 {
                     using var reader = tablesCommand.ExecuteReader();
-                    
+
                     while (reader.Read())
                     {
                         var tableName = reader.GetString(0);
@@ -117,4 +128,33 @@ public sealed class MetadataManager : IMetadataManager
                 }
                 return Result.Failure<Unit>($"Table named {tableName} does not exist");
             }));
+
+    /// <summary>
+    /// Constructs a new instance of the MySQL metadata manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<MetadataManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return Result.Failure<MetadataManager>("Connection string is required.");
+            }
+
+            var serverPattern = @"Server=.*;?";
+            var databasePattern = @"Database=.*;?";
+            var uidPattern = @"Uid=.*;?";
+            var pwdPattern = @"Pwd=.*;?";
+
+            if (!Regex.IsMatch(connectionString, serverPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, databasePattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, uidPattern, RegexOptions.IgnoreCase) ||
+                !Regex.IsMatch(connectionString, pwdPattern, RegexOptions.IgnoreCase))
+            {
+                return Result.Failure<MetadataManager>("Connection string is invalid.");
+            }
+
+            return Result.Success(new MetadataManager(connectionString, useAtomicConnection));
+        });
 }

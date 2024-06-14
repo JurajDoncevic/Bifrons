@@ -1,20 +1,30 @@
-﻿using Bifrons.Base;
-using Bifrons.Lenses.Relational.Model;
+﻿using Bifrons.Lenses.Relational.Model;
 using Microsoft.Data.Sqlite;
 
 namespace Bifrons.Cannonizers.Relational.Sqlite;
 
+/// <summary>
+/// Metadata manager for SQLite. Metadata manager is a class that provides a way to interact with the database metadata.
+/// </summary>
 public sealed class MetadataManager : IMetadataManager
 {
-    private readonly string _connectionString;
     private readonly SqliteConnection _connection;
     private readonly bool _useAtomicConnection;
 
-    public MetadataManager(string connectionString, bool useAtomicConnection = true)
+    /// <summary>
+    /// The connection path to the database.
+    /// </summary>
+    internal string ConnectionPath => _connection.DataSource + "/" + _connection.Database;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    private MetadataManager(string connectionString, bool useAtomicConnection = true)
     {
         _useAtomicConnection = useAtomicConnection;
-        _connectionString = connectionString;
-        _connection = new SqliteConnection(_connectionString);
+        _connection = new SqliteConnection(connectionString);
     }
 
     public Result<Unit> CreateTable(Table table)
@@ -144,5 +154,17 @@ public sealed class MetadataManager : IMetadataManager
             {
                 return Result.Exception<Unit>(e);
             }
+        });
+
+    /// <summary>
+    /// Constructs a new instance of the SQLite metadata manager.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database.</param>
+    /// <param name="useAtomicConnection">Whether to use atomic connection for each operation.</param>
+    public static Result<MetadataManager> Cons(string connectionString, bool useAtomicConnection = true)
+        => Result.AsResult(() =>
+        {
+            var metadataManager = new MetadataManager(connectionString, useAtomicConnection);
+            return Result.Success(metadataManager);
         });
 }

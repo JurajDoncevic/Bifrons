@@ -1,9 +1,10 @@
-﻿using Bifrons.Lenses.RelationalData.Model;
+﻿using Bifrons.Base;
+using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Cannonizers.Relational.Mysql.Tests;
 
 [Collection("Database collection")]
-public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
+public sealed class QueryManagerTests// : IClassFixture<DatabaseFixture>
 {
     private readonly DatabaseFixture _fixture;
 
@@ -18,7 +19,10 @@ public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
         // Arrange
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
-        var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+        var table = metadataManager.GetTable("Person").Match(
+            table => table,
+            msg => throw new Exception(msg));
+
         var key = ColumnData.Cons(table["Id"].Value, 1).Data;
 
         // Act
@@ -36,7 +40,9 @@ public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
         // Arrange
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
-        var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+        var table = metadataManager.GetTable("Person").Match(
+            table => table,
+            msg => throw new Exception(msg));
         var key = ColumnData.Cons(table["Id"].Value, 100).Data;
 
         // Act
@@ -54,7 +60,9 @@ public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
         // Arrange
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
-        var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+        var table = metadataManager.GetTable("Person").Match(
+            table => table,
+            msg => throw new Exception(msg));
 
         // Act
         var result = queryManager.GetAllFrom(table);
@@ -71,7 +79,9 @@ public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
         // Arrange
         var metadataManager = _fixture.GetService<MetadataManager>();
         var queryManager = _fixture.GetService<QueryManager>();
-        var table = metadataManager.GetTable("Person").Data ?? throw new Exception("Table not found");
+        var table = metadataManager.GetTable("Person").Match(
+            table => table,
+            msg => throw new Exception(msg));
         var predicate = new Func<RowData, bool>(row => row["FirstName"].Value.BoxedData as string == "John" && row["LastName"].Value.BoxedData as string == "Smith");
 
         // Act

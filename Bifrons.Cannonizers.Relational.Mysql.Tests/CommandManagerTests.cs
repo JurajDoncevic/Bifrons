@@ -5,7 +5,7 @@ using Bifrons.Lenses.RelationalData.Model;
 namespace Bifrons.Cannonizers.Relational.Mysql.Tests;
 
 [Collection("Database collection")]
-public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
+public sealed class CommandManagerTests// : IClassFixture<DatabaseFixture>
 {
     private readonly DatabaseFixture _fixture;
 
@@ -93,9 +93,9 @@ public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
     }
 
     [Fact]
-    public void UpdateRows_WhenRowsExist_ReturnsSuccess() 
+    public void UpdateRows_WhenRowsExist_ReturnsSuccess()
     {
-                // Arrange
+        // Arrange
         var longCol = Column.Cons("LongCOL", DataTypes.LONG);
         var stringCol = Column.Cons("StringCOL", DataTypes.STRING);
         var boolCol = Column.Cons("BoolCOL", DataTypes.BOOLEAN);
@@ -156,8 +156,8 @@ public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
 
         // Act
         var updateResult = commandManager.Update(
-                table, 
-                row => row["LongCOL"].Value.BoxedData as long? > 3L, 
+                table,
+                row => row["LongCOL"].Value.BoxedData as long? > 3L,
                 RowData.Cons([
                     ColumnData.Cons(longCol, 3L).Data ?? throw new Exception("Failed to create column"),
                     ColumnData.Cons(stringCol, "Test").Data ?? throw new Exception("Failed to create column"),
@@ -171,5 +171,5 @@ public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
         Assert.True(updateResult);
 
         Assert.True(metadataManager.DropTable(table.Name));
-    } 
+    }
 }
