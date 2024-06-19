@@ -17,5 +17,9 @@ public sealed class SynchronizationExperiments : IClassFixture<DatabaseFixture>
     {
         var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
         var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+
+        var a_studentsTable = academicCannonizer.MetadataManager.GetTable("Students");
+        var f_studentsTable = financialCannonizer.MetadataManager.GetTable("Students");
+
     }
 }

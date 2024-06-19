@@ -62,6 +62,7 @@ public sealed class DatabaseFixture : IDisposable
                 .WithDockerfileDirectory(CommonDirectoryPath.GetProjectDirectory(), string.Empty)
                 .WithName(academic_imageName)
                 .WithDockerfile($"Dockerfile.{academic_databaseType.ToString().ToLower()}")
+                .WithCreateParameterModifier(parameter => parameter.Target = "academic_management_db")
                 .Build().CreateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         }
         if (financial_buildImage)
@@ -71,6 +72,7 @@ public sealed class DatabaseFixture : IDisposable
                 .WithCleanUp(true)
                 .WithDockerfileDirectory(CommonDirectoryPath.GetProjectDirectory(), string.Empty)
                 .WithName(financial_imageName)
+                .WithCreateParameterModifier(parameter => parameter.Target = "financial_management_db")
                 .WithDockerfile($"Dockerfile.{financial_databaseType.ToString().ToLower()}")
                 .Build().CreateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         }
