@@ -168,7 +168,7 @@ internal static class DatabaseFixtureExtensions
         => $"Server=localhost;Port={port};Database={database};Uid={user};Pwd={password};";
 
     internal static string PreparePostgresConnectionString(int port, string user, string password, string database)
-        => $"Server=localhost;Port={port};Database={database};Username={user};Password={password};";
+        => $"Host=localhost;Port={port};Database={database};Username={user};Password={password};";
 
     internal static ContainerBuilder WithMysqlEnvironment(this ContainerBuilder builder, string user, string password, string database)
         => builder
