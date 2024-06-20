@@ -21,5 +21,7 @@ public sealed class SynchronizationExperiments : IClassFixture<DatabaseFixture>
         var a_studentsTable = academicCannonizer.MetadataManager.GetTable("Students");
         var f_studentsTable = financialCannonizer.MetadataManager.GetTable("Students");
 
+        Assert.True(a_studentsTable);
+        Assert.True(f_studentsTable);
     }
 }

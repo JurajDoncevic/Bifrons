@@ -102,6 +102,11 @@ public sealed class MetadataManager : IMetadataManager
         => Result.AsResult(() =>
             _connection.WithConnection(_useAtomicConnection, conn =>
             {
+                if(!TableExists(tableName))
+                {
+                    return Result.Failure<Table>($"Table {tableName} does not exist.");
+                }
+                
                 var getColumnsCommandText = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{tableName}'";
                 using var getColumnsCommand = new NpgsqlCommand(getColumnsCommandText, conn);
 

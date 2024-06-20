@@ -78,9 +78,9 @@ public sealed class Cannonizer : ICannonizer
     public static Result<Cannonizer> Cons(MetadataManager metadataManager, QueryManager queryManager, CommandManager commandManager)
     {
 
-        if (metadataManager.ConnectionPath == queryManager.ConnectionPath
-            && queryManager.ConnectionPath == commandManager.ConnectionPath
-            && commandManager.ConnectionPath == metadataManager.ConnectionPath)
+        if (metadataManager.ConnectionPath != queryManager.ConnectionPath
+            || queryManager.ConnectionPath != commandManager.ConnectionPath
+            || commandManager.ConnectionPath != metadataManager.ConnectionPath)
         {
             return Result.Failure<Cannonizer>("All managers must point to the same server and database.");
         }
