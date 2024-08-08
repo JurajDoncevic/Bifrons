@@ -67,14 +67,14 @@ internal static class Utils
         };
 
     internal static DataTypes FromPostgresTypeName(this string typeName)
-        => typeName switch
+        => typeName.ToLower() switch
         {
             "integer" => DataTypes.INTEGER,
             "bigint" => DataTypes.LONG,
-            "text" => DataTypes.STRING,
+            var str when str.Contains("text") || str.Contains("char") => DataTypes.STRING,
             "double precision" => DataTypes.DECIMAL,
             "boolean" => DataTypes.BOOLEAN,
-            var type when type.StartsWith("time") || type.StartsWith("date") => DataTypes.DATETIME,
+            var dt when dt.StartsWith("time") || dt.StartsWith("date") => DataTypes.DATETIME,
             "void" => DataTypes.UNIT,
             _ => throw new NotImplementedException("Unknown data type")
         };

@@ -3,11 +3,11 @@
 namespace Bifrons.Experiments;
 
 [Collection("DatabaseCollection")]
-public sealed class SynchronizationExperiments : IClassFixture<DatabaseFixture>
+public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixture>
 {
     private readonly DatabaseFixture _fixture;
 
-    public SynchronizationExperiments(DatabaseFixture fixture)
+    public RelationalDataSyncExperiments(DatabaseFixture fixture)
     {
         _fixture = fixture;
     }
