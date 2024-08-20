@@ -24,18 +24,30 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
         // right
         var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
 
-        var a_studentsTable = academicCannonizer.MetadataManager.GetTable("Students").Data ?? throw new Exception("Table not found");
-        var f_studentsTable = financialCannonizer.MetadataManager.GetTable("Students").Data ?? throw new Exception("Table not found");
-        var a_coursesTable = academicCannonizer.MetadataManager.GetTable("Courses").Data ?? throw new Exception("Table not found");
+        var a_studentsTable = academicCannonizer.MetadataManager.GetTable("Students")
+            .Match(
+                table => table,
+                error => throw new Exception(error)
+            );
+        var f_studentsTable = financialCannonizer.MetadataManager.GetTable("Students")
+            .Match(
+                table => table,
+                error => throw new Exception(error)
+            );
+        var a_coursesTable = academicCannonizer.MetadataManager.GetTable("Courses")
+            .Match(
+                table => table,
+                error => throw new Exception(error)
+            );
 
 
-        var lens_studentId = Columns.IdentityLens.Cons(f_studentsTable["StudentID"].Value.Name);
-        var lens_studentName = Columns.IdentityLens.Cons(f_studentsTable["FirstName"].Value.Name);
-        var lens_lastName = Columns.IdentityLens.Cons(f_studentsTable["LastName"].Value.Name);
-        var lens_email = Columns.IdentityLens.Cons(f_studentsTable["Email"].Value.Name);
-        var lens_phoneNumber = Columns.IdentityLens.Cons(f_studentsTable["PhoneNumber"].Value.Name);
-        var lens_major = Columns.IdentityLens.Cons(f_studentsTable["Major"].Value.Name);
-        var lens_enrollmentDate = Columns.DeleteLens.Cons(a_studentsTable["EnrollmentDate"].Value.Name);
+        var lens_studentId = Columns.IdentityLens.Cons("StudentID");
+        var lens_studentName = Columns.IdentityLens.Cons("FirstName");
+        var lens_lastName = Columns.IdentityLens.Cons("LastName");
+        var lens_email = Columns.IdentityLens.Cons("Email");
+        var lens_phoneNumber = Columns.IdentityLens.Cons("PhoneNumber");
+        var lens_major = Columns.IdentityLens.Cons("Major");
+        var lens_enrollmentDate = Columns.DeleteLens.Cons("EnrollmentDate");
         var columnLenses = Enumerable.AsEnumerable<SymmetricColumnLens>([lens_studentId, lens_studentName, lens_lastName, lens_email, lens_phoneNumber, lens_major, lens_enrollmentDate]);
 
         var lens_studentsTable = Tables.IdentityLens.Cons(f_studentsTable.Name, columnLenses);
@@ -44,5 +56,64 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
         var result_studentsTable = lens_studentsTable.CreateRight(a_studentsTable); 
 
         Assert.True(result_studentsTable);
+    }
+
+    [Fact]
+    public void SynchronizeRight_LectureRoomsTable_WhenCreatedLeft()
+    {
+        // ARRANGE
+        // setup cannonizers
+        // left
+        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        // right
+        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+
+        // create LectureRoom table (model)
+        var lectureRoomsTable = Bifrons.Lenses.Relational.Model.Table.Cons(
+            "LectureRooms", 
+            new List<Bifrons.Lenses.Relational.Model.Column> {
+                Bifrons.Lenses.Relational.Model.Column.Cons("RoomID", Bifrons.Lenses.Relational.Model.DataTypes.INTEGER),
+                Bifrons.Lenses.Relational.Model.Column.Cons("RoomName", Bifrons.Lenses.Relational.Model.DataTypes.STRING),
+                Bifrons.Lenses.Relational.Model.Column.Cons("Capacity", Bifrons.Lenses.Relational.Model.DataTypes.INTEGER),
+                Bifrons.Lenses.Relational.Model.Column.Cons("Building", Bifrons.Lenses.Relational.Model.DataTypes.STRING),
+                Bifrons.Lenses.Relational.Model.Column.Cons("Floor", Bifrons.Lenses.Relational.Model.DataTypes.INTEGER)
+        });
+
+        // create LectureRooms table in Academic database
+        var a_lectureRoomsTableCreation = academicCannonizer.MetadataManager.CreateTable(lectureRoomsTable)
+            .Match(
+                _ => _,
+                error => throw new Exception(error)
+            );
+
+        // ACT
+        // get LectureRooms table from Academic database
+        var a_lectureRoomsTable = academicCannonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
+            .Match(
+                table => table,
+                error => throw new Exception(error)
+            );
+
+        // create identity lens for LectureRooms table
+        var lens_roomId = Columns.IdentityLens.Cons("RoomID");
+        var lens_roomName = Columns.IdentityLens.Cons("RoomName");
+        var lens_capacity = Columns.IdentityLens.Cons("Capacity");
+        var lens_building = Columns.IdentityLens.Cons("Building");
+        var lens_floor = Columns.IdentityLens.Cons("Floor");
+        var columnLenses = Enumerable.AsEnumerable<SymmetricColumnLens>([lens_roomId, lens_roomName, lens_capacity, lens_building, lens_floor]);
+        var lens_lectureRoomsTable = Tables.IdentityLens.Cons(lectureRoomsTable.Name, columnLenses);
+
+        // create LectureRooms table in Financial database
+        var f_lectureRoomsTableCreation = lens_lectureRoomsTable.CreateRight(a_lectureRoomsTable)
+            .Bind(tbl => financialCannonizer.MetadataManager.CreateTable(tbl));
+        // get LectureRooms table from Financial database
+        var f_lectureRoomsTable = financialCannonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
+            .Match(
+                table => table,
+                error => throw new Exception(error)
+            );
+        
+        // ASSERT
+        Assert.Equal(a_lectureRoomsTable, f_lectureRoomsTable);
     }
 }
