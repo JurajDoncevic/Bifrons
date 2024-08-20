@@ -107,7 +107,7 @@ public sealed class MetadataManager : IMetadataManager
                     return Result.Failure<Table>($"Table {tableName} does not exist.");
                 }
                 
-                var getColumnsCommandText = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{tableName}'";
+                var getColumnsCommandText = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{tableName}' ORDER BY ordinal_position";
                 using var getColumnsCommand = new NpgsqlCommand(getColumnsCommandText, conn);
 
                 using var columnsReader = getColumnsCommand.ExecuteReader();
