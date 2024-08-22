@@ -54,14 +54,14 @@ public abstract class SymmetricColumnDataLens<TLeftColumnData, TRightColumnData,
     public abstract Func<TRightColumnData, Result<TLeftColumnData>> CreateLeft { get; }
 
     Func<ColumnData, Option<ColumnData>, Result<ColumnData>> ISymmetricColumnDataLens.PutLeft =>
-        (updatedSource, originalTarget) => PutLeft((TRightColumnData)updatedSource, originalTarget.Map(_ => (TLeftColumnData)_)).Map(_ => (ColumnData)_);
+        (updatedSource, originalTarget) => Result.AsResult(() => PutLeft((TRightColumnData)updatedSource, originalTarget.Map(_ => (TLeftColumnData)_)).Map(_ => (ColumnData)_));
 
     Func<ColumnData, Option<ColumnData>, Result<ColumnData>> ISymmetricColumnDataLens.PutRight => 
-        (updatedSource, originalTarget) => PutRight((TLeftColumnData)updatedSource, originalTarget.Map(_ => (TRightColumnData)_)).Map(_ => (ColumnData)_);
+        (updatedSource, originalTarget) => Result.AsResult(() => PutRight((TLeftColumnData)updatedSource, originalTarget.Map(_ => (TRightColumnData)_)).Map(_ => (ColumnData)_));
 
     Func<ColumnData, Result<ColumnData>> ISymmetricColumnDataLens.CreateRight => 
-        source => CreateRight((TLeftColumnData)source).Map(_ => (ColumnData)_);
+        source => Result.AsResult(() => CreateRight((TLeftColumnData)source).Map(_ => (ColumnData)_));
 
     Func<ColumnData, Result<ColumnData>> ISymmetricColumnDataLens.CreateLeft => 
-        source => CreateLeft((TRightColumnData)source).Map(_ => (ColumnData)_);
+        source => Result.AsResult(() => CreateLeft((TRightColumnData)source).Map(_ => (ColumnData)_));
 }

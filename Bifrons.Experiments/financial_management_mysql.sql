@@ -5,7 +5,7 @@ CREATE TABLE Students (
     LastName VARCHAR(50),
     Email VARCHAR(100),
     PhoneNumber VARCHAR(15),
-    Major VARCHAR(50)
+    BillingAddress VARCHAR(255)
 );
 
 -- Fee Payments table
@@ -66,12 +66,12 @@ INSERT INTO TeachingAssistants (AssistantID, FirstName, LastName, Email, HomeAdd
 ('T1U2V3W4X5', 'Olivia', 'Taylor', 'olivia.taylor@example.com', '123 Pine St, City, State, ZIP', '9988776644');
 
 -- Insert into Students table
-INSERT INTO Students (StudentID, FirstName, LastName, Email, PhoneNumber, Major) VALUES
-('A1B2C3D4E5', 'John', 'Doe', 'john.doe@example.com', '123-456-7890', 'Computer Science'),
-('F6G7H8I9J0', 'Jane', 'Smith', 'jane.smith@example.com', '987-654-3210', 'Mathematics'),
-('K1L2M3N4O5', 'Alice', 'Brown', 'alice.brown@example.com', '123-456-7891', 'Physics'),
-('P6Q7R8S9T0', 'Bob', 'Johnson', 'bob.johnson@example.com', '987-654-3211', 'Chemistry'),
-('U1V2W3X4Y5', 'Charlie', 'Davis', 'charlie.davis@example.com', '123-456-7892', 'Biology');
+INSERT INTO Students (StudentID, FirstName, LastName, Email, PhoneNumber, BillingAddress) VALUES
+('A1B2C3D4E5', 'John', 'Doe', 'john.doe@example.com', '123-456-7890', '123 Main St, City, State, ZIP'),
+('F6G7H8I9J0', 'Jane', 'Smith', 'jane.smith@example.com', '987-654-3210', '456 Oak St, City, State, ZIP'),
+('K1L2M3N4O5', 'Alice', 'Brown', 'alice.brown@example.com', '123-456-7891', '789 Pine St, City, State, ZIP'),
+('P6Q7R8S9T0', 'Bob', 'Johnson', 'bob.johnson@example.com', '987-654-3211', '321 Elm St, City, State, ZIP'),
+('U1V2W3X4Y5', 'Charlie', 'Davis', 'charlie.davis@example.com', '123-456-7892', '654 Willow St, City, State, ZIP');
 
 -- Insert into FeePayments table
 INSERT INTO FeePayments (StudentID, PaymentDate, Amount, PaymentMethod) VALUES

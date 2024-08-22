@@ -18,7 +18,8 @@ public abstract class SymmetricTableDataLens
     public bool MatchesLeft => _tableLens.MatchesLeft;
     public bool MatchesRight => _tableLens.MatchesRight;
 
-    public Option<ISymmetricColumnDataLens> this[string name] => _columnDataLenses.Value.FirstOrDefault(cdl => cdl.MatchesColumnNameLeft == name).ToOption();
+    public Option<ISymmetricColumnDataLens> GetLensMatchingLeft(string columnName) => _columnDataLenses.Value.FirstOrDefault(cdl => cdl.MatchesColumnNameLeft == columnName).ToOption();
+    public Option<ISymmetricColumnDataLens> GetLensMatchingRight(string columnName) => _columnDataLenses.Value.FirstOrDefault(cdl => cdl.MatchesColumnNameRight == columnName).ToOption();
 
     protected SymmetricTableDataLens(SymmetricTableLens tableLens, Option<IEnumerable<ISymmetricColumnDataLens>> columnDataLenses)
     {
