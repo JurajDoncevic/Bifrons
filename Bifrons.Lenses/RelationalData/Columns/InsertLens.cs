@@ -25,26 +25,26 @@ public abstract class InsertLens<TColumnData, TData>
     where TColumnData : ColumnData
 {
     private readonly TData _defaultData;
-    protected InsertLens(Relational.Columns.InsertLens columnLens, TData defaultData) 
+    protected InsertLens(Relational.Columns.InsertLens columnLens, TData defaultData)
         : base(columnLens, Option.None<ISymmetricLens<TData, TData>>())
     {
         _defaultData = defaultData;
     }
 
-    public override Func<UnitColumnData, Option<TColumnData>, Result<TColumnData>> PutRight => 
+    public override Func<UnitColumnData, Option<TColumnData>, Result<TColumnData>> PutRight =>
         (updatedSource, originalTarget) => originalTarget.Match(
             target => _columnLens.PutRight(updatedSource.Column, target.Column)
-                        .Bind(column => ColumnData.Cons<TColumnData>(column, _defaultData)),
+                        .Bind(column => ColumnData.Cons<TColumnData>(column, target.BoxedData)),
             () => CreateRight(updatedSource)
             );
-    
+
     public override Func<TColumnData, Option<UnitColumnData>, Result<UnitColumnData>> PutLeft =>
         (updatedSource, originalTarget) => originalTarget.Match(
             target => _columnLens.PutLeft(updatedSource.Column, target.Column)
                         .Bind(column => ColumnData.Cons<UnitColumnData>(column)),
             () => CreateLeft(updatedSource)
             );
-    
+
     public override Func<UnitColumnData, Result<TColumnData>> CreateRight =>
         source => _columnLens.CreateRight(source.Column)
                     .Bind(column => ColumnData.Cons<TColumnData>(column, _defaultData));
@@ -53,16 +53,16 @@ public abstract class InsertLens<TColumnData, TData>
         source => _columnLens.CreateLeft(source.Column)
                     .Bind(column => ColumnData.Cons<UnitColumnData>(column));
 
-    Func<ColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutLeft => 
+    Func<ColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutLeft =>
         (updatedSource, originalTarget) => PutLeft((TColumnData)updatedSource, originalTarget.Map(_ => (UnitColumnData)_)).Map(_ => (ColumnData)_);
 
-    Func<UnitColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutRight => 
+    Func<UnitColumnData, Option<ColumnData>, Result<ColumnData>> IInsertLens.PutRight =>
         (updatedSource, originalTarget) => PutRight((UnitColumnData)updatedSource, originalTarget.Map(_ => (TColumnData)_)).Map(_ => (ColumnData)_);
 
-    Func<UnitColumnData, Result<ColumnData>> IInsertLens.CreateRight => 
+    Func<UnitColumnData, Result<ColumnData>> IInsertLens.CreateRight =>
         source => CreateRight((UnitColumnData)source).Map(_ => (ColumnData)_);
 
-    Func<ColumnData, Result<ColumnData>> IInsertLens.CreateLeft => 
+    Func<ColumnData, Result<ColumnData>> IInsertLens.CreateLeft =>
         source => CreateLeft((TColumnData)source).Map(_ => (ColumnData)_);
 }
 
