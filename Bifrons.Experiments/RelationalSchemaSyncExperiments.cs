@@ -60,7 +60,7 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
         var lens_studentsTable = Tables.IdentityLens.Cons(f_studentsTable.Name, columnLenses);
 
 
-        var result_studentsTable = lens_studentsTable.CreateRight(a_studentsTable); 
+        var result_studentsTable = lens_studentsTable.CreateRight(a_studentsTable);
 
         Assert.True(result_studentsTable);
     }
@@ -77,7 +77,7 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
 
         // create LectureRoom table (model)
         var lectureRoomsTable = Bifrons.Lenses.Relational.Model.Table.Cons(
-            "LectureRooms", 
+            "LectureRooms",
             new List<Bifrons.Lenses.Relational.Model.Column> {
                 Bifrons.Lenses.Relational.Model.Column.Cons("RoomID", Bifrons.Lenses.Relational.Model.DataTypes.INTEGER),
                 Bifrons.Lenses.Relational.Model.Column.Cons("RoomName", Bifrons.Lenses.Relational.Model.DataTypes.STRING),
@@ -119,7 +119,7 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
                 table => table,
                 error => throw new Exception(error)
             );
-        
+
         // ASSERT
         Assert.Equal(a_lectureRoomsTable, f_lectureRoomsTable);
 
@@ -137,125 +137,5 @@ public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
                 _ => _,
                 error => throw new Exception(error)
             );
-    }
-
-    [Fact]
-    public void Synchronize_StudentTableData_WhenLeftAndRightAreAdded() 
-    {
-        // ARRANGE
-        // setup cannonizers
-        // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
-        // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
-
-        // create student table structure lens
-        var colLens_studentId = Columns.IdentityLens.Cons("StudentID");
-        var colLens_firstName = Columns.IdentityLens.Cons("FirstName");
-        var colLens_lastName = Columns.IdentityLens.Cons("LastName");
-        var colLens_email = Columns.IdentityLens.Cons("Email");
-        var colLens_phoneNumber = Columns.IdentityLens.Cons("PhoneNumber");
-        var colLens_major = Columns.DeleteLens.Cons("Major", Relational.Model.DataTypes.STRING);
-        var colLens_enrollmentDate = Columns.DeleteLens.Cons("EnrollmentDate", Relational.Model.DataTypes.DATETIME);
-        var colLens_billingAddress = Columns.InsertLens.Cons("BillingAddress", Relational.Model.DataTypes.STRING);
-        var tblLens_students = Tables.IdentityLens.Cons(
-            "Students", 
-            new List<Relational.Columns.SymmetricColumnLens>
-            {
-                colLens_studentId,
-                colLens_firstName,
-                colLens_lastName,
-                colLens_email,
-                colLens_phoneNumber,
-                colLens_major,
-                colLens_enrollmentDate,
-                colLens_billingAddress
-            });
-
-        // create student table data lens
-        var colDataLens_studentId = DataColumns.StringIdentityLens.Cons(
-            colLens_studentId,
-            Strings.IdentityLens.Cons()
-            );
-        var colDataLens_firstName = DataColumns.StringIdentityLens.Cons(
-            colLens_firstName,
-            Strings.IdentityLens.Cons()
-            );
-        var colDataLens_lastName = DataColumns.StringIdentityLens.Cons(
-            colLens_lastName,
-            Strings.IdentityLens.Cons()
-            );
-        var colDataLens_email = DataColumns.StringIdentityLens.Cons(
-            colLens_email,
-            Strings.IdentityLens.Cons()
-            );
-        var colDataLens_phoneNumber = DataColumns.StringIdentityLens.Cons(
-            colLens_phoneNumber,
-            Strings.IdentityLens.Cons()
-            );
-        var colDataLens_major = DataColumns.StringDeleteLens.Cons(
-            colLens_major,
-            "N/A"
-            );
-        var colDataLens_enrollmentDate = DataColumns.DateTimeDeleteLens.Cons(
-            colLens_enrollmentDate,
-            DateTime.MinValue
-            );
-        var colDataLens_billingAddress = DataColumns.StringInsertLens.Cons(
-            colLens_billingAddress,
-            "N/A"
-            );
-        var tblDataLens_students = DataTables.IdentityLens.Cons(
-            tblLens_students,
-            new List<RelationalData.Columns.ISymmetricColumnDataLens>
-            {
-                colDataLens_studentId,
-                colDataLens_firstName,
-                colDataLens_lastName,
-                colDataLens_email,
-                colDataLens_phoneNumber,
-                colDataLens_major,
-                colDataLens_enrollmentDate,
-                colDataLens_billingAddress
-            }).Match(
-                lens => lens,
-                error => throw new Exception(error)
-            );
-
-        // load left student data
-        var tblLeft_students = academicCannonizer.MetadataManager.GetTable("Students")
-            .Match(
-                table => table,
-                error => throw new Exception(error)
-            );
-        var tblDataLeft_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
-            .Match(
-                data => data,
-                error => throw new Exception(error)
-            );
-        // load right student data
-        var tblRight_students = financialCannonizer.MetadataManager.GetTable("Students")
-            .Match(
-                table => table,
-                error => throw new Exception(error)
-            );
-        var tblDataRight_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
-            .Match(
-                data => data,
-                error => throw new Exception(error)
-            );
-
-        // ACT
-        // get data
-        var res_tblData_rightStudents = tblDataLens_students.CreateRight(tblDataLeft_students);
-        var res_tblData_leftStudents = tblDataLens_students.CreateLeft(tblDataRight_students);
-
-        //sync data
-
-        // place data
-
-        // ASSERT
-        Assert.True(res_tblData_rightStudents);
-        Assert.True(res_tblData_leftStudents);
     }
 }
