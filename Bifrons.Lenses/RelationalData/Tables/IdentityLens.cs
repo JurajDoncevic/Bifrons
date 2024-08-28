@@ -20,12 +20,13 @@ public sealed class IdentityLens : SymmetricTableDataLens
                     originalTarget.Match(
                         originalTarget => Result.AsResult(() =>{
                             // see if you can find a matching row from the updated source in the originalTarget
+                            // includes both data from L and L & R; not from only R
                             var leftRowDataMatches = updatedSource.RowData
                                 .Select(rightRow => (rightRow: rightRow, idRow: GetIdentityRow(rightRow, _identityColumns)))
                                 .Select(tuple => (rightRow: tuple.rightRow, leftRowMatch: FindMatchingRowData(tuple.idRow, originalTarget.RowData)));
                             
 
-                            var rowData = leftRowDataMatches
+                            var leftAdaptedRowData = leftRowDataMatches
                                 .Select(tuple => {
                                     var rightRow = tuple.rightRow;
                                     var leftRowMatch = tuple.leftRowMatch;
@@ -54,8 +55,14 @@ public sealed class IdentityLens : SymmetricTableDataLens
                                         ).Unfold()
                                     );
                                     })
-                                .Select(cds => cds.Map(cd => RowData.Cons(cd)))
+                                .Select(cds => cds.Map(cd => RowData.Cons(cd.Where(_ => !_.IsUnit))))
                                 .Unfold();
+                            
+                            // find rows in the updated source that are not in the original target
+                            // this is the remainder of the L data not matched previously
+                            var unmatchedLeftRowData = updatedSource.RowData.Where(leftRow => FindMatchingRowData(GetIdentityRow(leftRow, _identityColumns), originalTarget.RowData).IsNone);
+                            // combine the matched and unmatched data
+                            var rowData = leftAdaptedRowData.Map(rows => rows.Concat(unmatchedLeftRowData));
                             return rowData;
                         }).Bind(rowData => TableData.Cons(leftTable, rowData)),
                         () => CreateLeft(updatedSource)
@@ -69,12 +76,12 @@ public sealed class IdentityLens : SymmetricTableDataLens
                     originalTarget.Match(
                         originalTarget => Result.AsResult(() =>{
                             // see if you can find a matching row from the updated source in the originalTarget
+                            // includes both data from L and L & R; not from only R
                             var rightRowDataMatches = updatedSource.RowData
                                 .Select(leftRow => (leftRow: leftRow, idRow: GetIdentityRow(leftRow, _identityColumns)))
-                                .Select(tuple => (leftRow: tuple.leftRow, rightRowMatch: FindMatchingRowData(tuple.idRow, originalTarget.RowData)));
-                            
+                                .Select(tuple => (leftRow: tuple.leftRow, rightRowMatch: FindMatchingRowData(tuple.idRow, originalTarget.RowData)));                                
 
-                            var rowData = rightRowDataMatches
+                            var rightAdaptedRowData = rightRowDataMatches
                                 .Select(tuple => {
                                     var leftRow = tuple.leftRow;
                                     var rightRowMatch = tuple.rightRowMatch;
@@ -103,8 +110,14 @@ public sealed class IdentityLens : SymmetricTableDataLens
                                         ).Unfold()
                                     );
                                     })
-                                .Select(cds => cds.Map(cd => RowData.Cons(cd)))
+                                .Select(cds => cds.Map(cd => RowData.Cons(cd.Where(_ => !_.IsUnit))))
                                 .Unfold();
+
+                            // find rows in the original target that are not in the updated source
+                            // this is the remainder of the R data not matched previously
+                            var unmatchedRightRowData = originalTarget.RowData.Where(rightRow => FindMatchingRowData(GetIdentityRow(rightRow, _identityColumns), updatedSource.RowData).IsNone);
+                            // combine the matched and unmatched data
+                            var rowData = rightAdaptedRowData.Map(rows => rows.Concat(unmatchedRightRowData));
                             return rowData;
                         }).Bind(rowData => TableData.Cons(rightTable, rowData)),
                         () => CreateRight(updatedSource)
