@@ -1,14 +1,16 @@
-﻿using Bifrons.Lenses.RelationalData.Columns;
+﻿using Bifrons.Lenses.Relational.Model;
+using Bifrons.Lenses.RelationalData.Columns;
 using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Lenses.RelationalData.Tables;
 
 public sealed class IdentityLens : SymmetricTableDataLens
 {
-
-    private IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses) 
+    private readonly List<Column> _identityColumns;
+    private IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses, Option<IEnumerable<Column>> identityColumns = default) 
         : base(tableLens, Option.Some(columnDataLenses))
     {
+        _identityColumns = identityColumns.Match(ic => ic.ToList(), () => []);
     }
 
     public override Func<TableData, Option<TableData>, Result<TableData>> PutLeft => 
@@ -71,8 +73,8 @@ public sealed class IdentityLens : SymmetricTableDataLens
                     .Bind(rd => TableData.Cons(table, rd))
                 );
 
-    public static Result<IdentityLens> Cons(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses)
+    public static Result<IdentityLens> Cons(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses, Option<IEnumerable<Column>> identityColumns = default)
         => tableLens.ColumnLenses.All(cdl => columnDataLenses.Any(cdl2 => cdl.MatchesColumnNameLeft == cdl2.MatchesColumnNameLeft))
-            ? Result.Success(new IdentityLens(tableLens, columnDataLenses))
+            ? Result.Success(new IdentityLens(tableLens, columnDataLenses, identityColumns))
             : Result.Failure<IdentityLens>("Column data lenses do not match the table lens.");
 }
