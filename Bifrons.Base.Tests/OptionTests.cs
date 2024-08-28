@@ -43,6 +43,23 @@ public class OptionTests
     }
 
     [Fact]
+    public void CreateNone_WithValueTypeDefault()
+    {
+        Option<int> option = default;
+
+        Assert.False(option.IsSome);
+    }
+
+    [Fact]
+    public void CreateNone_WithRefTypeDefault()
+    {
+        Option<object> option = default;
+
+        Assert.False(option.IsSome);
+    }
+
+
+    [Fact]
     public void MapSome_WithObject()
     {
         var x = "Hello";
