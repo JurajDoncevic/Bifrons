@@ -6,37 +6,89 @@ namespace Bifrons.Lenses.RelationalData.Tables;
 
 public sealed class IdentityLens : SymmetricTableDataLens
 {
-    private readonly List<Column> _identityColumns;
+    private readonly ISet<Column> _identityColumns;
     private IdentityLens(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses, Option<IEnumerable<Column>> identityColumns = default) 
         : base(tableLens, Option.Some(columnDataLenses))
     {
-        _identityColumns = identityColumns.Match(ic => ic.ToList(), () => []);
+        _identityColumns = identityColumns.Match(ic => ic.ToHashSet(), () => []);
     }
 
     public override Func<TableData, Option<TableData>, Result<TableData>> PutLeft => 
         (updatedSource, originalTarget) => 
             _tableLens.PutLeft(updatedSource.Table, originalTarget.Map(_ => _.Table))
-                .Bind(table =>
-                    updatedSource.RowData.Map(rd => 
-                        rd.ColumnData.Fold(
-                            Enumerable.Empty<Result<ColumnData>>(), 
-                            (cd, res) => res.Append(GetLensMatchingRight(cd.Name).Match(lens => lens.PutLeft(cd, originalTarget.Map(ot => ot.RowData.First().ColumnData.First(cd2 => cd2.Name == cd.Name))), () => Result.Failure<ColumnData>($"No lens found for column {cd.Name}")))
-                        ).Unfold().Map(cd => RowData.Cons(cd))
-                    ).Unfold()
-                    .Bind(rd => TableData.Cons(table, rd))
+                .Bind(leftTable =>
+                    originalTarget.Match(
+                        originalTarget => Result.AsResult(() =>{
+                            // see if you can find a matching row from the updated source in the originalTarget
+                            var leftRowDataMatches = updatedSource.RowData
+                                .Select(rightRow => (rightRow: rightRow, idRow: GetIdentityRow(rightRow, _identityColumns)))
+                                .Select(tuple => (rightRow: tuple.rightRow, leftRowMatch: FindMatchingRowData(tuple.idRow, originalTarget.RowData)));
+                            
+
+                            var rowData = leftRowDataMatches
+                                .Select(tuple => {
+                                    var rightRow = tuple.rightRow;
+                                    var leftRowMatch = tuple.leftRowMatch;
+                                    return leftRowMatch.Match(
+                                        leftRow => ColumnDataLenses.Fold(
+                                            Enumerable.Empty<Result<ColumnData>>(),
+                                            (cdl, res) => cdl.MatchesRight
+                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight].Match(cd => cdl.PutLeft(cd, leftRow[cd.Column.Name]), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")))
+                                                : res.Append(cdl.PutLeft(UnitColumnData.Cons(), leftRow.ColumnData.First(cd2 => cd2.Name == cdl.MatchesColumnNameLeft)))
+                                        ).Unfold(),
+                                        () => ColumnDataLenses.Fold(
+                                            Enumerable.Empty<Result<ColumnData>>(),
+                                            (cdl, res) => cdl.MatchesRight
+                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight].Match(cd => cdl.PutLeft(cd, Option.None<ColumnData>()), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")))
+                                                : res.Append(cdl.PutLeft(UnitColumnData.Cons(), Option.None<ColumnData>()))
+                                        ).Unfold()
+                                    );
+                                    })
+                                .Select(cds => cds.Map(cd => RowData.Cons(cd)))
+                                .Unfold();
+                            return rowData;
+                        }).Bind(rowData => TableData.Cons(leftTable, rowData)),
+                        () => CreateLeft(updatedSource)
+                    )              
                 );
 
     public override Func<TableData, Option<TableData>, Result<TableData>> PutRight => 
         (updatedSource, originalTarget) => 
             _tableLens.PutRight(updatedSource.Table, originalTarget.Map(_ => _.Table))
-                .Bind(table => 
-                    updatedSource.RowData.Map(rd => 
-                        rd.ColumnData.Fold(
-                            Enumerable.Empty<Result<ColumnData>>(), 
-                            (cd, res) => res.Append(GetLensMatchingLeft(cd.Name).Match(lens => lens.PutRight(cd, originalTarget.Map(ot => ot.RowData.First().ColumnData.First(cd2 => cd2.Name == cd.Name))), () => Result.Failure<ColumnData>($"No lens found for column {cd.Name}")))
-                        ).Unfold().Map(cd => RowData.Cons(cd))
-                    ).Unfold()
-                    .Bind(rd => TableData.Cons(table, rd))
+                .Bind(rightTable =>
+                    originalTarget.Match(
+                        originalTarget => Result.AsResult(() =>{
+                            // see if you can find a matching row from the updated source in the originalTarget
+                            var rightRowDataMatches = updatedSource.RowData
+                                .Select(leftRow => (leftRow: leftRow, idRow: GetIdentityRow(leftRow, _identityColumns)))
+                                .Select(tuple => (leftRow: tuple.leftRow, rightRowMatch: FindMatchingRowData(tuple.idRow, originalTarget.RowData)));
+                            
+
+                            var rowData = rightRowDataMatches
+                                .Select(tuple => {
+                                    var leftRow = tuple.leftRow;
+                                    var rightRowMatch = tuple.rightRowMatch;
+                                    return rightRowMatch.Match(
+                                        rightRow => ColumnDataLenses.Fold(
+                                            Enumerable.Empty<Result<ColumnData>>(),
+                                            (cdl, res) => cdl.MatchesLeft
+                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft].Match(cd => cdl.PutRight(cd, rightRow[cd.Column.Name]), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")))
+                                                : res.Append(cdl.PutRight(UnitColumnData.Cons(), rightRow.ColumnData.First(cd2 => cd2.Name == cdl.MatchesColumnNameRight)))
+                                        ).Unfold(),
+                                        () => ColumnDataLenses.Fold(
+                                            Enumerable.Empty<Result<ColumnData>>(),
+                                            (cdl, res) => cdl.MatchesLeft
+                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft].Match(cd => cdl.PutRight(cd, Option.None<ColumnData>()), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")))
+                                                : res.Append(cdl.PutRight(UnitColumnData.Cons(), Option.None<ColumnData>()))
+                                        ).Unfold()
+                                    );
+                                    })
+                                .Select(cds => cds.Map(cd => RowData.Cons(cd)))
+                                .Unfold();
+                            return rowData;
+                        }).Bind(rowData => TableData.Cons(rightTable, rowData)),
+                        () => CreateRight(updatedSource)
+                    )              
                 );
 
     public override Func<TableData, Result<TableData>> CreateRight => 
@@ -74,7 +126,29 @@ public sealed class IdentityLens : SymmetricTableDataLens
                 );
 
     public static Result<IdentityLens> Cons(Relational.Tables.IdentityLens tableLens, IEnumerable<ISymmetricColumnDataLens> columnDataLenses, Option<IEnumerable<Column>> identityColumns = default)
-        => tableLens.ColumnLenses.All(cdl => columnDataLenses.Any(cdl2 => cdl.MatchesColumnNameLeft == cdl2.MatchesColumnNameLeft))
-            ? Result.Success(new IdentityLens(tableLens, columnDataLenses, identityColumns))
-            : Result.Failure<IdentityLens>("Column data lenses do not match the table lens.");
+    {
+        if(!tableLens.ColumnLenses.All(cdl => columnDataLenses.Any(cdl2 => cdl.MatchesColumnNameLeft == cdl2.MatchesColumnNameLeft)))
+        {
+            return Result.Failure<IdentityLens>("Column data lenses do not match the table lens.");
+        }
+        if(identityColumns.IsSome && !identityColumns.Value.All(c => columnDataLenses.Any(cdl => cdl.MatchesColumnNameLeft == c.Name)))
+        {
+            return Result.Failure<IdentityLens>("Column data lenses do not match the table lens.");
+        }
+
+        return Result.Success(new IdentityLens(tableLens, columnDataLenses, identityColumns));
+    }
+
+    private static Option<RowData> FindMatchingRowData(RowData identityRow, IEnumerable<RowData> rows)
+    {
+        return rows.FirstOrDefault(
+                row => row.ColumnData.Where(cd => identityRow.Columns.Contains(cd.Column))
+                    .All(cd => identityRow[cd.Column.Name].Match(cd2 => cd2.BoxedData?.Equals(cd.BoxedData) ?? true, () => false)
+                )).ToOption();
+    }
+
+    private static RowData GetIdentityRow(RowData row, IEnumerable<Column> identityColumns)
+    {
+        return RowData.Cons(row.ColumnData.Where(cd => identityColumns.Any(c => c.Name == cd.Name)));
+    }
 }

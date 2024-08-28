@@ -10,6 +10,7 @@ using Booleans = Bifrons.Lenses.Booleans;
 using Decimals = Bifrons.Lenses.Decimals;
 using Relational = Bifrons.Lenses.Relational;
 using RelationalData = Bifrons.Lenses.RelationalData;
+using Bifrons.Lenses.Relational.Model;
 
 namespace Bifrons.Experiments;
 
@@ -114,7 +115,9 @@ public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixtur
                 colDataLens_major,
                 colDataLens_enrollmentDate,
                 colDataLens_billingAddress
-            }).Match(
+            },
+            new List<Column>() { Column.Cons("StudentID", Relational.Model.DataTypes.STRING) }
+            ).Match(
                 lens => lens,
                 error => throw new Exception(error)
             );
@@ -144,15 +147,24 @@ public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixtur
 
         // ACT
         // get data
-        var res_tblData_rightStudents = tblDataLens_students.CreateRight(tblDataLeft_students);
-        var res_tblData_leftStudents = tblDataLens_students.CreateLeft(tblDataRight_students);
+        var tblData_rightStudents = tblDataLens_students.CreateRight(tblDataLeft_students)
+            .Match(
+                data => data,
+                error => throw new Exception(error)
+            );
+        var tblData_leftStudents = tblDataLens_students.CreateLeft(tblDataRight_students)
+            .Match(
+                data => data,
+                error => throw new Exception(error)
+            );
+        
+        //sync data - no new data to sync
 
-        //sync data
+        var res_rightDataSync = tblDataLens_students.PutRight(tblData_leftStudents, tblData_rightStudents);
 
         // place data
 
         // ASSERT
-        Assert.True(res_tblData_rightStudents);
-        Assert.True(res_tblData_leftStudents);
+        Assert.True(res_rightDataSync);
     }
 }
