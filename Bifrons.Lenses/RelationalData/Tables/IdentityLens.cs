@@ -33,13 +33,23 @@ public sealed class IdentityLens : SymmetricTableDataLens
                                         leftRow => ColumnDataLenses.Fold(
                                             Enumerable.Empty<Result<ColumnData>>(),
                                             (cdl, res) => cdl.MatchesRight
-                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight].Match(cd => cdl.PutLeft(cd, leftRow[cd.Column.Name]), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")))
+                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight]
+                                                    .Match(
+                                                        cd => cdl.PutLeft(cd, leftRow[cd.Column.Name]),
+                                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")
+                                                    )
+                                                )
                                                 : res.Append(cdl.PutLeft(UnitColumnData.Cons(), leftRow.ColumnData.First(cd2 => cd2.Name == cdl.MatchesColumnNameLeft)))
                                         ).Unfold(),
                                         () => ColumnDataLenses.Fold(
                                             Enumerable.Empty<Result<ColumnData>>(),
                                             (cdl, res) => cdl.MatchesRight
-                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight].Match(cd => cdl.PutLeft(cd, Option.None<ColumnData>()), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")))
+                                                ? res.Append(rightRow[cdl.MatchesColumnNameRight]
+                                                    .Match(
+                                                        cd => cdl.PutLeft(cd, Option.None<ColumnData>()), 
+                                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")
+                                                    )
+                                                )
                                                 : res.Append(cdl.PutLeft(UnitColumnData.Cons(), Option.None<ColumnData>()))
                                         ).Unfold()
                                     );
@@ -72,13 +82,23 @@ public sealed class IdentityLens : SymmetricTableDataLens
                                         rightRow => ColumnDataLenses.Fold(
                                             Enumerable.Empty<Result<ColumnData>>(),
                                             (cdl, res) => cdl.MatchesLeft
-                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft].Match(cd => cdl.PutRight(cd, rightRow[cd.Column.Name]), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")))
+                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft]
+                                                     .Match(
+                                                        cd => cdl.PutRight(cd, rightRow[cd.Column.Name]), 
+                                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")
+                                                    )
+                                                )
                                                 : res.Append(cdl.PutRight(UnitColumnData.Cons(), rightRow.ColumnData.First(cd2 => cd2.Name == cdl.MatchesColumnNameRight)))
                                         ).Unfold(),
                                         () => ColumnDataLenses.Fold(
                                             Enumerable.Empty<Result<ColumnData>>(),
                                             (cdl, res) => cdl.MatchesLeft
-                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft].Match(cd => cdl.PutRight(cd, Option.None<ColumnData>()), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")))
+                                                ? res.Append(leftRow[cdl.MatchesColumnNameLeft]
+                                                     .Match(
+                                                        cd => cdl.PutRight(cd, Option.None<ColumnData>()), 
+                                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")
+                                                    )
+                                                )
                                                 : res.Append(cdl.PutRight(UnitColumnData.Cons(), Option.None<ColumnData>()))
                                         ).Unfold()
                                     );
@@ -99,7 +119,12 @@ public sealed class IdentityLens : SymmetricTableDataLens
                         ColumnDataLenses.Fold(
                             Enumerable.Empty<Result<ColumnData>>(),
                             (cdl, res) => cdl.MatchesLeft
-                                ? res.Append(rd[cdl.MatchesColumnNameLeft].Match(cd => cdl.CreateRight(cd), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")))
+                                ? res.Append(rd[cdl.MatchesColumnNameLeft]
+                                    .Match(
+                                        cd => cdl.CreateRight(cd), 
+                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesRight}")
+                                    )
+                                )
                                 : res.Append(cdl.CreateRight(UnitColumnData.Cons()))
                         ).Unfold()
                         .Map(row => row.Where(col => !col.IsUnit))
@@ -116,7 +141,12 @@ public sealed class IdentityLens : SymmetricTableDataLens
                         ColumnDataLenses.Fold(
                             Enumerable.Empty<Result<ColumnData>>(),
                             (cdl, res) => cdl.MatchesRight
-                                ? res.Append(rd[cdl.MatchesColumnNameRight].Match(cd => cdl.CreateLeft(cd), () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")))
+                                ? res.Append(rd[cdl.MatchesColumnNameRight]
+                                    .Match(
+                                        cd => cdl.CreateLeft(cd), 
+                                        () => Result.Failure<ColumnData>($"No column found for lens {cdl.MatchesLeft}")
+                                    )
+                                )
                                 : res.Append(cdl.CreateLeft(UnitColumnData.Cons()))
                         ).Unfold()
                         .Map(row => row.Where(col => !col.IsUnit))
