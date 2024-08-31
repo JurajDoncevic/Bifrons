@@ -554,6 +554,14 @@ public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixtur
         var res_studentsDataSync = tblDataLens_students.PutRight(tblDataLeft_students, tblDataRight_students)
             .Bind(rightData => tblDataLens_students.PutLeft(rightData, tblDataLeft_students).Map(leftData => (leftData, rightData)));
 
+        // use the cannonizers to place the data into the databases
+        var res_databaseSync = res_studentsDataSync.Bind(data => academicCannonizer.CommandManager.SyncIntoDatabase(tblLeft_students, new List<Column> { tblLeft_students["StudentID"].Value }, data.Item1.RowData))
+            .Bind(_ => financialCannonizer.CommandManager.SyncIntoDatabase(tblRight_students, new List<Column> { tblRight_students["StudentID"].Value }, res_studentsDataSync.Data.Item2.RowData));
+
+        // get the synced data from the databases
+        var res_syncedAcademicData = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students);
+        var res_syncedFinancialData = financialCannonizer.QueryManager.GetAllFrom(tblRight_students);
+
         #endregion
 
         #region ASSERT
@@ -561,6 +569,12 @@ public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixtur
         Assert.True(res_studentsDataSync);
         var (leftData, rightData) = res_studentsDataSync.Data;
         Assert.Equal(leftData.RowData.Count, rightData.RowData.Count);
+
+        Assert.True(res_databaseSync);
+        Assert.True(res_syncedAcademicData);
+        Assert.True(res_syncedFinancialData);
+        Assert.Equal(res_syncedAcademicData.Data.RowData.Count, res_syncedFinancialData.Data.RowData.Count);
+
         #endregion
 
         #region CLEANUP
