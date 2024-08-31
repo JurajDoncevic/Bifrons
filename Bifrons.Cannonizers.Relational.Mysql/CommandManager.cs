@@ -74,18 +74,24 @@ public sealed class CommandManager : ICommandManager
                 }
             }
 
-            using var deleteCommand = connection.CreateCommand();
-            deleteCommand.CommandText = $@"
-            DELETE FROM `{table.Name}`
-            WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToDelete)})";
-
-            var rowsDeleted = deleteCommand.ExecuteNonQuery();
-            if (rowsDeleted != rowsToDelete.Count)
+            if (rowsToDelete.Count != 0)
             {
-                return Result.Failure<Unit>($"Failed to delete {rowsToDelete.Count - rowsDeleted} rows");
+                using var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = $@"
+                DELETE FROM `{table.Name}`
+                WHERE SHA1(CONCAT({string.Join(", ", table.Columns.Select(c => $"`{c.Name}`"))})) IN ({string.Join(", ", rowsToDelete)})";
+
+
+                var rowsDeleted = deleteCommand.ExecuteNonQuery();
+                if (rowsDeleted != rowsToDelete.Count)
+                {
+                    return Result.Failure<Unit>($"Failed to delete {rowsToDelete.Count - rowsDeleted} rows");
+                }
+
+                return Result.Success(Unit(), $"Deleted {rowsDeleted} rows.");
             }
 
-            return Result.Success(Unit());
+            return Result.Success(Unit(), $"Deleted 0 rows.");
         }));
 
     public Result<Unit> Insert(Table table, RowData row)
