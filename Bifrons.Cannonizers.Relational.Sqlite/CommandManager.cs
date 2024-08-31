@@ -160,6 +160,43 @@ public sealed class CommandManager : ICommandManager
                 return Unit();
             }));
 
+
+    public Result<Unit> SyncIntoDatabase(Table table, IEnumerable<Column> identityColumns, IEnumerable<RowData> rows)
+        => Result.AsResult(() =>
+            _connection.WithConnection(_useAtomicConnection, connection =>
+            {
+                var tableName = table.Name;
+                var allColumnNames = table.Columns.Select(c => c.Name).ToArray();
+
+                var results = new List<Result<Unit>>();
+                foreach (var row in rows)
+                {
+                    var columnNames = row.ColumnData.Map(cd => cd.Name).ToArray();
+                    var columnValues = row.ColumnData.Map(cd => cd.BoxedData).ToArray();
+
+                    var insertColumns = string.Join(", ", columnNames);
+                    var insertValues = string.Join(", ", columnNames.Select((_, i) => $"@p{i}"));
+
+                    var sql = $@"
+                        INSERT OR REPLACE INTO {tableName} ({insertColumns})
+                        VALUES ({insertValues});";
+
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = sql;
+                        for (int i = 0; i < columnValues.Length; i++)
+                        {
+                            command.Parameters.AddWithValue($"@p{i}", columnValues[i]);
+                        }
+
+                        var result = command.ExecuteNonQuery() > 0 ? Result.Success(Unit()) : Result.Failure<Unit>("Failed to insert or replace row");
+                        results.Add(result);
+                    }
+                }
+
+                return results.Unfold().Map(_ => Unit());
+            }));
+
     /// <summary>
     /// Constructs a new instance of the SQLite command manager.
     /// </summary>

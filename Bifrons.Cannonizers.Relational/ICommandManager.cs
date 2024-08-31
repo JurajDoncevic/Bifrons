@@ -30,4 +30,13 @@ public interface ICommandManager
     /// <param name="table">The table to delete the row from.</param>
     /// <param name="predicate">The predicate to match the row to delete.</param>
     Result<Unit> Delete(Table table, Func<RowData, bool> predicate);
+
+
+    /// <summary>
+    /// Synchronizes the specified rows into the database. If a row exists by the identity columns, it will be updated. If it does not exist, it will be inserted. No rows are deleted.
+    /// </summary>
+    /// <param name="table">The table to synchronize the rows into.</param>
+    /// <param name="identityColumns">The identity columns of the table.</param>
+    /// <param name="rows">The rows to synchronize.</param>
+    Result<Unit> SyncIntoDatabase(Table table, IEnumerable<Column> identityColumns, IEnumerable<RowData> rows);
 }

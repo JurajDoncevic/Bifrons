@@ -178,6 +178,47 @@ public sealed class CommandManager : ICommandManager
                     .Map(_ => Unit());
             }));
 
+
+    public Result<Unit> SyncIntoDatabase(Table table, IEnumerable<Column> identityColumns, IEnumerable<RowData> rows)
+        => Result.AsResult(() =>
+            _connection.WithConnection(_useAtomicConnection, connection =>
+            {
+                var tableName = table.Name;
+                var identityColumnNames = identityColumns.Select(c => c.Name).ToArray();
+                var allColumnNames = table.Columns.Select(c => c.Name).ToArray();
+
+                var results = new List<Result<Unit>>();
+                foreach (var row in rows)
+                {
+                    var columnNames = row.ColumnData.Map(cd => cd.Name).ToArray();
+                    var columnValues = row.ColumnData.Map(cd => cd.BoxedData).ToArray();
+
+                    var insertColumns = string.Join(", ", columnNames.Map(c => $"\"{c}\""));
+                    var insertValues = string.Join(", ", columnNames.Select((_, i) => $"@p{i}"));
+                    var updateSet = string.Join(", ", columnNames.Select((col, i) => $"\"{col}\" = @p{i}"));
+
+                    var conflictColumns = string.Join(", ", identityColumnNames.Map(c => $"\"{c}\""));
+                    var sql = $@"
+                    INSERT INTO {"\"" + tableName + "\""} ({insertColumns})
+                    VALUES({insertValues})
+                    ON CONFLICT({conflictColumns})
+                    DO UPDATE SET {updateSet}; ";
+
+                    using (var command = new NpgsqlCommand(sql, connection))
+                    {
+                        for (int i = 0; i < columnValues.Length; i++)
+                        {
+                            command.Parameters.AddWithValue($"@p{i}", columnValues[i] ?? DBNull.Value);
+                        }
+
+                        var result = command.ExecuteNonQuery() > 0 ? Result.Success(Unit()) : Result.Failure<Unit>("Failed to insert or update row");
+                        results.Add(result);
+                    }
+                }
+
+                return results.Unfold().Map(_ => Unit());
+            }));
+
     /// <summary>
     /// Constructs a new instance of the PostgreSQL command manager.
     /// </summary>
