@@ -15,8 +15,8 @@ using Bifrons.Lenses.RelationalData.Model;
 
 namespace Bifrons.Experiments;
 
-[Collection("DatabaseCollection")]
-public sealed class RelationalDataSyncExperiments : IClassFixture<DatabaseFixture>
+[Collection("Database collection")]
+public sealed class RelationalDataSyncExperiments
 {
     private readonly DatabaseFixture _fixture;
 

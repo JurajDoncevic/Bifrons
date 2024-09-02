@@ -5,7 +5,7 @@ using Bifrons.Lenses.RelationalData.Model;
 namespace Bifrons.Cannonizers.Relational.Postgres.Tests;
 
 [Collection("Database collection")]
-public sealed class CommandManagerTests// : IClassFixture<CannonizerFixture>
+public sealed class CommandManagerTests
 {
     private readonly DatabaseFixture _fixture;
 

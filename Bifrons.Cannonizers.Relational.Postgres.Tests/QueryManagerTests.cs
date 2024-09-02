@@ -3,7 +3,7 @@
 namespace Bifrons.Cannonizers.Relational.Postgres.Tests;
 
 [Collection("Database collection")]
-public sealed class QueryManagerTests// : IClassFixture<CannonizerFixture>
+public sealed class QueryManagerTests
 {
     private readonly DatabaseFixture _fixture;
 

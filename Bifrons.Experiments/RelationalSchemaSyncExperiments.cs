@@ -13,8 +13,8 @@ using RelationalData = Bifrons.Lenses.RelationalData;
 
 namespace Bifrons.Experiments;
 
-[Collection("DatabaseCollection")]
-public class RelationalSchemaSyncExperiments : IClassFixture<DatabaseFixture>
+[Collection("Database collection")]
+public class RelationalSchemaSyncExperiments
 {
     private readonly DatabaseFixture _fixture;
 

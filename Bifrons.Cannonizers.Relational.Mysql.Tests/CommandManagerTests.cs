@@ -5,7 +5,7 @@ using Bifrons.Lenses.RelationalData.Model;
 namespace Bifrons.Cannonizers.Relational.Mysql.Tests;
 
 [Collection("Database collection")]
-public sealed class CommandManagerTests// : IClassFixture<DatabaseFixture>
+public sealed class CommandManagerTests
 {
     private readonly DatabaseFixture _fixture;
 

@@ -3,7 +3,7 @@
 namespace Bifrons.Cannonizers.Relational.Mysql.Tests;
 
 [Collection("Database collection")]
-public class MetadataManagerTests// : IClassFixture<DatabaseFixture>
+public class MetadataManagerTests
 {
     private readonly DatabaseFixture _fixture;
 
