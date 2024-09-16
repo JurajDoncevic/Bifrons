@@ -1,5 +1,5 @@
 # Bifrons
-Bidirectional lenses library
+Bidirectional lens library
 
 
 ## Schema sync experiment
