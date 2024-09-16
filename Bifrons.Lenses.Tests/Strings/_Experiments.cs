@@ -1,4 +1,6 @@
-﻿namespace Bifrons.Lenses.Strings.Tests;
+﻿using Bifrons.Lenses.RelationalData.Columns;
+
+namespace Bifrons.Lenses.Strings.Tests;
 
 public class Experiments
 {
@@ -279,5 +281,37 @@ public class Experiments
 
         Assert.True(result);
         Assert.Equal(updatedTarget, result.Data);
+    }
+
+    [Fact]
+    public void Paper_BeautifyExample()
+    {
+        var csvLine = "John;Doe;35;New York";
+        var exp_csvLine = "John;Doe;35;New York";
+        var exp_beautified = "Name: John Doe, Age: 35, City: New York";
+
+        var l_semi = DeleteLens.Cons(";");
+        var l_space = InsertLens.Cons(" ");
+        var l_comma = InsertLens.Cons(", ");
+        var l_name = IdentityLens.Cons(@"[a-zA-Z]+");
+        var l_nameT = InsertLens.Cons("Name: ");
+        var l_age = IdentityLens.Cons(@"\d+");
+        var l_ageT = InsertLens.Cons("Age: ");
+        var l_city = IdentityLens.Cons(@"[a-zA-Z ]+");
+        var l_cityT = InsertLens.Cons("City: ");
+
+        var l_beautify = l_nameT & l_name & l_semi & l_space & l_name & l_semi & l_comma  // name
+            & l_ageT & l_age & l_semi & l_comma // age
+            & l_cityT & l_city; // city
+
+        var res_beautified = l_beautify.CreateRight(csvLine);
+        Assert.True(res_beautified);
+        var beautified = res_beautified.Data;
+        Assert.Equal(exp_beautified, beautified);
+
+        var res_csvLine = l_beautify.CreateLeft(beautified);
+        Assert.True(res_csvLine);
+        var resultingCsvLine = res_csvLine.Data;
+        Assert.Equal(exp_csvLine, resultingCsvLine);
     }
 }
