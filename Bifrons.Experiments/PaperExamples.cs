@@ -1,11 +1,17 @@
 using System;
 using Integers = Bifrons.Lenses.Integers;
 using Strings = Bifrons.Lenses.Strings;
-using CrossType = Bifrons.Lenses.CrossType;
+using Decimals = Bifrons.Lenses.Decimals;
+using Booleans = Bifrons.Lenses.Booleans;
 using DateTimes = Bifrons.Lenses.DateTimes;
+using CrossType = Bifrons.Lenses.CrossType;
 using Columns = Bifrons.Lenses.Relational.Columns;
 using Tables = Bifrons.Lenses.Relational.Tables;
 using Bifrons.Lenses;
+using DataColumns = Bifrons.Lenses.RelationalData.Columns;
+using DataTables = Bifrons.Lenses.RelationalData.Tables;
+using RelationalDataModel = Bifrons.Lenses.RelationalData.Model;
+using RelationalModel = Bifrons.Lenses.Relational.Model;
 
 
 namespace Bifrons.Experiments;
@@ -161,4 +167,97 @@ public sealed class PaperExamples
         Assert.NotNull(tbl_departments);
         Assert.NotNull(tbl_users);
     }
+
+    [Fact]
+    public void Paper_RelationalDataLensesExample()
+    {
+        var l_col_id = Columns.IdentityLens.Cons("Id");
+        var l_col_name = Columns.IdentityLens.Cons("Name");
+        var l_col_dob = Columns.RenameLens.Cons("DOB", "DateOfBirth");
+        var l_col_isAdmin = Columns.DeleteLens.Cons("IsAdmin");
+        var l_col_hoursClocked = Columns.InsertLens.Cons("HoursClocked", RelationalModel.DataTypes.DECIMAL);
+        var l_tbl_people = Tables.IdentityLens.Cons(
+            "People",
+            [l_col_id, l_col_name, l_col_dob, l_col_isAdmin, l_col_hoursClocked]);
+
+        var dl_id = DataColumns.IntegerIdentityLens.Cons(
+            l_col_id, Integers.IdentityLens.Cons());
+        var dl_name = DataColumns.StringIdentityLens.Cons(
+            l_col_name, Strings.IdentityLens.Cons());
+        var dl_dob = DataColumns.DateTimeIdentityLens.Cons(
+            l_col_dob, DateTimes.IdentityLens.Cons());
+        var dl_isAdmin = DataColumns.BooleanDeleteLens.Cons(
+            l_col_isAdmin, false);
+        var dl_hoursClocked = DataColumns.DecimalInsertLens.Cons(
+            l_col_hoursClocked, 0.0);
+
+        var dl_tbl_people = DataTables.IdentityLens.Cons(
+            l_tbl_people,
+            [dl_id, dl_name, dl_dob, dl_isAdmin, dl_hoursClocked])
+            .Match(_ => _, msg => throw new Exception(msg));
+
+        var leftDefault = GetLeftTableData();
+
+        var rightDefault = dl_tbl_people.CreateRight(leftDefault);
+
+        Assert.True(rightDefault);
+        Assert.Equal("People", rightDefault.Data.Name);
+
+        RelationalDataModel.TableData GetLeftTableData()
+        {
+            var IdCol = RelationalModel.IntegerColumn.Cons("Id");
+            var NameCol = RelationalModel.StringColumn.Cons("Name");
+            var DobCol = RelationalModel.DateTimeColumn.Cons("DOB");
+            var IsAdminCol = RelationalModel.BooleanColumn.Cons("IsAdmin");
+            var HoursClockedCol = RelationalModel.DecimalColumn.Cons("HoursClocked");
+
+            var table
+            = RelationalModel.Table.Cons(
+                "People",
+                [
+                    IdCol,
+                    NameCol,
+                    DobCol,
+                    IsAdminCol,
+                ]);
+
+            var tableData =
+                RelationalDataModel.TableData.Cons(
+                    table,
+                    [
+                    RelationalDataModel.RowData.Cons(
+                    [
+                    RelationalDataModel.ColumnData.Cons(IdCol, 1).Data,
+                    RelationalDataModel.ColumnData.Cons(NameCol, "Alice").Data,
+                    RelationalDataModel.ColumnData.Cons(DobCol, new DateTime(1990, 1, 1)).Data,
+                    RelationalDataModel.ColumnData.Cons(IsAdminCol, true).Data,
+                    ]),
+                    RelationalDataModel.RowData.Cons(
+                    [
+                    RelationalDataModel.ColumnData.Cons(IdCol, 2).Data,
+                    RelationalDataModel.ColumnData.Cons(NameCol, "Bob").Data,
+                    RelationalDataModel.ColumnData.Cons(DobCol, new DateTime(1992, 12, 31)).Data,
+                    RelationalDataModel.ColumnData.Cons(IsAdminCol, false).Data,
+                    ]),
+                    RelationalDataModel.RowData.Cons(
+                    [
+                    RelationalDataModel.ColumnData.Cons(IdCol, 3).Data,
+                    RelationalDataModel.ColumnData.Cons(NameCol, "Charlie").Data,
+                    RelationalDataModel.ColumnData.Cons(DobCol, new DateTime(1995, 6, 15)).Data,
+                    RelationalDataModel.ColumnData.Cons(IsAdminCol, false).Data,
+                    ]),
+                    RelationalDataModel.RowData.Cons(
+                    [
+                    RelationalDataModel.ColumnData.Cons(IdCol, 4).Data,
+                    RelationalDataModel.ColumnData.Cons(NameCol, "David").Data,
+                    RelationalDataModel.ColumnData.Cons(DobCol, new DateTime(1998, 3, 22)).Data,
+                    RelationalDataModel.ColumnData.Cons(IsAdminCol, true).Data,
+                    ])
+                    ]
+                ).Data ?? throw new Exception("Failed to create left side data.");
+
+            return tableData;
+        }
+    }
 }
+
