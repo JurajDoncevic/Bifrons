@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Bifrons.Lenses;
+namespace Bifrons.Lenses.CrossType;
 
 /// <summary>
 /// Describes a date-time-string lens that tranforms date-times to strings and vice versa.
@@ -9,14 +9,16 @@ namespace Bifrons.Lenses;
 public sealed class DateTimeStringLens : ISymmetricLens<DateTime, string>
 {
     private readonly Regex _dateTimeRegex;
+    private readonly string _dateTimePattern;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="dateTimeRegexString">The regex string to use for date-time matching</param>
-    private DateTimeStringLens(string dateTimeRegexString)
+    private DateTimeStringLens(string dateTimeRegexString, string dateTimePattern)
     {
         _dateTimeRegex = new Regex(dateTimeRegexString);
+        _dateTimePattern = dateTimePattern;
     }
 
     public Func<string, Option<DateTime>, Result<DateTime>> PutLeft =>
@@ -38,7 +40,7 @@ public sealed class DateTimeStringLens : ISymmetricLens<DateTime, string>
                 return CreateRight(updatedSource);
             }
 
-            var updatedSourceString = updatedSource.ToString();
+            var updatedSourceString = updatedSource.ToString(_dateTimePattern);
 
             return Result.AsResult<string>(() => _dateTimeRegex.Replace(originalTarget.Value, updatedSourceString, 1));
         };
@@ -61,8 +63,8 @@ public sealed class DateTimeStringLens : ISymmetricLens<DateTime, string>
     /// Constructs a date-time-string lens
     /// </summary>
     /// <param name="dateTimeRegexString">The regex string to use for date-time matching</param>
-    public static DateTimeStringLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
-        => new(dateTimeRegexString);
+    public static DateTimeStringLens Cons(string dateTimeRegexString = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", string dateTimePattern = "yyyy-MM-ddTHH:mm:ss")
+        => new(dateTimeRegexString, dateTimePattern);
 }
 
 /// <summary>
