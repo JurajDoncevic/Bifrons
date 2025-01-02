@@ -118,7 +118,8 @@ public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricL
         (TLeft originalSource, TRight expectedOriginalTarget, TRight updatedTarget, TLeft expectedUpdatedSource) = _roundTripWithRightSideUpdateData;
 
         var createRightResult = _lens.CreateRight(originalSource);
-        var putLeftResult = createRightResult.Bind(target => _lens.PutLeft(updatedTarget, Option.Some(originalSource)));
+        var putLeftResult = createRightResult
+            .Bind(target => _lens.PutLeft(updatedTarget, originalSource));
 
         Assert.True(createRightResult);
         Assert.Equal(expectedOriginalTarget, createRightResult.Data);
@@ -131,7 +132,8 @@ public abstract class SymmetricLensTestingFramework<TLeft, TRight> : ISymmetricL
         (TRight originalSource, TLeft expectedOriginalTarget, TLeft updatedTarget, TRight expectedUpdatedSource) = _roundTripWithLeftSideUpdateData;
 
         var createLeftResult = _lens.CreateLeft(originalSource);
-        var putRightResult = createLeftResult.Bind(target => _lens.PutRight(updatedTarget, Option.Some(originalSource)));
+        var putRightResult = createLeftResult
+            .Bind(target => _lens.PutRight(updatedTarget, originalSource));
 
         Assert.True(createLeftResult);
         Assert.Equal(expectedOriginalTarget, createLeftResult.Data);
