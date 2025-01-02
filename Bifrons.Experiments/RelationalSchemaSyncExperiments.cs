@@ -1,4 +1,4 @@
-﻿using Bifrons.Cannonizers.Relational;
+﻿using Bifrons.Canonizers.Relational;
 using Tables = Bifrons.Lenses.Relational.Tables;
 using Columns = Bifrons.Lenses.Relational.Columns;
 using DataColumns = Bifrons.Lenses.RelationalData.Columns;
@@ -27,21 +27,21 @@ public class RelationalSchemaSyncExperiments
     public void Synchronize_StudentsTable()
     {
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
-        var a_studentsTable = academicCannonizer.MetadataManager.GetTable("Students")
+        var a_studentsTable = academicCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
-        var f_studentsTable = financialCannonizer.MetadataManager.GetTable("Students")
+        var f_studentsTable = financialCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
-        var a_coursesTable = academicCannonizer.MetadataManager.GetTable("Courses")
+        var a_coursesTable = academicCanonizer.MetadataManager.GetTable("Courses")
             .Match(
                 table => table,
                 error => throw new Exception(error)
@@ -69,11 +69,11 @@ public class RelationalSchemaSyncExperiments
     public void SynchronizeRight_LectureRoomsTable_WhenCreatedLeft()
     {
         // ARRANGE
-        // setup cannonizers
+        // setup canonizers
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
         // create LectureRoom table (model)
         var lectureRoomsTable = Bifrons.Lenses.Relational.Model.Table.Cons(
@@ -87,7 +87,7 @@ public class RelationalSchemaSyncExperiments
         });
 
         // create LectureRooms table in Academic database
-        var a_lectureRoomsTableCreation = academicCannonizer.MetadataManager.CreateTable(lectureRoomsTable)
+        var a_lectureRoomsTableCreation = academicCanonizer.MetadataManager.CreateTable(lectureRoomsTable)
             .Match(
                 _ => _,
                 error => throw new Exception(error)
@@ -95,7 +95,7 @@ public class RelationalSchemaSyncExperiments
 
         // ACT
         // get LectureRooms table from Academic database
-        var a_lectureRoomsTable = academicCannonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
+        var a_lectureRoomsTable = academicCanonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
             .Match(
                 table => table,
                 error => throw new Exception(error)
@@ -112,9 +112,9 @@ public class RelationalSchemaSyncExperiments
 
         // create LectureRooms table in Financial database
         var f_lectureRoomsTableCreation = lens_lectureRoomsTable.CreateRight(a_lectureRoomsTable)
-            .Bind(tbl => financialCannonizer.MetadataManager.CreateTable(tbl));
+            .Bind(tbl => financialCanonizer.MetadataManager.CreateTable(tbl));
         // get LectureRooms table from Financial database
-        var f_lectureRoomsTable = financialCannonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
+        var f_lectureRoomsTable = financialCanonizer.MetadataManager.GetTable(lectureRoomsTable.Name)
             .Match(
                 table => table,
                 error => throw new Exception(error)
@@ -125,14 +125,14 @@ public class RelationalSchemaSyncExperiments
 
         // CLEANUP
         // drop LectureRooms table from Academic database
-        var a_lectureRoomsTableDeletion = academicCannonizer.MetadataManager.DropTable(lectureRoomsTable.Name)
+        var a_lectureRoomsTableDeletion = academicCanonizer.MetadataManager.DropTable(lectureRoomsTable.Name)
             .Match(
                 _ => _,
                 error => throw new Exception(error)
             );
 
         // drop LectureRooms table from Financial database
-        var f_lectureRoomsTableDeletion = financialCannonizer.MetadataManager.DropTable(lectureRoomsTable.Name)
+        var f_lectureRoomsTableDeletion = financialCanonizer.MetadataManager.DropTable(lectureRoomsTable.Name)
             .Match(
                 _ => _,
                 error => throw new Exception(error)

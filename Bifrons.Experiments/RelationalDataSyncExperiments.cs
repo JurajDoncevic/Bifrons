@@ -1,4 +1,4 @@
-﻿using Bifrons.Cannonizers.Relational;
+﻿using Bifrons.Canonizers.Relational;
 using Tables = Bifrons.Lenses.Relational.Tables;
 using Columns = Bifrons.Lenses.Relational.Columns;
 using DataColumns = Bifrons.Lenses.RelationalData.Columns;
@@ -30,11 +30,11 @@ public sealed class RelationalDataSyncExperiments
     {
         #region ARRANGE
         // ARRANGE
-        // setup cannonizers
+        // setup canonizers
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
         // create student table structure lens
         var colLens_studentId = Columns.IdentityLens.Cons("StudentID");
@@ -112,23 +112,23 @@ public sealed class RelationalDataSyncExperiments
             );
 
         // load left student data
-        var tblLeft_students = academicCannonizer.MetadataManager.GetTable("Students")
+        var tblLeft_students = academicCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
-        var tblDataLeft_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
+        var tblDataLeft_students = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
             );
         // load right student data
-        var tblRight_students = financialCannonizer.MetadataManager.GetTable("Students")
+        var tblRight_students = financialCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
-        var tblDataRight_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
+        var tblDataRight_students = financialCanonizer.QueryManager.GetAllFrom(tblRight_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -165,11 +165,11 @@ public sealed class RelationalDataSyncExperiments
     {
         #region ARRANGE
         // ARRANGE
-        // setup cannonizers
+        // setup canonizers
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
         // create student table structure lens
         var colLens_studentId = Columns.IdentityLens.Cons("StudentID");
@@ -247,13 +247,13 @@ public sealed class RelationalDataSyncExperiments
             );
 
         // load left student table model
-        var tblLeft_students = academicCannonizer.MetadataManager.GetTable("Students")
+        var tblLeft_students = academicCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
         // load right student table model
-        var tblRight_students = financialCannonizer.MetadataManager.GetTable("Students")
+        var tblRight_students = financialCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
@@ -299,7 +299,7 @@ public sealed class RelationalDataSyncExperiments
 
         var res_academicInsertion = newAcademicStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(academicCannonizer.CommandManager.Insert(tblLeft_students, rowData))
+            (rowData, acc) => acc.Append(academicCanonizer.CommandManager.Insert(tblLeft_students, rowData))
         ).Unfold()
         .Match(
             data => data,
@@ -307,13 +307,13 @@ public sealed class RelationalDataSyncExperiments
         );
 
         // load left student data
-        var tblDataLeft_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
+        var tblDataLeft_students = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
             );
         // load right student data
-        var tblDataRight_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
+        var tblDataRight_students = financialCanonizer.QueryManager.GetAllFrom(tblRight_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -322,11 +322,11 @@ public sealed class RelationalDataSyncExperiments
 
         // ACT
         var res_tblData_rightStudents = tblDataLens_students.PutRight(tblDataLeft_students, tblDataRight_students);
-        
-        var res_financialDataSync = res_tblData_rightStudents
-            .Bind(students => financialCannonizer.CommandManager.SyncIntoDatabase(students.Table, new List<Column> { tblRight_students["StudentID"].Value }, students.RowData));
 
-        var rightTblData_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
+        var res_financialDataSync = res_tblData_rightStudents
+            .Bind(students => financialCanonizer.CommandManager.SyncIntoDatabase(students.Table, new List<Column> { tblRight_students["StudentID"].Value }, students.RowData));
+
+        var rightTblData_students = financialCanonizer.QueryManager.GetAllFrom(tblRight_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -338,12 +338,12 @@ public sealed class RelationalDataSyncExperiments
         Assert.True(res_financialDataSync);
         Assert.Equal(tblDataLeft_students.RowData.Count, rightTblData_students.RowData.Count);
 
-    
+
         // CLEANUP
         // delete data from left/academic database
         var res_academicDeletion = newAcademicStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(academicCannonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"] == rowData["StudentID"]))
+            (rowData, acc) => acc.Append(academicCanonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"] == rowData["StudentID"]))
         ).Unfold()
         .Match(
             data => data,
@@ -351,7 +351,7 @@ public sealed class RelationalDataSyncExperiments
         );
         var res_financialDeletion = newAcademicStudentData.Fold( // doesn't matter if we delete from financial or academic database, since we only use IDs
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(financialCannonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"] == rowData["StudentID"]))
+            (rowData, acc) => acc.Append(financialCanonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"] == rowData["StudentID"]))
         ).Unfold()
         .Match(
             data => data,
@@ -365,11 +365,11 @@ public sealed class RelationalDataSyncExperiments
     {
         #region ARRANGE
         // ARRANGE
-        // setup cannonizers
+        // setup canonizers
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
         // create student table structure lens
         var colLens_studentId = Columns.IdentityLens.Cons("StudentID");
@@ -445,20 +445,20 @@ public sealed class RelationalDataSyncExperiments
                 lens => lens,
                 error => throw new Exception(error)
             );
-        
+
         // load left student table model
-        var tblLeft_students = academicCannonizer.MetadataManager.GetTable("Students")
+        var tblLeft_students = academicCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
         // load right student table model
-        var tblRight_students = financialCannonizer.MetadataManager.GetTable("Students")
+        var tblRight_students = financialCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
-        
+
         // insert new data to right/financial database
         var newFinancialStudentData = Enumerable.AsEnumerable(
         [
@@ -486,17 +486,17 @@ public sealed class RelationalDataSyncExperiments
 
         var res_financialInsertion = newFinancialStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(financialCannonizer.CommandManager.Insert(tblRight_students, rowData))
+            (rowData, acc) => acc.Append(financialCanonizer.CommandManager.Insert(tblRight_students, rowData))
         ).Unfold();
 
         // load left student data
-        var tblDataLeft_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
+        var tblDataLeft_students = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
             );
         // load right student data
-        var tblDataRight_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
+        var tblDataRight_students = financialCanonizer.QueryManager.GetAllFrom(tblRight_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -507,9 +507,9 @@ public sealed class RelationalDataSyncExperiments
         var res_tblData_leftStudents = tblDataLens_students.PutLeft(tblDataRight_students, tblDataLeft_students);
 
         var res_academicDataSync = res_tblData_leftStudents
-            .Bind(students => academicCannonizer.CommandManager.SyncIntoDatabase(students.Table, new List<Column> { tblLeft_students["StudentID"].Value }, students.RowData));
-        
-        var leftTblData_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
+            .Bind(students => academicCanonizer.CommandManager.SyncIntoDatabase(students.Table, new List<Column> { tblLeft_students["StudentID"].Value }, students.RowData));
+
+        var leftTblData_students = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -524,13 +524,13 @@ public sealed class RelationalDataSyncExperiments
         // delete data from left/academic database
         var res_academicDeletion = newFinancialStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(academicCannonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"] == rowData["StudentID"]))
+            (rowData, acc) => acc.Append(academicCanonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"] == rowData["StudentID"]))
         ).Unfold();
 
         // delete data from right/financial database
         var res_financialDeletion = newFinancialStudentData.Fold( // doesn't matter if we delete from financial or academic database, since we only use IDs
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(financialCannonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"] == rowData["StudentID"]))
+            (rowData, acc) => acc.Append(financialCanonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"] == rowData["StudentID"]))
         ).Unfold();
     }
 
@@ -539,11 +539,11 @@ public sealed class RelationalDataSyncExperiments
     {
         #region ARRANGE
         // ARRANGE
-        // setup cannonizers
+        // setup canonizers
         // left
-        var academicCannonizer = _fixture.GetService<ICannonizer>("AcademicCannonizer");
+        var academicCanonizer = _fixture.GetService<ICanonizer>("AcademicCanonizer");
         // right
-        var financialCannonizer = _fixture.GetService<ICannonizer>("FinancialCannonizer");
+        var financialCanonizer = _fixture.GetService<ICanonizer>("FinancialCanonizer");
 
         // create student table structure lens
         var colLens_studentId = Columns.IdentityLens.Cons("StudentID");
@@ -621,13 +621,13 @@ public sealed class RelationalDataSyncExperiments
             );
 
         // load left student table model
-        var tblLeft_students = academicCannonizer.MetadataManager.GetTable("Students")
+        var tblLeft_students = academicCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
             );
         // load right student table model
-        var tblRight_students = financialCannonizer.MetadataManager.GetTable("Students")
+        var tblRight_students = financialCanonizer.MetadataManager.GetTable("Students")
             .Match(
                 table => table,
                 error => throw new Exception(error)
@@ -673,7 +673,7 @@ public sealed class RelationalDataSyncExperiments
 
         var res_academicInsertion = newAcademicStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(academicCannonizer.CommandManager.Insert(tblLeft_students, rowData))
+            (rowData, acc) => acc.Append(academicCanonizer.CommandManager.Insert(tblLeft_students, rowData))
         ).Unfold()
         .Match(
             data => data,
@@ -707,7 +707,7 @@ public sealed class RelationalDataSyncExperiments
 
         var res_financialInsertion = newFinancialStudentData.Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(financialCannonizer.CommandManager.Insert(tblRight_students, rowData))
+            (rowData, acc) => acc.Append(financialCanonizer.CommandManager.Insert(tblRight_students, rowData))
         ).Unfold()
         .Match(
             data => data,
@@ -715,13 +715,13 @@ public sealed class RelationalDataSyncExperiments
         );
 
         // load left student data
-        var tblDataLeft_students = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students)
+        var tblDataLeft_students = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
             );
         // load right student data
-        var tblDataRight_students = financialCannonizer.QueryManager.GetAllFrom(tblRight_students)
+        var tblDataRight_students = financialCanonizer.QueryManager.GetAllFrom(tblRight_students)
             .Match(
                 data => data,
                 error => throw new Exception(error)
@@ -735,13 +735,13 @@ public sealed class RelationalDataSyncExperiments
         var res_studentsDataSync = tblDataLens_students.PutRight(tblDataLeft_students, tblDataRight_students)
             .Bind(rightData => tblDataLens_students.PutLeft(rightData, tblDataLeft_students).Map(leftData => (leftData, rightData)));
 
-        // use the cannonizers to place the data into the databases
-        var res_databaseSync = res_studentsDataSync.Bind(data => academicCannonizer.CommandManager.SyncIntoDatabase(tblLeft_students, new List<Column> { tblLeft_students["StudentID"].Value }, data.Item1.RowData))
-            .Bind(_ => financialCannonizer.CommandManager.SyncIntoDatabase(tblRight_students, new List<Column> { tblRight_students["StudentID"].Value }, res_studentsDataSync.Data.Item2.RowData));
+        // use the canonizers to place the data into the databases
+        var res_databaseSync = res_studentsDataSync.Bind(data => academicCanonizer.CommandManager.SyncIntoDatabase(tblLeft_students, new List<Column> { tblLeft_students["StudentID"].Value }, data.Item1.RowData))
+            .Bind(_ => financialCanonizer.CommandManager.SyncIntoDatabase(tblRight_students, new List<Column> { tblRight_students["StudentID"].Value }, res_studentsDataSync.Data.Item2.RowData));
 
         // get the synced data from the databases
-        var res_syncedAcademicData = academicCannonizer.QueryManager.GetAllFrom(tblLeft_students);
-        var res_syncedFinancialData = financialCannonizer.QueryManager.GetAllFrom(tblRight_students);
+        var res_syncedAcademicData = academicCanonizer.QueryManager.GetAllFrom(tblLeft_students);
+        var res_syncedFinancialData = financialCanonizer.QueryManager.GetAllFrom(tblRight_students);
 
         #endregion
 
@@ -763,7 +763,7 @@ public sealed class RelationalDataSyncExperiments
         // delete data from left/academic database
         var res_academicDeletion = newAcademicStudentData.Concat(newFinancialStudentData).Fold(
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(academicCannonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"].Equals(rowData["StudentID"])))
+            (rowData, acc) => acc.Append(academicCanonizer.CommandManager.Delete(tblLeft_students, rd => rd["StudentID"].Equals(rowData["StudentID"])))
         ).Unfold()
         .Match(
             data => data,
@@ -772,7 +772,7 @@ public sealed class RelationalDataSyncExperiments
         // delete data from right/financial database
         var res_financialDeletion = newFinancialStudentData.Concat(newAcademicStudentData).Fold( // doesn't matter if we delete from financial or academic database, since we only use IDs
             Enumerable.Empty<Result<Unit>>(),
-            (rowData, acc) => acc.Append(financialCannonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"].Equals(rowData["StudentID"])))
+            (rowData, acc) => acc.Append(financialCanonizer.CommandManager.Delete(tblRight_students, rd => rd["StudentID"].Equals(rowData["StudentID"])))
         ).Unfold()
         .Match(
             data => data,

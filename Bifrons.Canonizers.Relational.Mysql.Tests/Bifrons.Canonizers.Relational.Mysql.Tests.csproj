@@ -31,12 +31,8 @@
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Update="appsettings.Local.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Bifrons.Base\Bifrons.Base.csproj" />
-    <ProjectReference Include="..\Bifrons.Lenses\Bifrons.Lenses.csproj" />
-    <ProjectReference Include="..\Bifrons.Canonizers.Relational.Sqlite\Bifrons.Canonizers.Relational.Sqlite.csproj" />
-    <ProjectReference Include="..\Bifrons.Canonizers.Relational\Bifrons.Canonizers.Relational.csproj" />
-    <ProjectReference Include="..\Bifrons.Canonizers.Relational.Postgres\Bifrons.Canonizers.Relational.Postgres.csproj" />
     <ProjectReference Include="..\Bifrons.Canonizers.Relational.Mysql\Bifrons.Canonizers.Relational.Mysql.csproj" />
   </ItemGroup>
 

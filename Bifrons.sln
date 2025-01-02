@@ -11,23 +11,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Lenses", "Bifrons.L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Lenses.Tests", "Bifrons.Lenses.Tests\Bifrons.Lenses.Tests.csproj", "{CF8AC905-076A-4FDB-A0B9-303F1B9346CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational", "Bifrons.Cannonizers.Relational\Bifrons.Cannonizers.Relational.csproj", "{4AC507CF-8392-42D0-AC97-5102C611C625}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational", "Bifrons.Canonizers.Relational\Bifrons.Canonizers.Relational.csproj", "{4AC507CF-8392-42D0-AC97-5102C611C625}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Tests", "Bifrons.Cannonizers.Relational.Tests\Bifrons.Cannonizers.Relational.Tests.csproj", "{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Tests", "Bifrons.Canonizers.Relational.Tests\Bifrons.Canonizers.Relational.Tests.csproj", "{DE1CB005-EC04-4A83-993F-4777E0D0C0C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Sqlite", "Bifrons.Cannonizers.Relational.Sqlite\Bifrons.Cannonizers.Relational.Sqlite.csproj", "{BEDA332B-02C0-431A-9150-607F70C0A443}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Sqlite", "Bifrons.Canonizers.Relational.Sqlite\Bifrons.Canonizers.Relational.Sqlite.csproj", "{BEDA332B-02C0-431A-9150-607F70C0A443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Sqlite.Tests", "Bifrons.Cannonizers.Relational.Sqlite.Tests\Bifrons.Cannonizers.Relational.Sqlite.Tests.csproj", "{4804ECCF-08D7-4B1B-973B-1083A97EA521}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Sqlite.Tests", "Bifrons.Canonizers.Relational.Sqlite.Tests\Bifrons.Canonizers.Relational.Sqlite.Tests.csproj", "{4804ECCF-08D7-4B1B-973B-1083A97EA521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Postgres", "Bifrons.Cannonizers.Relational.Postgres\Bifrons.Cannonizers.Relational.Postgres.csproj", "{CCADD2FC-6659-4153-8F31-F91746D682CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Postgres", "Bifrons.Canonizers.Relational.Postgres\Bifrons.Canonizers.Relational.Postgres.csproj", "{CCADD2FC-6659-4153-8F31-F91746D682CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Postgres.Tests", "Bifrons.Cannonizers.Relational.Postgres.Tests\Bifrons.Cannonizers.Relational.Postgres.Tests.csproj", "{31977835-5C1F-4B21-8675-88DDBDB848C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Postgres.Tests", "Bifrons.Canonizers.Relational.Postgres.Tests\Bifrons.Canonizers.Relational.Postgres.Tests.csproj", "{31977835-5C1F-4B21-8675-88DDBDB848C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Experiments", "Bifrons.Experiments\Bifrons.Experiments.csproj", "{2C187574-D2FB-4A6C-BC97-1C3EDB8974CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mysql", "Bifrons.Cannonizers.Relational.Mysql\Bifrons.Cannonizers.Relational.Mysql.csproj", "{387CD199-DE1A-479E-AA33-D57440558D34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Mysql", "Bifrons.Canonizers.Relational.Mysql\Bifrons.Canonizers.Relational.Mysql.csproj", "{387CD199-DE1A-479E-AA33-D57440558D34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Cannonizers.Relational.Mysql.Tests", "Bifrons.Cannonizers.Relational.Mysql.Tests\Bifrons.Cannonizers.Relational.Mysql.Tests.csproj", "{09ECD0E3-DF08-4376-95E5-DD547AEE242D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifrons.Canonizers.Relational.Mysql.Tests", "Bifrons.Canonizers.Relational.Mysql.Tests\Bifrons.Canonizers.Relational.Mysql.Tests.csproj", "{09ECD0E3-DF08-4376-95E5-DD547AEE242D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

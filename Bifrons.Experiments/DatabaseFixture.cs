@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using Bifrons.Cannonizers.Relational;
+using Bifrons.Canonizers.Relational;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
@@ -102,8 +102,8 @@ public sealed class DatabaseFixture : IDisposable
 
         // create keyed services accorind to the database type
         // TODO: Add the services to the service collection
-        _services.AddAcademicCannonizer(academic_databaseType, academicConnectionString);
-        _services.AddFinancialCannonizer(financial_databaseType, financialConnectionString);
+        _services.AddAcademicCanonizer(academic_databaseType, academicConnectionString);
+        _services.AddFinancialCanonizer(financial_databaseType, financialConnectionString);
 
         _scope = _services.BuildServiceProvider().CreateScope();
 
@@ -140,19 +140,19 @@ public sealed class DatabaseFixture : IDisposable
 internal static class DatabaseFixtureExtensions
 {
 
-    internal static IServiceCollection AddAcademicCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
+    internal static IServiceCollection AddAcademicCanonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
         => databaseType switch
         {
-            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("AcademicCannonizer", (_, _) => Cannonizers.Relational.Mysql.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
-            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("AcademicCannonizer", (_, _) => Cannonizers.Relational.Postgres.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICanonizer, Bifrons.Canonizers.Relational.Mysql.Canonizer>("AcademicCanonizer", (_, _) => Canonizers.Relational.Mysql.Canonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create canonizer")),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICanonizer, Bifrons.Canonizers.Relational.Postgres.Canonizer>("AcademicCanonizer", (_, _) => Canonizers.Relational.Postgres.Canonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create canonizer")),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
         };
 
-    internal static IServiceCollection AddFinancialCannonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
+    internal static IServiceCollection AddFinancialCanonizer(this IServiceCollection services, DatabaseTypes databaseType, string connectionString, bool useAtomicConnection = true)
         => databaseType switch
         {
-            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Mysql.Cannonizer>("FinancialCannonizer", (_, _) => Cannonizers.Relational.Mysql.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
-            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICannonizer, Bifrons.Cannonizers.Relational.Postgres.Cannonizer>("FinancialCannonizer", (_, _) => Cannonizers.Relational.Postgres.Cannonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create cannonizer")),
+            DatabaseTypes.MYSQL => services.AddKeyedScoped<ICanonizer, Bifrons.Canonizers.Relational.Mysql.Canonizer>("FinancialCanonizer", (_, _) => Canonizers.Relational.Mysql.Canonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create canonizer")),
+            DatabaseTypes.POSTGRES => services.AddKeyedScoped<ICanonizer, Bifrons.Canonizers.Relational.Postgres.Canonizer>("FinancialCanonizer", (_, _) => Canonizers.Relational.Postgres.Canonizer.Cons(connectionString, useAtomicConnection).Data ?? throw new Exception("Failed to create canonizer")),
             _ => throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null)
         };
 
