@@ -1,8 +1,8 @@
 # Bifrons
-Bidirectional lens library
+A bidirectional lens library in C#. This library is described in the paper "Bidirectionalization For The Common People".
 
 
-## Schema sync experiment
+## Database synchronization case study experiment
 Build the database container  images to keep them and avoid rebuilds on each test run.
 1) position into `/Bifrons.Experiments`*
 
