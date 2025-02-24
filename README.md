@@ -43,7 +43,7 @@ A local `appsettings.Local.json` configuration file can be created and it will b
 5) run the experiment test:
 `dotnet test --filter "FullyQualifiedName~Bifrons.Experiments.RelationalDataSyncExperiments.Synchronize_StudentTableData_WhenLeftAndRightDataIsAdded"`
 
-The test asserts a correct synchronization by counting the rows, which can be further manually verified by connecting to the databses with a SQL client application like DBeaver and checking the `Students` tables.
+The test asserts a correct synchronization by counting the rows, which can be further manually verified by connecting to the databses with an SQL client application like [DBeaver](https://dbeaver.io/) and checking the `Students` tables.
 
 
 
